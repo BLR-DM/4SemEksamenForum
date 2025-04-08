@@ -52,34 +52,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteService.Infrastructure"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9A04519-1471-43F5-92C0-E713CB857489}"
-	ProjectSection(SolutionItems) = preProject
-		ContentService\Directory.Packages.props = ContentService\Directory.Packages.props
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RecommendationService", "RecommendationService", "{2D8B3D32-B754-42A4-8E02-338198B08039}"
-	ProjectSection(SolutionItems) = preProject
-		VoteService\Directory.Packages.props = VoteService\Directory.Packages.props
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3B6C5F0D-0B39-4332-AB3C-5C45F2BC780F}"
 	ProjectSection(SolutionItems) = preProject
 		RecommendationService\src\model.py = RecommendationService\src\model.py
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B170125B-DF7E-4C74-BD17-0E2DF148588E}"
-	ProjectSection(SolutionItems) = preProject
-		ContentSafetyService\Directory.Packages.props = ContentSafetyService\Directory.Packages.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{70FA05A3-D76B-4DE5-A00E-B22FDDC16D4B}"
-	ProjectSection(SolutionItems) = preProject
-		SubscriptionService\Directory.Packages.props = SubscriptionService\Directory.Packages.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2EE3EA3C-06B3-4886-BD28-7205597D81B5}"
-	ProjectSection(SolutionItems) = preProject
-		VoteService\Directory.Packages.props = VoteService\Directory.Packages.props
 	EndProjectSection
 EndProject
 Global
@@ -197,11 +174,7 @@ Global
 		{0BDBD52D-CC49-0FA2-D2FF-181C40612B02} = {2D9B3C3D-CC7E-4358-A40E-3A52001AFD96}
 		{F1A1C374-1444-668E-A5C0-38A5D1448CAE} = {2D9B3C3D-CC7E-4358-A40E-3A52001AFD96}
 		{590B84FF-00BF-1618-DF3A-3590C8CA2E2E} = {2D9B3C3D-CC7E-4358-A40E-3A52001AFD96}
-		{E9A04519-1471-43F5-92C0-E713CB857489} = {60035463-8F7F-4ACB-9B6C-36B637EC7C73}
 		{3B6C5F0D-0B39-4332-AB3C-5C45F2BC780F} = {2D8B3D32-B754-42A4-8E02-338198B08039}
-		{B170125B-DF7E-4C74-BD17-0E2DF148588E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{70FA05A3-D76B-4DE5-A00E-B22FDDC16D4B} = {6DD33D2F-78C8-4416-8CD2-3193AC24C8F1}
-		{2EE3EA3C-06B3-4886-BD28-7205597D81B5} = {2D9B3C3D-CC7E-4358-A40E-3A52001AFD96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C477AE81-F8E9-4FF2-8B52-3DA17A75F8ED}
