@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ContentSafetyService/Directory.Packages.props", "ContentSafetyService/"]
+COPY ["Directory.Packages.props", "."]
 COPY ["ContentSafetyService/ContentSafetyService.Api/ContentSafetyService.Api.csproj", "ContentSafetyService/ContentSafetyService.Api/"]
 COPY ["ContentSafetyService/ContentSafetyService.Application/ContentSafetyService.Application.csproj", "ContentSafetyService/ContentSafetyService.Application/"]
 COPY ["ContentSafetyService/ContentSafetyService.Domain/ContentSafetyService.Domain.csproj", "ContentSafetyService/ContentSafetyService.Domain/"]

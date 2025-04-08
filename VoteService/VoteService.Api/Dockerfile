@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["VoteService/Directory.Packages.props", "VoteService/"]
+COPY ["Directory.Packages.props", "."]
 COPY ["VoteService/VoteService.Api/VoteService.Api.csproj", "VoteService/VoteService.Api/"]
 COPY ["VoteService/VoteService.Application/VoteService.Application.csproj", "VoteService/VoteService.Application/"]
 COPY ["VoteService/VoteService.Domain/VoteService.Domain.csproj", "VoteService/VoteService.Domain/"]

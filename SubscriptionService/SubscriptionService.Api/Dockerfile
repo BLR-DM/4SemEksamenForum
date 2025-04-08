@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["SubscriptionService/Directory.Packages.props", "SubscriptionService/"]
+COPY ["Directory.Packages.props", "."]
 COPY ["SubscriptionService/SubscriptionService.Api/SubscriptionService.Api.csproj", "SubscriptionService/SubscriptionService.Api/"]
 COPY ["SubscriptionService/SubscriptionService.Application/SubscriptionService.Application.csproj", "SubscriptionService/SubscriptionService.Application/"]
 COPY ["SubscriptionService/SubscriptionService.Domain/SubscriptionService.Domain.csproj", "SubscriptionService/SubscriptionService.Domain/"]
