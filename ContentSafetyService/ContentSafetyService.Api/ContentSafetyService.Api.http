@@ -1,0 +1,11 @@
+@ContentSafetyService.Api_HostAddress = http://localhost:5041
+
+POST {{ContentSafetyService.Api_HostAddress}}/contentmoderation/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "text": "Dette er test tekst. Jeg synes at du er tude grim at høre på!"
+}
+
+###

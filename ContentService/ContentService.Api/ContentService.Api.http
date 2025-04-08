@@ -1,0 +1,93 @@
+@ContentService.Api_HostAddress = http://localhost:5012
+
+GET {{ContentService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+####### Forum #######
+GET {{ContentService.Api_HostAddress}}/forum
+
+###
+GET {{ContentService.Api_HostAddress}}/forum/1
+
+###
+GET {{ContentService.Api_HostAddress}}/forum/2/posts
+
+###
+POST {{ContentService.Api_HostAddress}}/forum?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "forumName": "Test transaction"
+}
+
+###
+PUT {{ContentService.Api_HostAddress}}/forum/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "ForumName": "This is my first forum, update test",
+    "RowVersion": 796
+}
+
+###
+DELETE {{ContentService.Api_HostAddress}}/forum/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "RowVersion": 796
+}
+
+
+####### Post #######
+GET {{ContentService.Api_HostAddress}}/forum/2/post/1
+
+###
+POST {{ContentService.Api_HostAddress}}/forum/1/post?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "Title": "My First Post",
+    "Content": "This is the content of my post"
+}
+
+###
+PUT {{ContentService.Api_HostAddress}}/forum/1/post/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "Title": "My First Post",
+    "Content": "This is the content of my post, edited"
+}
+
+###
+DELETE {{ContentService.Api_HostAddress}}/forum/1/post/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "RowVersion": 795
+}
+
+
+####### Comment #######
+POST {{ContentService.Api_HostAddress}}/forum/1/post/1/comment?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "Content": "This is my first comment"
+}
+
+###
+PUT {{ContentService.Api_HostAddress}}/forum/1/post/1/comment/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "Content": "This is my first comment, edited"
+}
+
+###
+DELETE {{ContentService.Api_HostAddress}}/forum/1/post/1/comment/1?appUserId=1
+Content-Type: application/json
+Accept: application/json
+{
+    "RowVersion": 795
+}
