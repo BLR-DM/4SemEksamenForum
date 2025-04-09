@@ -2,6 +2,7 @@
 using ContentService.Application;
 using ContentService.Infrastructure;
 using Dapr;
+using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -13,31 +14,32 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Please enter your token as 'Bearer {your_token}'",
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
+builder.Services.AddDaprClient();
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//    {
+//        In = ParameterLocation.Header,
+//        Description = "Please enter your token as 'Bearer {your_token}'",
+//        Name = "Authorization",
+//        Type = SecuritySchemeType.ApiKey
+//    });
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] { }
-        }
-    });
-});
+//    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    {
+//        {
+//            new OpenApiSecurityScheme
+//            {
+//                Reference = new OpenApiReference
+//                {
+//                    Type = ReferenceType.SecurityScheme,
+//                    Id = "Bearer"
+//                }
+//            },
+//            new string[] { }
+//        }
+//    });
+//});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -49,38 +51,38 @@ builder.Services.AddInfrastructure(builder.Configuration);
 //        .Build();
 //});
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-    opt =>
-    {
-        opt.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-        opt.RequireHttpsMetadata = false;
-        opt.MetadataAddress = builder.Configuration["Keycloak:MetadataAddress"]!;
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidAudience = builder.Configuration["Keycloak:Audience"],
-            ValidIssuer = builder.Configuration["Keycloak:ValidIssuer"],
-            ValidateIssuer = true,
-            ValidateAudience = true
-        };
-        opt.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = ctx =>
-            {
-                Console.WriteLine($"JWT Auth failed: {ctx.Exception}");
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = ctx =>
-            {
-                Console.WriteLine("JWT Auth success!");
-                return Task.CompletedTask;
-            }
-        };
-    });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+//    opt =>
+//    {
+//        opt.BackchannelHttpHandler = new HttpClientHandler
+//        {
+//            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+//        };
+//        opt.RequireHttpsMetadata = false;
+//        opt.MetadataAddress = builder.Configuration["Keycloak:MetadataAddress"]!;
+//        opt.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidAudience = builder.Configuration["Keycloak:Audience"],
+//            ValidIssuer = builder.Configuration["Keycloak:ValidIssuer"],
+//            ValidateIssuer = true,
+//            ValidateAudience = true
+//        };
+//        opt.Events = new JwtBearerEvents
+//        {
+//            OnAuthenticationFailed = ctx =>
+//            {
+//                Console.WriteLine($"JWT Auth failed: {ctx.Exception}");
+//                return Task.CompletedTask;
+//            },
+//            OnTokenValidated = ctx =>
+//            {
+//                Console.WriteLine("JWT Auth success!");
+//                return Task.CompletedTask;
+//            }
+//        };
+//    });
 
 
 
@@ -98,8 +100,8 @@ var app = builder.Build();
 
 app.UseCors("AllowAspire");
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -110,16 +112,27 @@ if (app.Environment.IsDevelopment())
     
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+
+//app.UseSwagger();
+//app.UseSwaggerUI();
 
 //app.UseHttpsRedirection(); 
 
 
-//app.UseCloudEvents();  <= Use?
+app.UseRouting();
+app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
+
+
+
+app.MapPost("/publish", async (DaprClient daprClient) =>
+{
+    await daprClient.PublishEventAsync("pubsub", "test-topic", new MessagePayload("Hello From ContentService API!"));
+    return Results.Ok();
+}).AllowAnonymous();
+
 
 /* Flow:
 ContentService => contentSubmitted => ContentSafetyService moderates => contentApproved => ContentService saves => contentToPublish => ContentService saves => contentPublished
@@ -143,4 +156,4 @@ app.MapPostEndpoints();
 app.MapCommentEndpoints();
 
 app.Run();
-
+public record MessagePayload(string Text);

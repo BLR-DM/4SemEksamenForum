@@ -20,17 +20,16 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: "amqp://rabbitmq:5672"
+    value: amqp://rabbitmq:5672
   - name: durable
-    value: "false"
+    value: false
   - name: deletedWhenUnused
-    value: "false"
+    value: false
   - name: autoAck
-    value: "false"
+    value: false
   - name: reconnectWait
-    value: "0"
-  - name: concurrency
+    value: 0
+  - name: concurrencyMode
     value: parallel
-scopes: # ?
-  - orderprocessing
-  - checkout
+scope:
+  - contentservice-api

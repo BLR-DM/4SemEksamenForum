@@ -1,27 +1,40 @@
 services:
-  contentsafetyservice.api:
+  contentsafetyservice-api:
     image: ${DOCKER_REGISTRY-}contentsafetyserviceapi
     build:
       context: .
       dockerfile: ContentSafetyService/ContentSafetyService.Api/Dockerfile
+   
+  contentsafetyservice-dapr:
+    image: "daprio/daprd:1.15.4" 
 
-  contentservice.api:
+  contentservice-api:
     image: ${DOCKER_REGISTRY-}contentserviceapi
     build:
       context: .
       dockerfile: ContentService/ContentService.Api/Dockerfile
 
+  contentservice-dapr:
+    image: "daprio/daprd:1.15.4"
 
-  subscriptionservice.api:
+  subscriptionservice-api:
     image: ${DOCKER_REGISTRY-}subscriptionserviceapi
     build:
       context: .
       dockerfile: SubscriptionService/SubscriptionService.Api/Dockerfile
 
 
-  voteservice.api:
+  voteservice-api:
     image: ${DOCKER_REGISTRY-}voteserviceapi
     build:
       context: .
       dockerfile: VoteService/VoteService.Api/Dockerfile
 
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+
+  redis:
+    image: redis:latest

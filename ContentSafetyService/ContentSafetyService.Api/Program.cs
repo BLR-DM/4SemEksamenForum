@@ -5,6 +5,7 @@ using ContentSafetyService.Domain.ValueObjects;
 using ContentSafetyService.Infrastructure;
 using Dapr;
 using Dapr.AppCallback.Autogen.Grpc.v1;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 
@@ -78,13 +79,28 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 
-app.UseHttpsRedirection(); 
+//app.UseHttpsRedirection(); 
 
 app.UseCors("AllowAspire");
 
+app.UseRouting();
 app.UseCloudEvents();
+app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!");
+
+
+
+
+app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
+    {
+        logger.LogInformation("Received message: {Text}", text.Text);
+        return Results.Ok();
+    })
+    .WithTopic("pubsub", "test-topic");
+
+
+
 
 app.MapPost("/contentmoderation",
     async (Content content, IContentSafetyCommand command) =>
@@ -98,3 +114,4 @@ app.MapPost("/contentmoderation",
     }).WithTopic("pubsub", "contentmoderation");
 
 app.Run();
+public record MessagePayload(string Text);
