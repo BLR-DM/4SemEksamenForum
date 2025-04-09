@@ -41,8 +41,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - DAPR_HTTP_PORT=3500
+      - DAPR_GRPC_PORT=50001
+      - DAPR_GRPC_ADDRESS=contentservice-dapr:5000
     ports:
       - "3001:8080"
+    depends_on:
+      contentservice-dapr:
+        condition: service_started
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -54,19 +60,17 @@ services:
   contentservice-dapr:
     command: [
       "./daprd",
-      "-app-id", "contentservice-api",
-      "-app-port", "8080",
-      "-resources-path", "/components",
-      "-dapr-http-port", "3501",  # Explicit HTTP port
-      "-dapr-grpc-port", "50002"  # Explicit gRPC port
+      "--app-id", "contentservice-api",
+      "--app-port", "3001",
+      "--resources-path", "/components",
+      "--dapr-http-port", "3500",
+      "--dapr-grpc-port", "50001"
     ]
     volumes:
       - "./components/:/components"
     networks:
       - test-network
-    # ports:
-    #   - "3501:3501"  # Expose Dapr HTTP port
-      #- "50002:50002"
+    #network_mode: "service:contentservice-api"
 
   subscriptionservice-api:
     environment:
@@ -112,13 +116,13 @@ services:
   #   networks:
   #     - test-network
 
-  redis:    
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/var/lib/redis
-    networks:
-      - test-network
+  # redis:    
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/var/lib/redis
+  #   networks:
+  #     - test-network
 
 volumes:
   #rabbitmq_data:

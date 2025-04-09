@@ -36,5 +36,5 @@ services:
   #   image: rabbitmq:3-management
   #   container_name: rabbitmq
 
-  redis:
-    image: redis:latest
+  # redis:
+  #   image: redis:latest
