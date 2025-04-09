@@ -19,18 +19,17 @@ spec:
   type: pubsub.rabbitmq
   version: v1
   metadata:
-  - name: connectionString
-    value: "amqp://rabbitmq:5672"
+  - name: host
+    value: "amqp://localhost:5672"
   - name: durable
-    value: "true"
+    value: false
   - name: deletedWhenUnused
-    value: "false"
+    value: false
   - name: autoAck
-    value: "false"
+    value: false
   - name: reconnectWait
-    value: "0"
-  - name: concurrency
+    value: 0
+  - name: concurrencyMode
     value: parallel
-# scopes: # ?
-#   - orderprocessing
-#   - checkout
+scope:
+  - contentservice-api
