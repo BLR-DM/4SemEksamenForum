@@ -92,14 +92,9 @@ app.MapGet("/hello", () => "Hello World!");
 
 
 
-app.MapPost("/subscribe", (
-        [FromBody] CloudEvent<string> cloudEvent, // ? Bind to CloudEvent
-        ILogger<Program> logger) =>
+app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
     {
-        logger.LogInformation(
-            "Message received. Data: {Data}",
-            cloudEvent.Data // Actual payload is here
-        );
+        logger.LogInformation("Received message: {Text}", text.Text);
         return Results.Ok();
     })
     .WithTopic("pubsub", "test-topic");
@@ -119,3 +114,4 @@ app.MapPost("/contentmoderation",
     }).WithTopic("pubsub", "contentmoderation");
 
 app.Run();
+public record MessagePayload(string Text);

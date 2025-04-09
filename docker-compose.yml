@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: ContentSafetyService/ContentSafetyService.Api/Dockerfile
    
-  # contentsafetyservice.dapr:
-  #   image: "daprio/daprd:1.15.4" 
+  contentsafetyservice-dapr:
+    image: "daprio/daprd:1.15.4" 
 
   contentservice-api:
     image: ${DOCKER_REGISTRY-}contentserviceapi
@@ -32,9 +32,9 @@ services:
 
 
 
-  # rabbitmq:
-  #   image: rabbitmq:3-management
-  #   container_name: rabbitmq
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
 
-  # redis:
-  #   image: redis:latest
+  redis:
+    image: redis:latest

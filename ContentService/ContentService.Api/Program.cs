@@ -129,8 +129,7 @@ app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
 app.MapPost("/publish", async (DaprClient daprClient) =>
 {
-    var data = "Hello From ContentService API!";
-    await daprClient.PublishEventAsync("pubsub", "test-topic", data); // Dapr wraps this automatically
+    await daprClient.PublishEventAsync("pubsub", "test-topic", new MessagePayload("Hello From ContentService API!"));
     return Results.Ok();
 }).AllowAnonymous();
 
@@ -157,4 +156,4 @@ app.MapPostEndpoints();
 app.MapCommentEndpoints();
 
 app.Run();
-
+public record MessagePayload(string Text);
