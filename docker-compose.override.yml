@@ -12,6 +12,27 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - test-network
+
+  contentsafetyservice.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "contentsafetyservice-api",
+      "-app-port", "8080",
+      "--resources-path", "/components",
+      "--dapr-http-port", "3500",  # Explicit HTTP port
+      "--dapr-grpc-port", "50001"  # Explicit gRPC port
+    ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - contentsafetyservice.api
+    networks:
+      - test-network
+    ports:
+      - "3500:3500"  # Expose Dapr HTTP port
+
   contentservice.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -25,6 +46,26 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - test-network
+
+  contentservice.dapr:
+    command: [
+      "./daprd",
+      "-app-id", "contentservice-api",
+      "-app-port", "8080",
+      "--resources-path", "/components",
+      "--dapr-http-port", "3501",  # Explicit HTTP port
+      "--dapr-grpc-port", "50002"  # Explicit gRPC port
+    ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - contentservice.api
+    networks:
+      - test-network
+    ports:
+      - "3501:3501"  # Expose Dapr HTTP port
 
   subscriptionservice.api:
     environment:
@@ -39,6 +80,8 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - test-network
 
   voteservice.api:
     environment:
@@ -53,3 +96,37 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - test-network
+
+  rabbitmq:
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - test-network
+
+  redis:    
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/var/lib/redis
+    networks:
+      - test-network
+
+volumes:
+  rabbitmq_data:
+  redis_data:
+  
+networks:
+  test-network:    

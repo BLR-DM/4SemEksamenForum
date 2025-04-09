@@ -19,10 +19,10 @@ spec:
   type: pubsub.rabbitmq
   version: v1
   metadata:
-  - name: host
+  - name: connectionString
     value: "amqp://rabbitmq:5672"
   - name: durable
-    value: "false"
+    value: "true"
   - name: deletedWhenUnused
     value: "false"
   - name: autoAck
@@ -31,6 +31,6 @@ spec:
     value: "0"
   - name: concurrency
     value: parallel
-scopes: # ?
-  - orderprocessing
-  - checkout
+# scopes: # ?
+#   - orderprocessing
+#   - checkout
