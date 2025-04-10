@@ -7,6 +7,11 @@ services:
    
   contentsafetyservice-dapr:
     image: "daprio/daprd:1.15.4" 
+    depends_on:
+      contentsafetyservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   contentservice-api:
     image: ${DOCKER_REGISTRY-}contentserviceapi
@@ -16,6 +21,11 @@ services:
 
   contentservice-dapr:
     image: "daprio/daprd:1.15.4"
+    depends_on:
+      contentservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy    
 
   subscriptionservice-api:
     image: ${DOCKER_REGISTRY-}subscriptionserviceapi
@@ -35,6 +45,11 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 15s
+      timeout: 15s
+      retries: 10
 
   redis:
     image: redis:latest
