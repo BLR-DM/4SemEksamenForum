@@ -13,8 +13,7 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  contentsafetyservice-dapr:
-    network_mode: service:contentsafetyservice-api
+  contentsafetyservice-dapr:    
     command: >
       ./daprd
       --app-id contentsafetyservice-api
@@ -39,8 +38,7 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  contentservice-dapr:
-    network_mode: service:contentservice-api
+  contentservice-dapr:    
     command: >
       ./daprd
       --app-id contentservice-api

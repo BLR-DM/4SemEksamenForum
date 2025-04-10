@@ -6,7 +6,8 @@ services:
       dockerfile: ContentSafetyService/ContentSafetyService.Api/Dockerfile
    
   contentsafetyservice-dapr:
-    image: "daprio/daprd:1.15.4" 
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:contentservice-api
     depends_on:
       contentsafetyservice-api:
         condition: service_started
@@ -21,6 +22,7 @@ services:
 
   contentservice-dapr:
     image: "daprio/daprd:1.15.4"
+    network_mode: service:contentsafetyservice-api
     depends_on:
       contentservice-api:
         condition: service_started
@@ -56,5 +58,5 @@ services:
     container_name: redis
 
   zipkin:
-    image: openzipkin/zipkin
+    image: openzipkin/zipkin-slim:latest
     container_name: zipkin
