@@ -58,6 +58,11 @@ services:
     ]
     volumes:
       - "./components/:/components"
+    depends_on:
+      contentservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     network_mode: "service:contentservice-api"
 
   subscriptionservice-api:
@@ -96,6 +101,11 @@ services:
     ports:
       - "5672:5672"  # AMQP port
       - "15672:15672"  # Management UI port
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 15s
+      timeout: 15s
+      retries: 10
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
