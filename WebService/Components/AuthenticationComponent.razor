@@ -1,0 +1,9 @@
+﻿<AuthorizeView Context="auth">
+    <Authorized>
+        <span class="nav-item text-white">Hej @auth.User.Identity.Name !</span>
+        <a class="nav-link" href="authentication/logout">Log ud</a>
+    </Authorized>
+    <NotAuthorized>
+        <a class="nav-link" href="authentication/login">Log ind</a>
+    </NotAuthorized>
+</AuthorizeView>
