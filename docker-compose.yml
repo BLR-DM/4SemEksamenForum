@@ -38,3 +38,8 @@ services:
 
   redis:
     image: redis:latest
+    container_name: redis
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin

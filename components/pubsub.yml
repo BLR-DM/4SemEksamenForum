@@ -19,7 +19,7 @@ spec:
   type: pubsub.rabbitmq
   version: v1
   metadata:
-  - name: host
+  - name: connectionString
     value: amqp://rabbitmq:5672
   - name: durable
     value: false

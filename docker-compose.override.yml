@@ -15,22 +15,21 @@ services:
       - test-network
 
   contentsafetyservice-dapr:
-    command: [
-      "./daprd",
-      "-app-id", "contentsafetyservice-api",
-      "-app-port", "8080",
-      "--resources-path", "/components",
-      "--dapr-http-port", "3500",  # Explicit HTTP port
-      "--dapr-grpc-port", "50001"  # Explicit gRPC port
-    ]
+    command: >
+      ./daprd
+      --app-id contentsafetyservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
     volumes:
-      - "./components/:/components"
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
     depends_on:
       contentsafetyservice-api:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    network_mode: "service:contentsafetyservice-api"
+    network_mode: service:contentsafetyservice-api
 
   contentservice-api:
     environment:
@@ -48,22 +47,21 @@ services:
       - test-network
 
   contentservice-dapr:
-    command: [
-      "./daprd",
-      "--app-id", "contentservice-api",
-      "--app-port", "8080",
-      "--resources-path", "/components",
-      "--dapr-http-port", "3500",
-      "--dapr-grpc-port", "50001"
-    ]
+    command: >
+      ./daprd
+      --app-id contentservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
     volumes:
-      - "./components/:/components"
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
     depends_on:
       contentservice-api:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    network_mode: "service:contentservice-api"
+    network_mode: service:contentservice-api
 
   subscriptionservice-api:
     environment:
@@ -119,9 +117,24 @@ services:
     networks:
       - test-network
 
+  zipkin:
+        # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
+    environment:
+      - STORAGE_TYPE=mem
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to increase heap size
+      # - JAVA_OPTS=-Xms128m -Xmx128m -XX:+ExitOnOutOfMemoryError
+    ports:
+      - 9411:9411
+    # Uncomment to enable debug logging
+    # command: --logging.level.zipkin2=DEBUG
+    networks:
+      - test-network
+
 volumes:
   rabbitmq_data:
   redis_data:
   
 networks:
-  test-network:
+  test-network: null
