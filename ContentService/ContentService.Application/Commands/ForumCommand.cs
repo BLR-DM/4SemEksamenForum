@@ -3,6 +3,7 @@ using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
+using Dapr.Client;
 
 namespace ContentService.Application.Commands
 {
@@ -10,12 +11,16 @@ namespace ContentService.Application.Commands
     {
         private readonly IForumRepository _forumRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DaprClient _daprClient;
 
-        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository)
+        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository, DaprClient daprClient)
         {
             _unitOfWork = unitOfWork;
             _forumRepository = forumRepository;
+            _daprClient = daprClient;
         }
+
+        public record ContentModerationDto(int Id, string Content);
 
         async Task IForumCommand.CreateForumAsync(CreateForumDto forumDto, string appUserId)
         {
@@ -38,9 +43,10 @@ namespace ContentService.Application.Commands
                 RETURNING "Id", xmin;
                 */
 
+                var contentModerationDto = new ContentModerationDto(forum.Id, forum.ForumName);
 
-                // Publish event (must happen AFTER saving to DB)
-                // await _dapr.PublishEventAsync("pubsub", "forumSubmitted", forumDto);
+                // Testing publish -> should not be here
+                await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
             }
             catch (Exception)
             {
