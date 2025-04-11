@@ -26,7 +26,7 @@ namespace ContentService.Application.Commands
         {
             try
             {
-                var forum = Forum.Create(forumDto.ForumName, appUserId);
+                var forum = Forum.Create(forumDto.ForumName, forumDto.Content, appUserId);
 
                 await _unitOfWork.BeginTransaction();
 
@@ -43,7 +43,8 @@ namespace ContentService.Application.Commands
                 RETURNING "Id", xmin;
                 */
 
-                var contentModerationDto = new ContentModerationDto(forum.Id, forum.ForumName);
+                // Need to moderate content, not forumName <- just for test
+                var contentModerationDto = new ContentModerationDto(forum.Id, forum.Content);
 
                 // Testing publish -> should not be here
                 await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
@@ -125,7 +126,7 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumAsync(forumId);
 
                 // Do
-                forum.Update(forumDto.ForumName, appUserId);
+                forum.Update(forumDto.Content, appUserId);
                 _forumRepository.UpdateForumAsync(forum, forumDto.RowVersion);
 
                 // Save
@@ -192,7 +193,7 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumAsync(forumId);
 
                 // Do
-                var post = forum.UpdatePost(postId, postDto.Title, postDto.Description, appUserId);
+                var post = forum.UpdatePost(postId, postDto.Title, postDto.Content, appUserId);
                 _forumRepository.UpdatePost(post, postDto.RowVersion);
 
                 //Save
