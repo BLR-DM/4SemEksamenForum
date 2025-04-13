@@ -1,19 +1,7 @@
 services:
-  contentsafetyservice-api:
-    image: ${DOCKER_REGISTRY-}contentsafetyserviceapi
-    build:
-      context: .
-      dockerfile: ContentSafetyService/ContentSafetyService.Api/Dockerfile
-   
-  contentsafetyservice-dapr:
-    image: "daprio/daprd:1.15.4"
-    network_mode: service:contentservice-api
-    depends_on:
-      contentsafetyservice-api:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
-
+    #
+    # Content Service
+    #
   contentservice-api:
     image: ${DOCKER_REGISTRY-}contentserviceapi
     build:
@@ -27,22 +15,86 @@ services:
       contentservice-api:
         condition: service_started
       rabbitmq:
-        condition: service_healthy    
+        condition: service_healthy  
 
+    #   
+    # Contentsafety Service
+    #
+  contentsafetyservice-api:
+    image: ${DOCKER_REGISTRY-}contentsafetyserviceapi
+    build:
+      context: .
+      dockerfile: ContentSafetyService/ContentSafetyService.Api/Dockerfile
+   
+  contentsafetyservice-dapr:
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:contentservice-api
+    depends_on:
+      contentsafetyservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy  
+
+    #
+    # Subscription Service
+    #
   subscriptionservice-api:
     image: ${DOCKER_REGISTRY-}subscriptionserviceapi
     build:
       context: .
       dockerfile: SubscriptionService/SubscriptionService.Api/Dockerfile
+  
+  subscriptionservice-dapr:
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:subscriptionservice-api
+    depends_on:
+      subscriptionservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy 
 
 
+    #
+    # Vote Service
+    #
   voteservice-api:
     image: ${DOCKER_REGISTRY-}voteserviceapi
     build:
       context: .
       dockerfile: VoteService/VoteService.Api/Dockerfile
 
+  voteservice-dapr:
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:voteservice-api
+    depends_on:
+      voteservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy 
 
+    #
+    # point Service
+    #
+  pointservice-api:
+    image: ${DOCKER_REGISTRY-}pointserviceapi
+    build:
+      context: .
+      dockerfile: PointService/PointService.Api/Dockerfile
+
+  pointservice-dapr:
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:pointservice-api
+    depends_on:
+      pointservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy 
+
+  gateway-api:
+    image: ${DOCKER_REGISTRY-}gatewayapi
+    build:
+      context: .
+      dockerfile: Gateway/Gateway.Api/Dockerfile
 
   rabbitmq:
     image: rabbitmq:3-management
