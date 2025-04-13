@@ -112,3 +112,4 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim:latest
     container_name: zipkin
+
