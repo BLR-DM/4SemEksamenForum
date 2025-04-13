@@ -40,8 +40,8 @@ namespace ContentService.Api.Endpoints
                 async (IForumCommand command, CreateForumDto forumDto, string appUserId) =>
                 {
                     await command.CreateForumAsync(forumDto, appUserId);
-                    return Results.Created(); // Results.Accepted -> workflow start
-                }).WithTags(tag);
+                    return Results.Created();
+                }).WithTags(tag).AllowAnonymous();
 
             app.MapPut("/forum/{forumId}", 
                 async (IForumCommand command, UpdateForumDto forumDto, string appUserId, int forumId) =>

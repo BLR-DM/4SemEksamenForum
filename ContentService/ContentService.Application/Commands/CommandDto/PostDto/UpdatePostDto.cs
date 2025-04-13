@@ -1,4 +1,4 @@
 ﻿namespace ContentService.Application.Commands.CommandDto.PostDto
 {
-    public record UpdatePostDto(string Title, string Description, uint RowVersion);
+    public record UpdatePostDto(string Title, string Content, uint RowVersion);
 }

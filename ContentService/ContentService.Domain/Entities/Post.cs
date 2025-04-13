@@ -34,12 +34,13 @@ namespace ContentService.Domain.Entities
             return new Post(title, content, username, appUserId);
         }
 
-        public void Update(string newDescription, string userId)
+        public void Update(string title, string updatedContent, string userId)
         {
             AssureUserIsCreator(userId);
 
             //SetHistory(Description, Solution);
-            Content = newDescription;
+            Title = title;
+            Content = updatedContent;
         }
 
         //private void SetHistory(string orgDescription, string orgSolution)

@@ -145,11 +145,11 @@ app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
 
 
-app.MapPost("/publish", async (DaprClient daprClient) =>
-{
-    await daprClient.PublishEventAsync("pubsub", "test-topic", new MessagePayload("Hello From ContentService API!"));
-    return Results.Ok();
-}).AllowAnonymous();
+//app.MapPost("/publish", async (DaprClient daprClient) =>
+//{
+//    await daprClient.PublishEventAsync("pubsub", "test-topic", new MessagePayload("Hello From ContentService API!"));
+//    return Results.Ok();
+//}).AllowAnonymous();
 
 
 /* Flow:
