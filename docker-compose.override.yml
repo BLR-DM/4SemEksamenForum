@@ -1,37 +1,12 @@
 services:
-  contentsafetyservice-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
-    ports:
-      - "3000:8080"
-      - "50001:50001"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  contentsafetyservice-dapr:    
-    command: >
-      ./daprd
-      --app-id contentsafetyservice-api
-      --app-port 8080
-      --resources-path /components
-      --config /dapr/config.yaml
-    volumes:
-      - ./components/:/components
-      - ./dapr/config.yaml:/dapr/config.yaml
-    
+    #
+    # Content Service
+    #
   contentservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
-    ports:
-      - "3001:8080"
-      - "50002:50001"
+
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -49,28 +24,112 @@ services:
       - ./components/:/components
       - ./dapr/config.yaml:/dapr/config.yaml
 
-  subscriptionservice-api:
+
+    #   
+    # Contentsafety Service
+    #
+  contentsafetyservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
-    ports:
-      - "3002:8080"
-      - "8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  contentsafetyservice-dapr:    
+    command: >
+      ./daprd
+      --app-id contentsafetyservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
+    volumes:
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
+
+
+    #
+    # Subscription Service
+    #
+  subscriptionservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  subscriptionservice-dapr:    
+    command: >
+      ./daprd
+      --app-id subscriptionservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
+    volumes:
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
       
+
+    #
+    # Vote Service
+    #
   voteservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+ 
+  voteservice-dapr:    
+    command: >
+      ./daprd
+      --app-id voteservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
+    volumes:
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
+
+    #
+    # Point Service
+    #
+  pointservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  
+  pointservice-dapr:    
+    command: >
+      ./daprd
+      --app-id pointservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
+    volumes:
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
+
+  gateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
     ports:
-      - "3003:8080"
-      - "8081"
+      - "5000:8080"
+      - "5001:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -102,3 +161,4 @@ services:
 volumes:
   rabbitmq_data:
   redis_data:
+

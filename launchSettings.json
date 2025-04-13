@@ -7,7 +7,9 @@
         "contentsafetyservice.api": "StartDebugging",
         "contentservice.api": "StartDebugging",
         "subscriptionservice.api": "StartDebugging",
-        "voteservice.api": "StartDebugging"
+        "voteservice.api": "StartDebugging",
+        "gateway.api": "StartDebugging",
+        "pointservice.api": "StartDebugging"
       }
     }
   }

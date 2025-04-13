@@ -162,4 +162,6 @@ app.MapPost("Comment/Votes",
         }
     });
 
+app.MapGet("/hello", () => "Hello World!");
+
 app.Run();
