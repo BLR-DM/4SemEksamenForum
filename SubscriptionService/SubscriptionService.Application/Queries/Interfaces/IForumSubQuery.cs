@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubscriptionService.Application.Dto;
 using SubscriptionService.Application.Queries.QueryDto;
 
 namespace SubscriptionService.Application.Queries.Interfaces
