@@ -3,10 +3,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ContentService.Application;
 using ContentService.Application.Queries;
+using ContentService.Application.Services;
 using ContentService.Infrastructure.Helpers;
 using ContentService.Infrastructure.Interfaces;
 using ContentService.Infrastructure.Queries;
 using ContentService.Infrastructure.Repositories;
+using ContentService.Infrastructure.Services;
 
 namespace ContentService.Infrastructure
 {
@@ -19,6 +21,7 @@ namespace ContentService.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork<ContentContext>>();
             services.AddScoped<IForumMapper, ForumMapper>();
             services.AddScoped<IForumQuery, ForumQuery>();
+            services.AddScoped<IPublisherService, DaprPublisherService>();
 
             // Add-Migration InitialMigration -Context ContentContext -Project ContentService.DatabaseMigration
             // Update-Database -Context ContentContext -Project ContentService.DatabaseMigration

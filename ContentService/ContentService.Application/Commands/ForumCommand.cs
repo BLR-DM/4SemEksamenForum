@@ -1,6 +1,7 @@
 ﻿using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
+using ContentService.Application.Services;
 using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
 using Dapr.Client;
@@ -10,14 +11,14 @@ namespace ContentService.Application.Commands
     public class ForumCommand : IForumCommand
     {
         private readonly IForumRepository _forumRepository;
+        private readonly IEventHandler _eventHandler;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DaprClient _daprClient;
 
-        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository, DaprClient daprClient)
+        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository, IEventHandler eventHandler )
         {
             _unitOfWork = unitOfWork;
             _forumRepository = forumRepository;
-            _daprClient = daprClient;
+            _eventHandler = eventHandler;
         }
 
         public record ContentModerationDto(int Id, string Content);
@@ -47,7 +48,7 @@ namespace ContentService.Application.Commands
                 var contentModerationDto = new ContentModerationDto(forum.Id, forum.Content);
 
                 // Testing publish -> should not be here
-                await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
+                //await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
             }
             catch (Exception)
             {
@@ -165,16 +166,18 @@ namespace ContentService.Application.Commands
         {
             try
             {
-                // await _unitOfWork.BeginTransaction();
+                await _unitOfWork.BeginTransaction();
 
                 // Load
                 var forum = await _forumRepository.GetForumAsync(forumId);
 
                 // Do
-                forum.AddPost(postDto.Title, postDto.Content, username, appUserId);
+                var post = forum.AddPost(postDto.Title, postDto.Content, username, appUserId);
 
                 //Save
                 await _unitOfWork.Commit();
+
+                await _eventHandler.PostSubmitted(post.Id, post.Content);
             }
             catch (Exception)
             {

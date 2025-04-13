@@ -64,10 +64,11 @@ namespace ContentService.Domain.Entities
 
         // Post
 
-        public void AddPost(string title, string content, string username, string appUserId)
+        public Post AddPost(string title, string content, string username, string appUserId)
         {
             var post = Post.Create(title, content, username, appUserId);
             _posts.Add(post);
+            return post;
         }
 
         public Post UpdatePost(int postId, string title, string content, string appUserId)

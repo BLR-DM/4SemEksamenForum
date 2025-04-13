@@ -1,7 +1,8 @@
 ﻿using ContentService.Application.Commands;
 using ContentService.Application.Commands.Interfaces;
-using Dapr.Client;
+using ContentService.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
+using EventHandler = ContentService.Application.Services.EventHandler;
 
 namespace ContentService.Application
 {
@@ -11,6 +12,7 @@ namespace ContentService.Application
         {
             services.AddScoped<IForumCommand, ForumCommand>();
             services.AddScoped<IPostCommand, PostCommand>();
+            services.AddScoped<IEventHandler, EventHandler>();
 
             return services;
         }

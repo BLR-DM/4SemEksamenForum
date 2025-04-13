@@ -117,7 +117,8 @@ app.MapPost("/contentmoderation",
         logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
 
         return Results.Ok();
-    }).WithTopic("pubsub", "contentSubmitted");
+    }).WithTopic("pubsub", "contentSubmitted")
+    .WithTopic("pubsub", "post-submitted");
 
 app.Run();
 public record MessagePayload(string Text);
