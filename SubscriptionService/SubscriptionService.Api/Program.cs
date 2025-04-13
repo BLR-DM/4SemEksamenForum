@@ -4,6 +4,7 @@ using Scalar.AspNetCore;
 using SubscriptionService.Application.Commands.CommandDto;
 using SubscriptionService.Application.Commands.Interfaces;
 using SubscriptionService.Application.Configuration;
+using SubscriptionService.Application.Dto;
 using SubscriptionService.Application.Queries.Interfaces;
 using SubscriptionService.Infrastructure.Configuration;
 
@@ -184,14 +185,16 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions/", async (string appUserId, I
 {
     try
     {
-        var forumIds = await query.GetSubscriptionsByUserIdAsync(appUserId);
+        var test = await query.GetSubscriptionsByUserIdAsync(appUserId);
 
-        return Results.Ok(forumIds);
+        var response = ResponseDto<List<int>>.Ok(test);
+
+        return Results.Ok(response);
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message);
-        return Results.Problem();
+        var response = ResponseDto<List<int>>.Fail(ex.Message);
+        return Results.Ok(response);
     }
 });
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SubscriptionService.Application.Dto;
 using SubscriptionService.Application.Queries.Interfaces;
 using SubscriptionService.Application.Queries.QueryDto;
 using SubscriptionService.Domain.Entities;
