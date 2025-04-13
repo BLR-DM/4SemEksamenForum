@@ -1,5 +1,6 @@
 ﻿using ContentService.Application.Commands;
 using ContentService.Application.Commands.Interfaces;
+using Dapr.Client;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ContentService.Application

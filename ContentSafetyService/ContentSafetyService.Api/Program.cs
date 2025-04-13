@@ -103,15 +103,22 @@ app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
 
 
 app.MapPost("/contentmoderation",
-    async (Content content, IContentSafetyCommand command) =>
+    async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command) =>
     {
+        // Save moderation content request?
+        logger.LogInformation("Content for moderation received: Id: {Id}\n" +
+                              "Content: {Content}", payload.Id, payload.Content);
+
         var mediaType = MediaType.Text;
         var blocklists = Array.Empty<string>();
 
-        var decision = await command.ModerateContentAsync(mediaType, content.Text, blocklists);
+        var decision = await command.ModerateContentAsync(mediaType, payload.Content, blocklists);
 
-        return Results.Ok(decision);
-    }).WithTopic("pubsub", "contentmoderation");
+        logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
+
+        return Results.Ok();
+    }).WithTopic("pubsub", "contentSubmitted");
 
 app.Run();
 public record MessagePayload(string Text);
+public record ContentModerationDto(int Id, string Content);

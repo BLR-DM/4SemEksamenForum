@@ -10,16 +10,17 @@ namespace ContentService.Domain.Entities
         {
         }
 
-        private Forum(string forumName, string appUserId)
+        private Forum(string forumName, string content, string appUserId)
         {
             ForumName = forumName;
+            Content = content;
             CreatedDate = DateTime.Now;
             AppUserId = appUserId;
             Status = Status.Submitted;
         }
 
-        public string ForumName { get; protected set; } // Value?
-        //public string Content { get; protected set; } // Value?
+        public string ForumName { get; protected set; }
+        public string Content { get; protected set; }
         public DateTime CreatedDate { get; protected set; }
         public string AppUserId { get; protected set; }
         public Status Status { get; protected set; }
@@ -28,9 +29,9 @@ namespace ContentService.Domain.Entities
 
         // Forum
 
-        public static Forum Create(string forumName, string appUserId)
+        public static Forum Create(string forumName, string content, string appUserId)
         {
-            return new Forum(forumName, appUserId);
+            return new Forum(forumName, content, appUserId);
         }
 
         public void Approve()
@@ -49,10 +50,10 @@ namespace ContentService.Domain.Entities
             Status = Status.Published;
         }
 
-        public void Update(string forumName, string appUserId)
+        public void Update(string content, string appUserId)
         {
             AssureUserIsCreator(appUserId);
-            ForumName = forumName;
+            Content = content;
         }
 
         private void AssureUserIsCreator(string userId)
@@ -72,7 +73,7 @@ namespace ContentService.Domain.Entities
         public Post UpdatePost(int postId, string title, string content, string appUserId)
         {
             var post = GetPostById(postId);
-            post.Update(content, appUserId);
+            post.Update(title, content, appUserId);
             return post;
         }
 

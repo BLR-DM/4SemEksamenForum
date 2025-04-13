@@ -3,6 +3,7 @@ using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
+using Dapr.Client;
 
 namespace ContentService.Application.Commands
 {
@@ -10,18 +11,22 @@ namespace ContentService.Application.Commands
     {
         private readonly IForumRepository _forumRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DaprClient _daprClient;
 
-        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository)
+        public ForumCommand(IUnitOfWork unitOfWork, IForumRepository forumRepository, DaprClient daprClient)
         {
             _unitOfWork = unitOfWork;
             _forumRepository = forumRepository;
+            _daprClient = daprClient;
         }
+
+        public record ContentModerationDto(int Id, string Content);
 
         async Task IForumCommand.CreateForumAsync(CreateForumDto forumDto, string appUserId)
         {
             try
             {
-                var forum = Forum.Create(forumDto.ForumName, appUserId);
+                var forum = Forum.Create(forumDto.ForumName, forumDto.Content, appUserId);
 
                 await _unitOfWork.BeginTransaction();
 
@@ -38,9 +43,11 @@ namespace ContentService.Application.Commands
                 RETURNING "Id", xmin;
                 */
 
+                // Need to moderate content, not forumName <- just for test
+                var contentModerationDto = new ContentModerationDto(forum.Id, forum.Content);
 
-                // Publish event (must happen AFTER saving to DB)
-                // await _dapr.PublishEventAsync("pubsub", "forumSubmitted", forumDto);
+                // Testing publish -> should not be here
+                await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
             }
             catch (Exception)
             {
@@ -119,7 +126,7 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumAsync(forumId);
 
                 // Do
-                forum.Update(forumDto.ForumName, appUserId);
+                forum.Update(forumDto.Content, appUserId);
                 _forumRepository.UpdateForumAsync(forum, forumDto.RowVersion);
 
                 // Save
@@ -186,7 +193,7 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumAsync(forumId);
 
                 // Do
-                var post = forum.UpdatePost(postId, postDto.Title, postDto.Description, appUserId);
+                var post = forum.UpdatePost(postId, postDto.Title, postDto.Content, appUserId);
                 _forumRepository.UpdatePost(post, postDto.RowVersion);
 
                 //Save
