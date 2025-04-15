@@ -5,7 +5,6 @@ namespace PointService.Domain.Entities
     public class PointAction
     {
         [Key]
-        public int Id { get; set; }
         public string Action { get; protected set; }
         public int Points { get; protected set; }
 

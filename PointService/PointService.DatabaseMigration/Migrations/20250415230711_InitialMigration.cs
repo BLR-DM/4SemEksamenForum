@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -15,14 +16,12 @@ namespace PointService.DatabaseMigration.Migrations
                 name: "PointActions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Action = table.Column<string>(type: "text", nullable: false),
                     Points = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PointActions", x => x.Id);
+                    table.PrimaryKey("PK_PointActions", x => x.Action);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,11 +31,13 @@ namespace PointService.DatabaseMigration.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    PointActionId = table.Column<int>(type: "integer", nullable: false),
+                    PointActionId = table.Column<string>(type: "text", nullable: false),
+                    Points = table.Column<int>(type: "integer", nullable: false),
                     SourceId = table.Column<int>(type: "integer", nullable: false),
                     SourceType = table.Column<string>(type: "text", nullable: false),
                     ContextId = table.Column<int>(type: "integer", nullable: false),
-                    ContextType = table.Column<string>(type: "text", nullable: false)
+                    ContextType = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,7 +46,7 @@ namespace PointService.DatabaseMigration.Migrations
                         name: "FK_PointEntries_PointActions_PointActionId",
                         column: x => x.PointActionId,
                         principalTable: "PointActions",
-                        principalColumn: "Id",
+                        principalColumn: "Action",
                         onDelete: ReferentialAction.Cascade);
                 });
 

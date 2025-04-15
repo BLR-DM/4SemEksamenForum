@@ -14,4 +14,8 @@
     <ProjectReference Include="..\PointService.Domain\PointService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Command\Interfaces\" />
+  </ItemGroup>
+
 </Project>

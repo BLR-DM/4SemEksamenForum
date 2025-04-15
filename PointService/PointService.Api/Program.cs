@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using PointService.Application;
+using PointService.Application.Command;
+using PointService.Application.Command.CommandDto;
+using PointService.Application.Queries;
 using PointService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +26,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
 
         options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
-        options.Audience = "subscription-api";
+        options.Audience = "pointservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -48,5 +52,50 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/hello", () => "Hello World!");
+
+app.MapPost("/User/{userId}/Points",
+    async (string userId, CreatePointEntryDto dto, IPointEntryCommand command) =>
+    {
+        try
+        {
+            await command.CreatePointEntryAsync(dto, userId);
+
+            return Results.Created();
+        }
+        catch (Exception)
+        {
+            return Results.Problem();
+        }
+    });
+
+app.MapPost("/PointAction",
+    async (CreatePointActionDto dto, IPointActionCommand command) =>
+    {
+        try
+        {
+            await command.CreatePointActionAsync(dto);
+
+            return Results.Created();
+        }
+        catch (Exception)
+        {
+            return Results.Problem();
+        }
+    });
+
+app.MapGet("/User/{userId}/Points",
+    async (string userId, IPointEntryQuery query) =>
+    {
+        try
+        {
+            var points = await query.GetPointsByUserIdAsync(userId);
+
+            return Results.Ok(points);
+        }
+        catch (Exception)
+        {
+            return Results.Problem();
+        }
+    });
 
 app.Run();
