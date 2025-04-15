@@ -8,18 +8,18 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("ContentServiceApi",
-        client => client.BaseAddress = new Uri("https://contentservicexxx:xxxx/"))
+builder.Services.AddHttpClient("GateWayApi",
+        client => client.BaseAddress = new Uri("https://localhost:5000"))
     .AddHttpMessageHandler(sp =>
     {
         var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: ["https://contentservicexxx:xxxx/"]);
+                authorizedUrls: ["https://localhost:5000"]);
     
         return handler;
     });
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ContentServiceApi"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("GateWayApi"));
 
 
 builder.Services.AddOidcAuthentication(options =>

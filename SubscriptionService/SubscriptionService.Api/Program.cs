@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using SubscriptionService.Application.Commands.CommandDto;
@@ -40,6 +42,29 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//KEYCLOAK OPSÆTNING
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+
+        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Audience = "subscription-api";
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApplication();
@@ -69,11 +94,13 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseAuthentication();
+app.UseAuthorization();
 //app.UseHttpsRedirection();
 
 app.UseCors("AllowAspire");
 
-app.MapGet("/hello", () => "Hello World!");
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 
 app.MapPost("/Forums/{forumId}/Subscriptions",
     async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>

@@ -86,6 +86,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointService", "PointService", "{D26199A9-2D7A-421C-824F-D17DBC162B8C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointService.Api", "PointService\PointService.Api\PointService.Api.csproj", "{939C381D-769E-45CF-97DF-6B8003D82C6C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F079D48B-7142-4A4E-9C3D-E6F2EEE09304} = {F079D48B-7142-4A4E-9C3D-E6F2EEE09304}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointService.Domain", "PointService\PointService.Domain\PointService.Domain.csproj", "{E4AC6F83-FA97-4B89-B5AB-85EAB4EB43B3}"
 EndProject
