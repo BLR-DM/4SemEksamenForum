@@ -100,6 +100,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+
         options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
         options.Audience = "contentservice-api";
         options.RequireHttpsMetadata = false;
@@ -118,8 +123,6 @@ var app = builder.Build();
 
 app.UseCors("AllowAspire");
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -138,10 +141,12 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 
 
 

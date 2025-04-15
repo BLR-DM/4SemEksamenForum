@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using VoteService.Application;
@@ -40,7 +42,28 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+//KEYCLOAK OPSÆTNING
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
 
+        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Audience = "vote-api";
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
@@ -70,7 +93,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCors("AllowAspire");
 
 
@@ -162,6 +186,6 @@ app.MapPost("Comment/Votes",
         }
     });
 
-app.MapGet("/hello", () => "Hello World!");
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 
 app.Run();
