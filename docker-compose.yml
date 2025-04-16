@@ -10,7 +10,7 @@ services:
 
   contentservice-dapr:
     image: "daprio/daprd:1.15.4"
-    network_mode: service:contentsafetyservice-api
+    network_mode: service:contentservice-api
     depends_on:
       contentservice-api:
         condition: service_started
@@ -28,7 +28,7 @@ services:
    
   contentsafetyservice-dapr:
     image: "daprio/daprd:1.15.4"
-    network_mode: service:contentservice-api
+    network_mode: service:contentsafetyservice-api
     depends_on:
       contentsafetyservice-api:
         condition: service_started
