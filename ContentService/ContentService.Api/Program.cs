@@ -1,5 +1,7 @@
 ﻿using ContentService.Api.Endpoints;
 using ContentService.Application;
+using ContentService.Application.Commands.CommandDto.ForumDto;
+using ContentService.Application.Commands.Interfaces;
 using ContentService.Infrastructure;
 using Dapr;
 using Dapr.Client;
@@ -121,6 +123,10 @@ app.UseCors("AllowAspire");
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Enable DI validation at startup
+//builder.Services.AddOptions<ServiceProviderOptions>()
+//    .Configure(options => options.ValidateOnBuild = true);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -142,6 +148,17 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
+
+app.MapPost("/publish-content",
+    async (IForumCommand command, ContentApprovedDto contentId) =>
+    {
+        Console.WriteLine(contentId.ContentId);
+        var contentType = contentId.ContentId.Split(':')[0]; // Forum
+        // If forum
+        var publishForumDto = new PublishForumDto(14);
+        await command.HandleApprovalAsync(publishForumDto);
+        return Results.Ok();
+    }).WithTopic("pubsub", "content-approved").AllowAnonymous();
 
 
 
@@ -175,3 +192,4 @@ app.MapCommentEndpoints();
 
 app.Run();
 public record MessagePayload(string Text);
+public record ContentApprovedDto(string ContentId);

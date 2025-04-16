@@ -5,9 +5,11 @@ using ContentSafetyService.Domain.ValueObjects;
 using ContentSafetyService.Infrastructure;
 using Dapr;
 using Dapr.AppCallback.Autogen.Grpc.v1;
+using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using Action = ContentSafetyService.Domain.Enums.Action;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,11 +105,11 @@ app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
 
 
 app.MapPost("/contentmoderation",
-    async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command) =>
+    async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command, DaprClient dapr) =>
     {
         // Save moderation content request?
         logger.LogInformation("Content for moderation received: Id: {Id}\n" +
-                              "Content: {Content}", payload.Id, payload.Content);
+                              "Content: {Content}", payload.ContentId, payload.Content);
 
         var mediaType = MediaType.Text;
         var blocklists = Array.Empty<string>();
@@ -116,10 +118,29 @@ app.MapPost("/contentmoderation",
 
         logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
 
+        // Test
+        switch (decision.SuggestedAction)
+        {
+            case Action.Accept:
+            {
+                var contentApprovedDto = new ContentApprovedDto(payload.ContentId);
+                await dapr.PublishEventAsync("pubsub", "content-approved", contentApprovedDto);
+                break;
+            }
+            case Action.Reject:
+                // content-rejected ..
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
         return Results.Ok();
-    }).WithTopic("pubsub", "contentSubmitted")
+
+    }).WithTopic("pubsub", "content-submitted")
     .WithTopic("pubsub", "post-submitted");
 
 app.Run();
 public record MessagePayload(string Text);
-public record ContentModerationDto(int Id, string Content);
+public record ContentModerationDto(string ContentId, string Content);
+public record ContentApprovedDto(string ContentId);
+public record ContentRejectedDto(string ContentId, string Reason); // test, instead of reason, include the ActionByCategory / rejected ones

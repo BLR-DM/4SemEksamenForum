@@ -44,8 +44,8 @@ namespace ContentService.Domain.Entities
 
         public void Publish()
         {
-            if (Status != Status.Approved)
-                throw new InvalidOperationException("Only approved forums can be published");
+            //if (Status != Status.Approved)
+            //    throw new InvalidOperationException("Only approved forums can be published");
 
             Status = Status.Published;
         }

@@ -43,7 +43,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Created();
                 }).WithTags(tag).AllowAnonymous();
 
-            app.MapPut("/forum/{forumId}", 
+            app.MapPut("/forum/{forumId}",
                 async (IForumCommand command, UpdateForumDto forumDto, string appUserId, int forumId) =>
                 {
                     await command.UpdateForumAsync(forumDto, appUserId, forumId);
