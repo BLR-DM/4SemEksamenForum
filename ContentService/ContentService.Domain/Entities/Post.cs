@@ -1,5 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using System.Xml.Linq;
+﻿
+using ContentService.Domain.Enums;
 
 namespace ContentService.Domain.Entities
 {
@@ -18,14 +18,14 @@ namespace ContentService.Domain.Entities
             Content = content;
             Username = username;
             AppUserId = appUserId;
-            CreatedDate = DateTime.Now;
         }
 
         public string Title { get; protected set; }
         public string Content { get; protected set; }
         public string Username { get; protected set; }
         public string AppUserId { get; protected set; }
-        public DateTime CreatedDate { get; private set; }
+        public Status Status { get; protected set; } = Status.Submitted;
+        public DateTimeOffset CreatedDate { get; private set; } = DateTimeOffset.UtcNow.AddHours(2);
         //public ICollection<PostHistory> History => _history;
         public IReadOnlyCollection<Comment> Comments => _comments;
 
@@ -33,6 +33,9 @@ namespace ContentService.Domain.Entities
         {
             return new Post(title, content, username, appUserId);
         }
+        public void MarkAsApproved() => Status = Status.Approved;
+        public void MarkAsPublished() => Status = Status.Published;
+        public void MarkAsRejected() => Status = Status.Rejected;
 
         public void Update(string title, string updatedContent, string userId)
         {

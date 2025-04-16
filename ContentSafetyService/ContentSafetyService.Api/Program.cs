@@ -5,9 +5,11 @@ using ContentSafetyService.Domain.ValueObjects;
 using ContentSafetyService.Infrastructure;
 using Dapr;
 using Dapr.AppCallback.Autogen.Grpc.v1;
+using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using Action = ContentSafetyService.Domain.Enums.Action;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,11 +105,11 @@ app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
 
 
 app.MapPost("/contentmoderation",
-    async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command) =>
+    async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command, DaprClient dapr) =>
     {
         // Save moderation content request?
         logger.LogInformation("Content for moderation received: Id: {Id}\n" +
-                              "Content: {Content}", payload.Id, payload.Content);
+                              "Content: {Content}", payload.ContentId, payload.Content);
 
         var mediaType = MediaType.Text;
         var blocklists = Array.Empty<string>();
@@ -116,10 +118,17 @@ app.MapPost("/contentmoderation",
 
         logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
 
+        // Test
+
+        var contentModeratedDto = new ContentModeratedDto(payload.ContentId, decision.SuggestedAction);
+        await dapr.PublishEventAsync("pubsub", "content-moderated", contentModeratedDto);
+
         return Results.Ok();
-    }).WithTopic("pubsub", "contentSubmitted")
-    .WithTopic("pubsub", "post-submitted");
+
+    }).WithTopic("pubsub", "content-submitted");
 
 app.Run();
 public record MessagePayload(string Text);
-public record ContentModerationDto(int Id, string Content);
+public record ContentModerationDto(string ContentId, string Content);
+public record ContentModeratedDto(string ContentId, Action Status);
+public record ContentRejectedDto(string ContentId, string Reason); // test, instead of reason, include the ActionByCategory / rejected ones

@@ -1,6 +1,9 @@
 ﻿using ContentService.Api.Endpoints;
 using ContentService.Application;
+using ContentService.Application.Commands.CommandDto.ForumDto;
+using ContentService.Application.Commands.Interfaces;
 using ContentService.Infrastructure;
+using ContentService.Infrastructure.Interfaces;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -124,6 +127,10 @@ var app = builder.Build();
 app.UseCors("AllowAspire");
 
 
+// Enable DI validation at startup
+//builder.Services.AddOptions<ServiceProviderOptions>()
+//    .Configure(options => options.ValidateOnBuild = true);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -147,6 +154,34 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+
+//app.MapPost("/content-moderated",
+//    async (IForumCommand command, ContentApprovedDto contentId) =>
+//    {
+//        Console.WriteLine(contentId.ContentId);
+//        var contentType = contentId.ContentId.Split(':')[0]; // Forum
+//        // If forum
+//        var publishForumDto = new PublishForumDto(14);
+//        await command.HandleForumApprovalAsync(publishForumDto);
+//        return Results.Ok();
+//    })
+//    .WithTopic("pubsub", "content-moderated")
+//    .AllowAnonymous();
+
+
+app.MapPost("/content-moderated",
+        async (IModerationResultHandler handler, ContentModeratedDto dto) =>
+        {
+            Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
+            await handler.HandleModerationResultAsync(dto);
+            return Results.Ok();
+        })
+    .WithTopic("pubsub", "content-moderated")
+    .AllowAnonymous();
+
+
+
+
 
 
 

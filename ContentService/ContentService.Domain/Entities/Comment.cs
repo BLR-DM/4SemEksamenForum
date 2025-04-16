@@ -1,4 +1,6 @@
-﻿namespace ContentService.Domain.Entities
+﻿using ContentService.Domain.Enums;
+
+namespace ContentService.Domain.Entities
 {
     public class Comment : DomainEntity
     {
@@ -10,13 +12,13 @@
         {
             Username = username;
             Content = content;
-            CreatedDate = DateTime.Now;
             AppUserId = appUserId;
         }
         
         public string Content { get; protected set; }
         public string Username { get; protected set; }
-        public DateTime CreatedDate { get; protected set; }
+        public Status Status { get; protected set; } = Status.Submitted;
+        public DateTimeOffset CreatedDate { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
         public string AppUserId { get; protected set; }
 
         public static Comment Create(string username, string content, string appUserId)

@@ -38,8 +38,8 @@ namespace ContentService.DatabaseMigration.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp(0) without time zone");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("PostId")
                         .HasColumnType("integer");
@@ -49,6 +49,10 @@ namespace ContentService.DatabaseMigration.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -77,8 +81,8 @@ namespace ContentService.DatabaseMigration.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp(0) without time zone");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ForumName")
                         .IsRequired()
@@ -115,8 +119,8 @@ namespace ContentService.DatabaseMigration.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp(0) without time zone");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ForumId")
                         .HasColumnType("integer");
@@ -126,6 +130,10 @@ namespace ContentService.DatabaseMigration.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()

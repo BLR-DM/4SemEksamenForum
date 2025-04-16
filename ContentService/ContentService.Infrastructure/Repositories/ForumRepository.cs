@@ -51,6 +51,18 @@ namespace ContentService.Infrastructure.Repositories
             _db.Comments.Remove(comment);
         }
 
+        async Task<Forum> IForumRepository.GetForumOnlyAsync(int forumId)
+        {
+            try
+            {
+                return await _db.Forums.FirstAsync(forum => forum.Id == forumId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         async Task<Forum> IForumRepository.GetForumAsync(int forumId)
         {
             try
