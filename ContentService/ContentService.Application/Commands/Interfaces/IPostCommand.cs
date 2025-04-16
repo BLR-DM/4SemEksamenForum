@@ -1,4 +1,5 @@
 ﻿using ContentService.Application.Commands.CommandDto.CommentDto;
+using ContentService.Application.Commands.CommandDto.PostDto;
 
 namespace ContentService.Application.Commands.Interfaces
 {

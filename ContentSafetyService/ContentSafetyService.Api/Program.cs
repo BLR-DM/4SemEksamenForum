@@ -119,28 +119,16 @@ app.MapPost("/contentmoderation",
         logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
 
         // Test
-        switch (decision.SuggestedAction)
-        {
-            case Action.Accept:
-            {
-                var contentApprovedDto = new ContentApprovedDto(payload.ContentId);
-                await dapr.PublishEventAsync("pubsub", "content-approved", contentApprovedDto);
-                break;
-            }
-            case Action.Reject:
-                // content-rejected ..
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-        
+
+        var contentModeratedDto = new ContentModeratedDto(payload.ContentId, decision.SuggestedAction);
+        await dapr.PublishEventAsync("pubsub", "content-moderated", contentModeratedDto);
+
         return Results.Ok();
 
-    }).WithTopic("pubsub", "content-submitted")
-    .WithTopic("pubsub", "post-submitted");
+    }).WithTopic("pubsub", "content-submitted");
 
 app.Run();
 public record MessagePayload(string Text);
 public record ContentModerationDto(string ContentId, string Content);
-public record ContentApprovedDto(string ContentId);
+public record ContentModeratedDto(string ContentId, Action Status);
 public record ContentRejectedDto(string ContentId, string Reason); // test, instead of reason, include the ActionByCategory / rejected ones

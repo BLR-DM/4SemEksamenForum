@@ -3,6 +3,7 @@ using ContentService.Application;
 using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Infrastructure;
+using ContentService.Infrastructure.Interfaces;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -149,16 +150,33 @@ app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
-app.MapPost("/publish-content",
-    async (IForumCommand command, ContentApprovedDto contentId) =>
-    {
-        Console.WriteLine(contentId.ContentId);
-        var contentType = contentId.ContentId.Split(':')[0]; // Forum
-        // If forum
-        var publishForumDto = new PublishForumDto(14);
-        await command.HandleApprovalAsync(publishForumDto);
-        return Results.Ok();
-    }).WithTopic("pubsub", "content-approved").AllowAnonymous();
+//app.MapPost("/content-moderated",
+//    async (IForumCommand command, ContentApprovedDto contentId) =>
+//    {
+//        Console.WriteLine(contentId.ContentId);
+//        var contentType = contentId.ContentId.Split(':')[0]; // Forum
+//        // If forum
+//        var publishForumDto = new PublishForumDto(14);
+//        await command.HandleForumApprovalAsync(publishForumDto);
+//        return Results.Ok();
+//    })
+//    .WithTopic("pubsub", "content-moderated")
+//    .AllowAnonymous();
+
+
+app.MapPost("/content-moderated",
+        async (IModerationResultHandler handler, ContentModeratedDto dto) =>
+        {
+            Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
+            await handler.HandleModerationResultAsync(dto);
+            return Results.Ok();
+        })
+    .WithTopic("pubsub", "content-moderated")
+    .AllowAnonymous();
+
+
+
+
 
 
 
@@ -192,4 +210,3 @@ app.MapCommentEndpoints();
 
 app.Run();
 public record MessagePayload(string Text);
-public record ContentApprovedDto(string ContentId);

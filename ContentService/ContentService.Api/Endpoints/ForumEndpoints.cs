@@ -60,7 +60,7 @@ namespace ContentService.Api.Endpoints
             //app.MapPost("/forum/approved",
             //    async (IForumCommand command, PublishForumDto forumDto) =>
             //    {
-            //        await command.HandleApprovalAsync(forumDto);
+            //        await command.HandleForumApprovalAsync(forumDto);
             //        return Results.Ok();
             //    }).WithTopic("pubsub", "forumApproved");
 

@@ -22,6 +22,7 @@ namespace ContentService.Infrastructure
             services.AddScoped<IForumMapper, ForumMapper>();
             services.AddScoped<IForumQuery, ForumQuery>();
             services.AddScoped<IPublisherService, DaprPublisherService>();
+            services.AddScoped<IModerationResultHandler, ModerationResultRouter>();
 
             // Add-Migration InitialMigration -Context ContentContext -Project ContentService.DatabaseMigration
             // Update-Database -Context ContentContext -Project ContentService.DatabaseMigration

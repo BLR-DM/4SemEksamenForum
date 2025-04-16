@@ -14,16 +14,14 @@ namespace ContentService.Domain.Entities
         {
             ForumName = forumName;
             Content = content;
-            CreatedDate = DateTime.Now;
             AppUserId = appUserId;
-            Status = Status.Submitted;
         }
 
         public string ForumName { get; protected set; }
         public string Content { get; protected set; }
-        public DateTime CreatedDate { get; protected set; }
+        public Status Status { get; protected set; } = Status.Submitted;
+        public DateTimeOffset CreatedDate { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
         public string AppUserId { get; protected set; }
-        public Status Status { get; protected set; }
         public IReadOnlyCollection<Post> Posts => _posts;
 
 
@@ -34,21 +32,9 @@ namespace ContentService.Domain.Entities
             return new Forum(forumName, content, appUserId);
         }
 
-        public void Approve()
-        {
-            if (Status != Status.Submitted)
-                throw new InvalidOperationException("Only submitted forums can be approved");
-
-            Status = Status.Approved;
-        }
-
-        public void Publish()
-        {
-            //if (Status != Status.Approved)
-            //    throw new InvalidOperationException("Only approved forums can be published");
-
-            Status = Status.Published;
-        }
+        public void MarkAsApproved() => Status = Status.Approved;
+        public void MarkAsPublished() => Status = Status.Published;
+        public void MarkAsRejected() => Status = Status.Rejected;
 
         public void Update(string content, string appUserId)
         {

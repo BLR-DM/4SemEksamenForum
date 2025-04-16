@@ -51,7 +51,7 @@ namespace ContentService.Application.Commands
                 // Testing publish -> should not be here
                 //await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
 
-                // Publish event
+                // MarkAsPublished event
                 var contentId = $"Forum:{forum.Id}";
                 await _eventHandler.ContentSubmitted(contentId, forum.Content);
             }
@@ -63,27 +63,82 @@ namespace ContentService.Application.Commands
         }
 
         //[Topic("pubsub", "forumApproved")]
-        async Task IForumCommand.HandleApprovalAsync(PublishForumDto forumDto)
+        async Task IForumCommand.HandleForumApprovalAsync(PublishForumDto forumDto)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
                 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumDto.Id);
+                var forum = await _forumRepository.GetForumOnlyAsync(forumDto.Id);
 
                 // Idempotency check
                 if (forum.Status == Status.Published)
                     return;
 
                 // Do
-                forum.Publish();
+                forum.MarkAsPublished();
 
-                // Publish event
+                // MarkAsPublished event
                 await _eventHandler.ForumPublished(forum.AppUserId, forum.Id);
+                // Subject to change? What if can't publish / save? Deadletter?
+                // Save
+                await _unitOfWork.Commit();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        async Task IForumCommand.HandlePostApprovalAsync(PublishPostDto postDto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumAsync(postDto.ForumId);
+
+                var post = forum.GetPostById(postDto.PostId);
+
+                // Idempotency check
+                if (post.Status == Status.Published)
+                    return;
+
+                // Do
+                post.MarkAsPublished();
+
+                // MarkAsPublished event
+                await _eventHandler.PostPublished(post.AppUserId, forum.Id, post.Id);
 
                 // Save
                 await _unitOfWork.Commit();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        public async Task HandleRejectionAsync(RejectForumDto forumDto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumOnlyAsync(forumDto.Id);
+
+                // Do
+                forum.MarkAsRejected();
+
+                // Save
+                await _unitOfWork.Commit();
+
+                //await _eventHandler.ForumRejected(forum.AppUserId, forum.Id);
             }
             catch (Exception)
             {
@@ -105,11 +160,11 @@ namespace ContentService.Application.Commands
         //        if (forum.Status == Status.Published)
         //            return;
 
-        //        // Publish event
+        //        // MarkAsPublished event
         //        // await _dapr.PublishEventAsync("pubsub", "forumPublished", forum);
 
         //        // Do
-        //        forum.Publish();
+        //        forum.MarkAsPublished();
 
         //        // Save
         //        await _unitOfWork.Commit();
@@ -128,7 +183,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumId);
+                var forum = await _forumRepository.GetForumOnlyAsync(forumId);
 
                 // Do
                 forum.Update(forumDto.Content, appUserId);
@@ -151,7 +206,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumId);
+                var forum = await _forumRepository.GetForumOnlyAsync(forumId);
 
                 // Do
                 _forumRepository.DeleteForum(forum, forumDto.RowVersion);
@@ -181,7 +236,7 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
 
-                // Publish event
+                // MarkAsPublished event
                 var contentId = $"Post:{forum.Id}-{post.Id}";
                 await _eventHandler.ContentSubmitted(contentId, post.Content);
                 //await _eventHandler.PostSubmitted(post.Id, post.Content);
@@ -239,7 +294,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        Task IForumCommand.HandlePublishAsync(PublishForumDto forumDto)
+        Task IForumCommand.HandlePublishAsync(PublishPostDto forumDto)
         {
             throw new NotImplementedException();
         }
