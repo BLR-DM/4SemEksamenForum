@@ -1,11 +1,10 @@
 ﻿using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
+using ContentService.Application.Helpers;
 using ContentService.Application.Services;
 using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
-using Dapr.Client;
-using Microsoft.Extensions.Hosting;
 
 namespace ContentService.Application.Commands
 {
@@ -51,8 +50,8 @@ namespace ContentService.Application.Commands
                 // Testing publish -> should not be here
                 //await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
 
-                // MarkAsPublished event
-                var contentId = $"Forum:{forum.Id}";
+                // Event
+                var contentId = ContentIdFormatter.FormatForumId(forum.Id);
                 await _eventHandler.ContentSubmitted(contentId, forum.Content);
             }
             catch (Exception)
@@ -79,7 +78,7 @@ namespace ContentService.Application.Commands
                 // Do
                 forum.MarkAsPublished();
 
-                // MarkAsPublished event
+                // Event
                 await _eventHandler.ForumPublished(forum.AppUserId, forum.Id);
                 // Subject to change? What if can't publish / save? Deadletter?
                 // Save
@@ -110,7 +109,7 @@ namespace ContentService.Application.Commands
                 // Do
                 post.MarkAsPublished();
 
-                // MarkAsPublished event
+                // Event
                 await _eventHandler.PostPublished(post.AppUserId, forum.Id, post.Id);
 
                 // Save
@@ -228,7 +227,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumId);
+                var forum = await _forumRepository.GetForumOnlyAsync(forumId);
 
                 // Do
                 var post = forum.AddPost(postDto.Title, postDto.Content, username, appUserId);
@@ -236,8 +235,8 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
 
-                // MarkAsPublished event
-                var contentId = $"Post:{forum.Id}-{post.Id}";
+                // Event
+                var contentId = ContentIdFormatter.FormatPostId(forum.Id, post.Id);
                 await _eventHandler.ContentSubmitted(contentId, post.Content);
                 //await _eventHandler.PostSubmitted(post.Id, post.Content);
             }
@@ -292,11 +291,6 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Rollback();
                 throw;
             }
-        }
-
-        Task IForumCommand.HandlePublishAsync(PublishPostDto forumDto)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -53,37 +53,24 @@ namespace ContentService.Infrastructure.Repositories
 
         async Task<Forum> IForumRepository.GetForumOnlyAsync(int forumId)
         {
-            try
-            {
-                return await _db.Forums.FirstAsync(forum => forum.Id == forumId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _db.Forums.FirstAsync(forum => forum.Id == forumId);
+
         }
 
         async Task<Forum> IForumRepository.GetForumAsync(int forumId)
         {
-            try
-            {
-                return await _db.Forums
-                    .Include(f => f.Posts)
-                    .FirstAsync(forum => forum.Id == forumId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _db.Forums
+                .Include(f => f.Posts)
+                .FirstAsync(forum => forum.Id == forumId);
         }
 
         async Task<Forum> IForumRepository.GetForumWithSinglePostAsync(int forumId, int postId)
         {
             return await _db.Forums
-                .Include(f => f.Posts)
+                .Include(f => f.Posts
+                    .Where(p => p.Id == postId))
                     .ThenInclude(p => p.Comments)
-                .Include(f => f.Posts)
-                .SingleAsync(f => f.Id == forumId);
+                .FirstAsync(f => f.Id == forumId);
         }
         
         async Task IForumRepository.SaveChangesAsync()

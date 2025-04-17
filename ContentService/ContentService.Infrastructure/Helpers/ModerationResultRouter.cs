@@ -1,6 +1,8 @@
-﻿using ContentService.Application.Commands.CommandDto.ForumDto;
+﻿using ContentService.Application.Commands.CommandDto.CommentDto;
+using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
+using ContentService.Application.Helpers;
 using ContentService.Infrastructure.Interfaces;
 
 namespace ContentService.Infrastructure.Helpers
@@ -18,7 +20,7 @@ namespace ContentService.Infrastructure.Helpers
 
         public async Task HandleModerationResultAsync(ContentModeratedDto dto)
         {
-            var (type, ids) = ContentIdHelper.Parse(dto.ContentId);
+            var (type, ids) = ContentIdFormatter.Parse(dto.ContentId);
 
             switch (type)
             {
@@ -34,6 +36,10 @@ namespace ContentService.Infrastructure.Helpers
                         await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(ids[0], ids[1]));
                     //else
                     //    await _postCommand.HandleRejectionAsync(new RejectPostDto(ids[0], ids[1]));
+                    break;
+                case "Comment":
+                    if (dto.Result == ModerationResult.Accept)
+                        await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(ids[0], ids[1], ids[2]));
                     break;
 
                 default:
