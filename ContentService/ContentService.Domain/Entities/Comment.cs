@@ -26,6 +26,10 @@ namespace ContentService.Domain.Entities
             return new Comment(username, content, appUserId);
         }
 
+        public void MarkAsApproved() => Status = Status.Approved;
+        public void MarkAsPublished() => Status = Status.Published;
+        public void MarkAsRejected() => Status = Status.Rejected;
+
         public void Update(string content, string appUserId)
         {
             AssureUserIsCreator(appUserId);

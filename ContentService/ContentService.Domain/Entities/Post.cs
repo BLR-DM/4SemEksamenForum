@@ -60,10 +60,12 @@ namespace ContentService.Domain.Entities
 
         // Comment
 
-        public void CreateComment(string username, string content, string appUserId)
+        public Comment CreateComment(string username, string content, string appUserId)
         {
             var comment = Comment.Create(username, content, appUserId);
             _comments.Add(comment);
+
+            return comment;
         }
 
         public Comment UpdateComment(int commentId, string content, string appUserId)
@@ -82,7 +84,7 @@ namespace ContentService.Domain.Entities
             return comment;
         }
 
-        private Comment GetCommentById(int commentId)
+        public Comment GetCommentById(int commentId)
         {
             var comment = Comments.FirstOrDefault(p => p.Id == commentId);
             if (comment is null) throw new ArgumentException("Comment not found");

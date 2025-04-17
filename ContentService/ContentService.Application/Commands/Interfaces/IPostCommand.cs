@@ -8,5 +8,6 @@ namespace ContentService.Application.Commands.Interfaces
         Task CreateCommentAsync(CreateCommentDto commentDto, string username, int postId, string appUserId, int forumId);
         Task UpdateCommentAsync(UpdateCommentDto commentDto, string appUserId, int forumId, int postId, int commentId);
         Task DeleteCommentAsync(DeleteCommentDto commentDto, string appUserId, int forumId, int postId, int commentId);
+        Task HandleCommentApprovalAsync(PublishCommentDto publishCommentDto);
     }
 }
