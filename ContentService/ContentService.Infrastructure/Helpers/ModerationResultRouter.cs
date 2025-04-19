@@ -20,11 +20,12 @@ namespace ContentService.Infrastructure.Helpers
 
         public async Task HandleModerationResultAsync(ContentModeratedDto dto)
         {
-            var (type, ids) = ContentIdFormatter.Parse(dto.ContentId);
+            var (contentType, ids) = ContentIdFormatter.Parse(dto.ContentId);
 
-            switch (type)
+            switch (contentType)
             {
                 case "Forum":
+                    var (forumId) = (ids[0]); // Deconstruction of tuple for readability
                     if (dto.Result == ModerationResult.Accept)
                         await _forumCommand.HandleForumApprovalAsync(new PublishForumDto(ids[0]));
                     //else
@@ -32,18 +33,20 @@ namespace ContentService.Infrastructure.Helpers
                     break;
 
                 case "Post":
+                    var (forumId, postId) = (ids[0], ids[1]);
                     if (dto.Result == ModerationResult.Accept)
-                        await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(ids[0], ids[1]));
+                        await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(forumId, postId));
                     //else
                     //    await _postCommand.HandleRejectionAsync(new RejectPostDto(ids[0], ids[1]));
                     break;
                 case "Comment":
+                    var (forumId, postId, commentId) = (ids[0], ids[1], ids[2]);
                     if (dto.Result == ModerationResult.Accept)
-                        await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(ids[0], ids[1], ids[2]));
+                        await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(forumId, postId, commentId));
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Unsupported content type: {type}");
+                    throw new InvalidOperationException($"Unsupported content type: {contentType}");
             }
         }
     }
