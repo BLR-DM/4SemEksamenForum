@@ -21,8 +21,6 @@ namespace ContentService.Application.Commands
             _eventHandler = eventHandler;
         }
 
-        public record ContentModerationDto(int Id, string Content);
-
         async Task IForumCommand.CreateForumAsync(CreateForumDto forumDto, string appUserId)
         {
             try

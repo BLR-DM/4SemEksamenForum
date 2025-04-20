@@ -25,7 +25,6 @@ namespace ContentService.Infrastructure.Helpers
             switch (contentType)
             {
                 case "Forum":
-                    var (forumId) = (ids[0]); // Deconstruction of tuple for readability
                     if (dto.Result == ModerationResult.Accept)
                         await _forumCommand.HandleForumApprovalAsync(new PublishForumDto(ids[0]));
                     //else
@@ -33,16 +32,14 @@ namespace ContentService.Infrastructure.Helpers
                     break;
 
                 case "Post":
-                    var (forumId, postId) = (ids[0], ids[1]);
                     if (dto.Result == ModerationResult.Accept)
-                        await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(forumId, postId));
+                        await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(ids[0], ids[1]));
                     //else
                     //    await _postCommand.HandleRejectionAsync(new RejectPostDto(ids[0], ids[1]));
                     break;
                 case "Comment":
-                    var (forumId, postId, commentId) = (ids[0], ids[1], ids[2]);
                     if (dto.Result == ModerationResult.Accept)
-                        await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(forumId, postId, commentId));
+                        await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(ids[0], ids[1], ids[2]));
                     break;
 
                 default:

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ContentService.DatabaseMigration.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedStatusOnPostCommentDateTimeFix : Migration
+    public partial class InititalMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -83,6 +83,12 @@ namespace ContentService.DatabaseMigration.Migrations
                 name: "IX_Comments_PostId",
                 table: "Comments",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Forums_ForumName",
+                table: "Forums",
+                column: "ForumName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_ForumId",

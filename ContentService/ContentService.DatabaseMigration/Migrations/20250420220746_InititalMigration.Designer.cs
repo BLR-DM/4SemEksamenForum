@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ContentService.DatabaseMigration.Migrations
 {
     [DbContext(typeof(ContentContext))]
-    [Migration("20250416195212_AddedStatusOnPostCommentDateTimeFix")]
-    partial class AddedStatusOnPostCommentDateTimeFix
+    [Migration("20250420220746_InititalMigration")]
+    partial class InititalMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -102,6 +102,9 @@ namespace ContentService.DatabaseMigration.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ForumName")
+                        .IsUnique();
 
                     b.ToTable("Forums", (string)null);
                 });
