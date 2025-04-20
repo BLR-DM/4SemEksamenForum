@@ -1,4 +1,6 @@
-﻿using ContentService.Application.EventDto;
+﻿using ContentService.Application.EventDto.CommentEventDto;
+using ContentService.Application.EventDto.ForumEventDto;
+using ContentService.Application.EventDto.PostEventDto;
 
 namespace ContentService.Application.Services
 {
@@ -11,22 +13,31 @@ namespace ContentService.Application.Services
             _publisherService = publisherService;
         }
 
-        async Task IEventHandler.ContentSubmitted(string contentId, string content)
+        // Submit
+        async Task IEventHandler.ForumSubmitted(string forumId, string content)
         {
-            var contentSubmittedDto = new ContentSubmittedDto(contentId, content);
-            await _publisherService.PublishEvent("content-submitted", contentSubmittedDto);
+            var forumSubmittedDto = new ForumSubmittedDto(forumId, content);
+            await _publisherService.PublishEvent("forum-submitted", forumSubmittedDto);
         }
 
+        async Task IEventHandler.PostSubmitted(string postId, string content)
+        {
+            var postSubmittedDto = new PostSubmittedDto(postId, content);
+            await _publisherService.PublishEvent("post-submitted", postSubmittedDto);
+        }
+
+        async Task IEventHandler.CommentSubmitted(string commentId, string content)
+        {
+            var commentSubmittedDto = new CommentSubmittedDto(commentId, content);
+            await _publisherService.PublishEvent("comment-submitted", commentSubmittedDto);
+        }
+
+        // Publish
         async Task IEventHandler.ForumPublished(string userId, int forumId)
         {
             var forumPublishedDto = new ForumPublishedDto(userId, forumId);
             await _publisherService.PublishEvent("forum-published", forumPublishedDto);
         }
-        //async Task IEventHandler.PostSubmitted(int postId, string content)
-        //{
-        //    var postSubmittedDto = new PostSubmittedDto(postId, content);
-        //    await _publisherService.PublishEvent("post-submitted", postSubmittedDto);
-        //}
 
         async Task IEventHandler.PostPublished(string userId, int forumId, int postId)
         {
@@ -43,9 +54,10 @@ namespace ContentService.Application.Services
 
     public interface IEventHandler
     {
-        Task ContentSubmitted(string contentId, string content);
+        Task ForumSubmitted(string forumId, string content);
+        Task PostSubmitted(string postId, string content);
+        Task CommentSubmitted(string commentId, string content);
         Task ForumPublished(string userId, int forumId);
-        //Task PostSubmitted(int postId, string content);
         Task PostPublished(string userId, int forumId, int postId);
         Task CommentPublished(string userId, int forumId, int postId, int commentId);
     }

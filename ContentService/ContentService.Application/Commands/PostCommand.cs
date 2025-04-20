@@ -38,8 +38,8 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 // Event
-                var contentId = ContentIdFormatter.FormatCommentId(forum.Id, post.Id, comment.Id);
-                await _eventHandler.ContentSubmitted(contentId, comment.Content);
+                var commentId = ContentIdFormatter.FormatCommentId(forum.Id, post.Id, comment.Id);
+                await _eventHandler.CommentSubmitted(commentId, comment.Content);
             }
             catch (Exception)
             {

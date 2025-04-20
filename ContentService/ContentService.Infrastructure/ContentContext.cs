@@ -20,27 +20,19 @@ namespace ContentService.Infrastructure
                 .Property(f => f.Status)
                 .HasConversion<string>(); // Stores enum as a string
 
-            //modelBuilder.Entity<Forum>()
-            //    .Property(f => f.CreatedDate)
-            //    .HasColumnType("timestamp(0) without time zone");
+            modelBuilder.Entity<Forum>()
+                .HasIndex(f => f.ForumName)
+                .IsUnique();
 
             // Post
             modelBuilder.Entity<Post>()
                 .Property(p => p.Status)
                 .HasConversion<string>(); // Stores enum as a string
 
-            //modelBuilder.Entity<Post>()
-            //    .Property(f => f.CreatedDate)
-            //    .HasColumnType("timestamp(0) without time zone");
-
             // Comment
             modelBuilder.Entity<Comment>()
                 .Property(c => c.Status)
                 .HasConversion<string>(); // Stores enum as a string
-
-            //modelBuilder.Entity<Comment>()
-            //    .Property(f => f.CreatedDate)
-            //    .HasColumnType("timestamp(0) without time zone");
 
 
             // Table mappings on entities

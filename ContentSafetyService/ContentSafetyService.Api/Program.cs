@@ -108,7 +108,8 @@ app.MapPost("/contentmoderation",
     async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command, DaprClient dapr) =>
     {
         // Save moderation content request?
-        logger.LogInformation("Content for moderation received: Id: {Id}\n" +
+        logger.LogInformation("Content for moderation received:\n" +
+                              "ContentId: {Id}\n" +
                               "Content: {Content}", payload.ContentId, payload.Content);
 
         var mediaType = MediaType.Text;
@@ -125,7 +126,10 @@ app.MapPost("/contentmoderation",
 
         return Results.Ok();
 
-    }).WithTopic("pubsub", "content-submitted");
+    })
+    .WithTopic("pubsub", "forum-submitted")
+    .WithTopic("pubsub", "post-submitted")
+    .WithTopic("pubsub", "comment-submitted");
 
 app.Run();
 public record MessagePayload(string Text);

@@ -1,4 +1,4 @@
-﻿namespace ContentService.Application.EventDto
+﻿namespace ContentService.Application.EventDto.ForumEventDto
 {
     public record ForumPublishedDto(string UserId, int ForumId);
 }

@@ -1,4 +1,5 @@
-﻿using ContentService.Domain.Enums;
+﻿using System.Runtime.CompilerServices;
+using ContentService.Domain.Enums;
 
 namespace ContentService.Domain.Entities
 {

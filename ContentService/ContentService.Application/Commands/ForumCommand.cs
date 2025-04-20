@@ -51,8 +51,8 @@ namespace ContentService.Application.Commands
                 //await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
 
                 // Event
-                var contentId = ContentIdFormatter.FormatForumId(forum.Id);
-                await _eventHandler.ContentSubmitted(contentId, forum.Content);
+                var forumId = ContentIdFormatter.FormatForumId(forum.Id);
+                await _eventHandler.ForumSubmitted(forumId, forum.Content);
             }
             catch (Exception)
             {
@@ -236,9 +236,8 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 // Event
-                var contentId = ContentIdFormatter.FormatPostId(forum.Id, post.Id);
-                await _eventHandler.ContentSubmitted(contentId, post.Content);
-                //await _eventHandler.PostSubmitted(post.Id, post.Content);
+                var postId = ContentIdFormatter.FormatPostId(forum.Id, post.Id);
+                await _eventHandler.PostSubmitted(postId, post.Content);
             }
             catch (Exception)
             {
