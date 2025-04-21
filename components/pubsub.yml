@@ -33,3 +33,5 @@ spec:
     value: parallel
 scope:
   - contentservice-api
+  - voteservice-api
+  - pointservice-api
