@@ -1,9 +1,11 @@
+using Dapr;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using PointService.Application;
 using PointService.Application.Command;
 using PointService.Application.Command.CommandDto;
+using PointService.Application.EventDto.PosVoteDto;
 using PointService.Application.Queries;
 using PointService.Infrastructure;
 
@@ -12,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddDaprClient();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
@@ -50,6 +53,8 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCloudEvents();
+app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!");
 
@@ -98,4 +103,13 @@ app.MapGet("/User/{userId}/Points",
         }
     });
 
+app.MapPost("/postvote-created", (PostVoteDto dto) =>
+{
+    Console.WriteLine("Lets go");
+
+}).WithTopic("pubsub", "postvote-created").AllowAnonymous();
+
+
+
 app.Run();
+
