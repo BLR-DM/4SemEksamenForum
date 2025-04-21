@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SubscriptionService.Application.Commands;
 using SubscriptionService.Application.Commands.Interfaces;
+using SubscriptionService.Application.Services;
 
 namespace SubscriptionService.Application.Configuration
 {
@@ -15,6 +16,7 @@ namespace SubscriptionService.Application.Configuration
         {
             services.AddScoped<IForumSubCommand, ForumSubCommand>();
             services.AddScoped<IPostSubCommand, PostSubCommand>();
+            services.AddScoped<IEventHandler, SubscriptionService.Application.Services.EventHandler>();
 
             return services;
         }

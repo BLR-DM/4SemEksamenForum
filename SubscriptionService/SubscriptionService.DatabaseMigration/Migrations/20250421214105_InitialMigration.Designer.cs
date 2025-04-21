@@ -12,7 +12,7 @@ using SubscriptionService.Infrastructure;
 namespace SubscriptionService.DatabaseMigration.Migrations
 {
     [DbContext(typeof(SubscriptionContext))]
-    [Migration("20250329143559_InitialMigration")]
+    [Migration("20250421214105_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -20,39 +20,53 @@ namespace SubscriptionService.DatabaseMigration.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("SubscriptionService.Domain.Entities.ForumSubscription", b =>
                 {
-                    b.Property<int>("ForumId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("ForumId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("SubscribedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("ForumId", "AppUserId");
+                    b.HasKey("Id");
 
                     b.ToTable("ForumSubscriptions");
                 });
 
             modelBuilder.Entity("SubscriptionService.Domain.Entities.PostSubscription", b =>
                 {
-                    b.Property<int>("PostId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("SubscribedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("PostId", "AppUserId");
+                    b.HasKey("Id");
 
                     b.ToTable("PostSubscriptions");
                 });

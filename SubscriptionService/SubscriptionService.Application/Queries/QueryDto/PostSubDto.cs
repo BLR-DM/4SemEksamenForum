@@ -10,6 +10,6 @@ namespace SubscriptionService.Application.Queries.QueryDto
     {
         public string AppUserId { get; set; } = string.Empty;
         public int PostId { get; set; }
-        public DateTime SubscribedAt { get; set; }
+        public DateTimeOffset SubscribedAt { get; set; }
     }
 }

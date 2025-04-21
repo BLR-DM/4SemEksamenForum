@@ -27,16 +27,16 @@ namespace SubscriptionService.Application.Services
             await _publisherService.PublishEvent("user-subscribed-to-post", evtDto);
         }
 
-        async Task IEventHandler.UserUnsubscribedToForum(string userId, int subscriptionId)
+        async Task IEventHandler.UserUnsubscribedFromForum(string userId, int subscriptionId)
         {
             var evtDto = new UserUnSubscribedToForumEventDto(userId, subscriptionId);
-            await _publisherService.PublishEvent("user-unsubscribed-to-forum", evtDto);
+            await _publisherService.PublishEvent("user-unsubscribed-from-forum", evtDto);
         }
 
-        async Task IEventHandler.UserUnsubscribedToPost(string userId, int subscriptionId)
+        async Task IEventHandler.UserUnsubscribedFromPost(string userId, int subscriptionId)
         {
             var evtDto = new UserUnSubscribedToPostEventDto(userId, subscriptionId);
-            await _publisherService.PublishEvent("user-unsubscribed-to-post", evtDto);
+            await _publisherService.PublishEvent("user-unsubscribed-from-post", evtDto);
         }
     }
 
@@ -44,7 +44,7 @@ namespace SubscriptionService.Application.Services
     {
         Task UserSubscribedToForum(string userId, int subscriptionId, int forumId);
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
-        Task UserUnsubscribedToForum(string userId, int subscriptionId);
-        Task UserUnsubscribedToPost(string userId, int subscriptionId);
+        Task UserUnsubscribedFromForum(string userId, int subscriptionId);
+        Task UserUnsubscribedFromPost(string userId, int subscriptionId);
     }
 }

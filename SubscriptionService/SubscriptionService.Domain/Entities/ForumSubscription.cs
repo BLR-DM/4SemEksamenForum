@@ -10,9 +10,10 @@ namespace SubscriptionService.Domain.Entities
     {
         protected ForumSubscription() { AppUserId = string.Empty; }
 
+        public int Id { get; protected set; }
         public int ForumId { get; protected set; }
         public string AppUserId { get; protected set; }
-        public DateTime SubscribedAt { get; protected set; } = DateTime.UtcNow.AddHours(1);
+        public DateTimeOffset SubscribedAt { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
 
         private ForumSubscription(int forumId, string appUserId)
         {

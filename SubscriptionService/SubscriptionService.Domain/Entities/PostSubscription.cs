@@ -11,9 +11,10 @@ namespace SubscriptionService.Domain.Entities
     {
         protected PostSubscription() { AppUserId = string.Empty; }
 
+        public int Id { get; protected set; }
         public int PostId { get; protected set; }
         public string AppUserId { get; protected set; }
-        public DateTime SubscribedAt { get; protected set; } = DateTime.Now;
+        public DateTimeOffset SubscribedAt { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
 
         private PostSubscription(int postId, string appUserId)
         {
