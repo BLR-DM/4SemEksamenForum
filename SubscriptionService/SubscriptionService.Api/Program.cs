@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.AddDaprClient();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -96,11 +96,14 @@ app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCloudEvents();
+app.MapSubscribeHandler();
 //app.UseHttpsRedirection();
 
 app.UseCors("AllowAspire");
 
 app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+
 
 app.MapPost("/Forums/{forumId}/Subscriptions",
     async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
@@ -118,6 +121,24 @@ app.MapPost("/Forums/{forumId}/Subscriptions",
         }
     });
 
+
+app.MapPost("/events/forum-published",
+    async (ForumPublishedDto evtDto, IForumSubCommand command) =>
+    {
+        try
+        {
+            await command.CreateAsync(evtDto.ForumId, evtDto.UserId);
+
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    }).WithTopic("pubsub", "forum-published");
+
+
 app.MapPost("/Posts/{postId}/Subscriptions",
     async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
     {
@@ -132,6 +153,21 @@ app.MapPost("/Posts/{postId}/Subscriptions",
             return Results.Problem(ex.Message);
         }
     });
+
+app.MapPost("/events/post-published",
+    async (PostPublishedDto evtDto, IPostSubCommand command) =>
+    {
+        try
+        {
+            await command.CreateAsync(evtDto.PostId, evtDto.UserId);
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    }).WithTopic("pubsub", "post-published");
 
 app.MapDelete("/Forums/{forumId}/Subscriptions",
     async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
@@ -227,3 +263,6 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions/", async (string appUserId, I
 
 
 app.Run();
+
+public record ForumPublishedDto(string UserId, int ForumId);
+public record PostPublishedDto(string UserId, int PostId);

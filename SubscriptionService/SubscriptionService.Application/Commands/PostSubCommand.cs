@@ -18,16 +18,16 @@ namespace SubscriptionService.Application.Commands
         {
             _postSubRepository = postSubRepository;
         }
-        async Task IPostSubCommand.CreateAsync(int postId, string appUserId)
+        async Task IPostSubCommand.CreateAsync(int postId, string userId)
         {
-            var postSub = PostSubscription.Create(postId, appUserId);
+            var postSub = PostSubscription.Create(postId, userId);
 
             await _postSubRepository.AddAsync(postSub);
         }
 
-        async Task IPostSubCommand.DeleteAsync(int postId, string appUserId)
+        async Task IPostSubCommand.DeleteAsync(int postId, string userId)
         {
-            var postSub = await _postSubRepository.GetAsync(postId, appUserId);
+            var postSub = await _postSubRepository.GetAsync(postId, userId);
 
             await _postSubRepository.DeleteAsync(postSub);
         }
