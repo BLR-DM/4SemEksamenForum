@@ -80,7 +80,7 @@ namespace ContentService.Application.Services
         Task PostPublished(string userId, int forumId, int postId);
         Task CommentPublished(string userId, int forumId, int postId, int commentId);
         Task ForumRejected(string userId, int forumId);
-        Task PostRejected(string userId, int forumId, int postId)
+        Task PostRejected(string userId, int forumId, int postId);
         Task CommentRejected(string userId, int forumId, int postId, int commentId);
     }
 }

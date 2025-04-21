@@ -52,7 +52,7 @@ namespace ContentService.Application.Commands
                 var forumId = ContentIdFormatter.FormatForumId(forum.Id);
                 await _eventHandler.ForumSubmitted(forumId, forum.Content);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _unitOfWork.Rollback();
                 throw;

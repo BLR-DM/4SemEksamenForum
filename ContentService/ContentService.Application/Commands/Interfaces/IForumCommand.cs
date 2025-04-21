@@ -9,7 +9,7 @@ namespace ContentService.Application.Commands.Interfaces
         Task CreateForumAsync(CreateForumDto forumDto, string appUserId);
         Task UpdateForumAsync(UpdateForumDto forumDto, string appUserId, int forumId);
         Task HandleForumApprovalAsync(PublishForumDto forumDto);
-        Task HandleForumRejectedAsync(RejectForumDto forumDto);
+        Task HandleForumRejectionAsync(RejectForumDto forumDto);
         Task HandlePostApprovalAsync(PublishPostDto postDto);
         Task DeleteForumAsync(DeleteForumDto forumDto, int forumId);
 

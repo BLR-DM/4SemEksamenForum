@@ -28,7 +28,7 @@ namespace ContentService.Infrastructure.Helpers
                     if (dto.Result == ModerationResult.Accept)
                         await _forumCommand.HandleForumApprovalAsync(new PublishForumDto(ids[0]));
                     else if (dto.Result == ModerationResult.Reject)
-                        await _forumCommand.HandleForumRejectedAsync(new RejectForumDto(ids[0]));
+                        await _forumCommand.HandleForumRejectionAsync(new RejectForumDto(ids[0]));
                     break;
 
                 case "Post":
