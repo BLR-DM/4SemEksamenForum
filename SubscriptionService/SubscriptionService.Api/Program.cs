@@ -155,11 +155,12 @@ app.MapPost("/Posts/{postId}/Subscriptions",
     });
 
 app.MapPost("/events/post-published",
-    async (PostPublishedDto evtDto, IPostSubCommand command) =>
+    async (PostPublishedDto evtDto, IPostSubCommand postCommand, IForumSubCommand forumCommand) =>
     {
         try
         {
-            await command.CreateAsync(evtDto.PostId, evtDto.UserId);
+            await postCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
+            await forumCommand.CreateAsync(evtDto.ForumId, evtDto.UserId);
             return Results.Ok();
         }
         catch (Exception ex)
@@ -168,6 +169,21 @@ app.MapPost("/events/post-published",
             return Results.Problem(ex.Message);
         }
     }).WithTopic("pubsub", "post-published");
+
+app.MapPost("/events/comment-published",
+    async (CommentPublishedDto evtDto, IPostSubCommand postCommand) =>
+    {
+        try
+        {
+            await postCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    }).WithTopic("pubsub", "comment-published");
 
 app.MapDelete("/Forums/{forumId}/Subscriptions",
     async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
@@ -265,4 +281,5 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions/", async (string appUserId, I
 app.Run();
 
 public record ForumPublishedDto(string UserId, int ForumId);
-public record PostPublishedDto(string UserId, int PostId);
+public record PostPublishedDto(string UserId, int ForumId, int PostId);
+public record CommentPublishedDto(string UserId, int PostId);

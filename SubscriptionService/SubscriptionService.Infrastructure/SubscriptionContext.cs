@@ -19,9 +19,6 @@ namespace SubscriptionService.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PostSubscription>().HasKey(ps => new { ps.PostId, ps.AppUserId });
-
-            modelBuilder.Entity<ForumSubscription>().HasKey(fs => new { fs.ForumId, fs.AppUserId });
         }
     }
 }
