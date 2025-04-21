@@ -11,7 +11,7 @@ namespace SubscriptionService.Application.Repositories
     {
         Task AddAsync(PostSubscription postSub);
         Task DeleteAsync(PostSubscription postSub); 
-        Task<PostSubscription> GetAsync(int postId, string appUserId);
+        Task<PostSubscription> GetAsync(int postId, string userId);
 
     }
 }
