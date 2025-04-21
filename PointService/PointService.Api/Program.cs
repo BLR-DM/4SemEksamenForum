@@ -54,6 +54,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
+app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!");
 
@@ -109,4 +110,6 @@ app.MapPost("/postvote-created", (PostVoteDto dto) =>
 }).WithTopic("pubsub", "postvote-created").AllowAnonymous();
 
 
+
 app.Run();
+

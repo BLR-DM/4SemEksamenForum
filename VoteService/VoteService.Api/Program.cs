@@ -1,3 +1,4 @@
+using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -189,5 +190,6 @@ app.MapPost("Comment/Votes",
     });
 
 app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+
 
 app.Run();

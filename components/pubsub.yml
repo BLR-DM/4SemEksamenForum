@@ -31,6 +31,8 @@ spec:
     value: 0
   - name: concurrencyMode
     value: parallel
+ # - name: enableDeadLetter
+  #  value: true
 scope:
   - contentservice-api
   - voteservice-api
