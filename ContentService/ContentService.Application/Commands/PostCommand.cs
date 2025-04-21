@@ -1,7 +1,9 @@
 ﻿using ContentService.Application.Commands.CommandDto.CommentDto;
+using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Application.Helpers;
 using ContentService.Application.Services;
+using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
 
 namespace ContentService.Application.Commands
@@ -40,6 +42,68 @@ namespace ContentService.Application.Commands
                 // Event
                 var commentId = ContentIdFormatter.FormatCommentId(forum.Id, post.Id, comment.Id);
                 await _eventHandler.CommentSubmitted(commentId, comment.Content);
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        async Task IPostCommand.HandleCommentApprovalAsync(PublishCommentDto commentDto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumWithSinglePostAsync(commentDto.ForumId, commentDto.PostId);
+                var post = forum.GetPostById(commentDto.PostId);
+                var comment = post.GetCommentById(commentDto.CommentId);
+
+                // Idempotency check
+                if (comment.Status == Status.Published)
+                    return;
+
+                // Do
+                comment.MarkAsPublished();
+
+                // Event
+                await _eventHandler.CommentPublished(post.AppUserId, forum.Id, post.Id, comment.Id);
+
+                // Save
+                await _unitOfWork.Commit();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        async Task IPostCommand.HandleCommentRejectionAsync(RejectCommentDto commentDto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumWithSinglePostAsync(commentDto.ForumId, commentDto.PostId);
+                var post = forum.GetPostById(commentDto.PostId);
+                var comment = post.GetCommentById(commentDto.CommentId);
+
+                // Idempotency check
+                if (comment.Status == Status.Rejected)
+                    return;
+
+                // Do
+                comment.MarkAsRejected();
+
+                // Event
+                await _eventHandler.CommentRejected(post.AppUserId, forum.Id, post.Id, comment.Id);
+
+                // Save
+                await _unitOfWork.Commit();
             }
             catch (Exception)
             {
@@ -96,37 +160,6 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Rollback();
                 throw;
             }
-        }
-
-        async Task IPostCommand.HandleCommentApprovalAsync(PublishCommentDto publishCommentDto)
-        {
-            try
-            {
-                await _unitOfWork.BeginTransaction();
-
-                // Load
-                var forum = await _forumRepository.GetForumWithSinglePostAsync(publishCommentDto.ForumId, publishCommentDto.PostId);
-                var post = forum.GetPostById(publishCommentDto.PostId);
-                var comment = post.GetCommentById(publishCommentDto.CommentId);
-
-                if (comment.Status == Status.Published)
-                    return;
-
-                // Do
-                comment.MarkAsPublished();
-
-                // Event
-                await _eventHandler.CommentPublished(comment.AppUserId, forum.Id, post.Id, comment.Id);
-
-                // Save
-                await _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-                await _unitOfWork.Rollback();
-                throw;
-            }
-
         }
     }
 }

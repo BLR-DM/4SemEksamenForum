@@ -59,7 +59,6 @@ namespace ContentService.Application.Commands
             }
         }
 
-        //[Topic("pubsub", "forumApproved")]
         async Task IForumCommand.HandleForumApprovalAsync(PublishForumDto forumDto)
         {
             try
@@ -79,6 +78,35 @@ namespace ContentService.Application.Commands
                 // Event
                 await _eventHandler.ForumPublished(forum.AppUserId, forum.Id);
                 // Subject to change? What if can't publish / save? Deadletter?
+                // Save
+                await _unitOfWork.Commit();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        public async Task HandleForumRejectionAsync(RejectForumDto forumDto)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumOnlyAsync(forumDto.Id);
+
+                // Idempotency check
+                if (forum.Status == Status.Rejected)
+                    return;
+
+                // Do
+                forum.MarkAsRejected();
+
+                // Event
+                await _eventHandler.ForumRejected(forum.AppUserId, forum.Id);
+
                 // Save
                 await _unitOfWork.Commit();
             }
@@ -120,22 +148,29 @@ namespace ContentService.Application.Commands
             }
         }
 
-        public async Task HandleRejectionAsync(RejectForumDto forumDto)
+        async Task IForumCommand.HandlePostRejectionAsync(RejectPostDto postDto)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumOnlyAsync(forumDto.Id);
+                var forum = await _forumRepository.GetForumAsync(postDto.ForumId);
+
+                var post = forum.GetPostById(postDto.PostId);
+
+                // Idempotency check
+                if (post.Status == Status.Rejected)
+                    return;
 
                 // Do
-                forum.MarkAsRejected();
+                post.MarkAsRejected();
+
+                // Event
+                await _eventHandler.PostRejected(post.AppUserId, forum.Id, post.Id);
 
                 // Save
                 await _unitOfWork.Commit();
-
-                //await _eventHandler.ForumRejected(forum.AppUserId, forum.Id);
             }
             catch (Exception)
             {

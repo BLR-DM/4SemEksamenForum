@@ -27,19 +27,21 @@ namespace ContentService.Infrastructure.Helpers
                 case "Forum":
                     if (dto.Result == ModerationResult.Accept)
                         await _forumCommand.HandleForumApprovalAsync(new PublishForumDto(ids[0]));
-                    //else
-                    //    await _forumCommand.HandleRejectionAsync(new RejectForumDto(ids[0]));
+                    else if (dto.Result == ModerationResult.Reject)
+                        await _forumCommand.HandleForumRejectedAsync(new RejectForumDto(ids[0]));
                     break;
 
                 case "Post":
                     if (dto.Result == ModerationResult.Accept)
                         await _forumCommand.HandlePostApprovalAsync(new PublishPostDto(ids[0], ids[1]));
-                    //else
-                    //    await _postCommand.HandleRejectionAsync(new RejectPostDto(ids[0], ids[1]));
+                    if (dto.Result == ModerationResult.Reject)
+                        await _forumCommand.HandlePostRejectionAsync(new RejectPostDto(ids[0], ids[1]));
                     break;
                 case "Comment":
                     if (dto.Result == ModerationResult.Accept)
                         await _postCommand.HandleCommentApprovalAsync(new PublishCommentDto(ids[0], ids[1], ids[2]));
+                    else if (dto.Result == ModerationResult.Reject)
+                        await _postCommand.HandleCommentRejectionAsync(new RejectCommentDto(ids[0], ids[1], ids[2]));
                     break;
 
                 default:

@@ -50,6 +50,25 @@ namespace ContentService.Application.Services
             var commentPublishedDto = new CommentPublishedDto(userId, forumId, postId, commentId);
             await _publisherService.PublishEvent("comment-published", commentPublishedDto);
         }
+
+        // Reject
+        async Task IEventHandler.ForumRejected(string userId, int forumId)
+        {
+            var forumRejectedDto = new ForumRejectedDto(userId, forumId);
+            await _publisherService.PublishEvent("forum-rejected", forumRejectedDto);
+        }
+
+        async Task IEventHandler.PostRejected(string userId, int forumId, int postId)
+        {
+            var postRejectedDto = new PostRejectedDto(userId, forumId, postId);
+            await _publisherService.PublishEvent("post-rejected", postRejectedDto);
+        }
+
+        async Task IEventHandler.CommentRejected(string userId, int forumId, int postId, int commentId)
+        {
+            var commentRejectedDto = new CommentRejectedDto(userId, forumId, postId, commentId);
+            await _publisherService.PublishEvent("comment-rejected", commentRejectedDto);
+        }
     }
 
     public interface IEventHandler
@@ -60,5 +79,8 @@ namespace ContentService.Application.Services
         Task ForumPublished(string userId, int forumId);
         Task PostPublished(string userId, int forumId, int postId);
         Task CommentPublished(string userId, int forumId, int postId, int commentId);
+        Task ForumRejected(string userId, int forumId);
+        Task PostRejected(string userId, int forumId, int postId)
+        Task CommentRejected(string userId, int forumId, int postId, int commentId);
     }
 }
