@@ -22,18 +22,21 @@ spec:
   - name: connectionString
     value: amqp://rabbitmq:5672
   - name: durable
-    value: false
+    value: true
   - name: deletedWhenUnused
     value: false
   - name: autoAck
     value: false
+  - name: prepetchCount
+    value: 50
   - name: reconnectWait
-    value: 0
+    value: 5
   - name: concurrencyMode
     value: parallel
-  - name: enableDeadLetter
-    value: true
+  # - name: enableDeadLetter
+  #   value: true
 scope:
   - contentservice-api
   - voteservice-api
   - pointservice-api
+  - contentsafetyservice-api
