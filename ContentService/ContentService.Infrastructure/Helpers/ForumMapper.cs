@@ -12,6 +12,7 @@ namespace ContentService.Infrastructure.Helpers
             {
                 Id = forum.Id,
                 ForumName = forum.ForumName,
+                //Content = forum.Content,
                 CreatedDate = forum.CreatedDate.ToString(),
                 AppUserId = forum.AppUserId,
                 RowVersion = forum.RowVersion
@@ -24,6 +25,7 @@ namespace ContentService.Infrastructure.Helpers
             {
                 Id = forum.Id,
                 ForumName = forum.ForumName,
+                Content = forum.Content,
                 CreatedDate = forum.CreatedDate.ToString(),
                 AppUserId = forum.AppUserId,
                 RowVersion = forum.RowVersion,

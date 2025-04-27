@@ -19,12 +19,14 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .FirstAsync(f => f.Id == forumId);
+
             return _forumMapper.MapToDto(forum);
         }
 
         async Task<IEnumerable<ForumDto>> IForumQuery.GetForumsAsync()
         {
             var forums = await _db.Forums.AsNoTracking().ToListAsync();
+
             return forums.Select(forum => _forumMapper.MapToDto(forum));
         }
 
@@ -42,7 +44,8 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .Where(f => f.Id == forumId)
-                .Include(f => f.Posts.Where(p => p.Id == postId))
+                .Include(f => f.Posts
+                    .Where(p => p.Id == postId))
                 .ThenInclude(p => p.Comments)
                 .FirstOrDefaultAsync();
 
