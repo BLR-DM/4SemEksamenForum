@@ -43,14 +43,18 @@ namespace ContentService.Domain.Entities
             Content = content;
         }
 
+        public void Delete(string appUserId)
+        {
+            AssureUserIsCreator(appUserId);
+        }
+
         private void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
-                throw new ArgumentException("Only the creater of the post can edit this");
+                throw new ArgumentException("Only the creater of the forum can perform this action");
         }
 
         // Post
-
         public Post AddPost(string title, string content, string username, string appUserId)
         {
             var post = Post.Create(title, content, username, appUserId);
@@ -65,9 +69,10 @@ namespace ContentService.Domain.Entities
             return post;
         }
 
-        public Post DeletePost(int postId, string appUserId) //maaske slet? //admin ??
+        public Post DeletePost(int postId, string appUserId)
         {
             var post = GetPostById(postId);
+            post.Delete(appUserId);
             _posts.Remove(post);
             return post;
         }

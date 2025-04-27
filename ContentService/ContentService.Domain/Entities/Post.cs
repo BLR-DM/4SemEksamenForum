@@ -37,13 +37,13 @@ namespace ContentService.Domain.Entities
         public void MarkAsPublished() => Status = Status.Published;
         public void MarkAsRejected() => Status = Status.Rejected;
 
-        public void Update(string title, string updatedContent, string userId)
+        public void Update(string title, string content, string userId)
         {
             AssureUserIsCreator(userId);
 
             //SetHistory(Description, Solution);
             Title = title;
-            Content = updatedContent;
+            Content = content;
         }
 
         //private void SetHistory(string orgDescription, string orgSolution)
@@ -51,10 +51,15 @@ namespace ContentService.Domain.Entities
         //    _history.Add(new PostHistory(orgDescription, orgSolution));
         //}
 
+        public void Delete(string userId)
+        {
+            AssureUserIsCreator(userId);
+        }
+
         private void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
-                throw new ArgumentException("Only the creater of the post can edit this");
+                throw new ArgumentException("Only the creater of the post can perform this action");
         }
 
 
@@ -71,7 +76,6 @@ namespace ContentService.Domain.Entities
         public Comment UpdateComment(int commentId, string content, string appUserId)
         {
             var comment = GetCommentById(commentId);
-
             comment.Update(content, appUserId);
             return comment;
         }
@@ -79,7 +83,7 @@ namespace ContentService.Domain.Entities
         public Comment DeleteComment(int commentId, string appUserId)
         {
             var comment = GetCommentById(commentId);
-
+            comment.Delete(appUserId);
             _comments.Remove(comment);
             return comment;
         }

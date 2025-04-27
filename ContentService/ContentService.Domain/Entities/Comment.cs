@@ -36,10 +36,15 @@ namespace ContentService.Domain.Entities
             Content = content;
         }
 
+        public void Delete(string appUserId)
+        {
+            AssureUserIsCreator(appUserId);
+        }
+
         private void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
-                throw new ArgumentException("Only the creater of the comment can edit this");
+                throw new ArgumentException("Only the creater of the comment can perform this action");
         }
     }
 }

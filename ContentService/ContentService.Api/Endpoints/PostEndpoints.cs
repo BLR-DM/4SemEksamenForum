@@ -11,6 +11,7 @@ namespace ContentService.Api.Endpoints
         {
             const string tag = "Post";
 
+            // Query
             app.MapGet("/forum/{forumId}/post/{postId}",
                 async (IForumQuery query, int forumId, int postId) =>
                 {
@@ -18,6 +19,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(result);
                 }).WithTags(tag);
 
+            // Write
             app.MapPost("/forum/{forumId}/post",
                 async (IForumCommand command, CreatePostDto postDto, string appUserId, int forumId) =>
                 {

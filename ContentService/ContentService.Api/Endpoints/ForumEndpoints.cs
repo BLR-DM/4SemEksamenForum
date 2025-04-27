@@ -15,6 +15,8 @@ namespace ContentService.Api.Endpoints
             ///// Endpoint verbs forum/... or need to configure CloudEvents payload etc.
             //
             //  MapGroup remove forum prefix
+
+            // Query
             app.MapGet("/forum",
                 async (IForumQuery query) =>
                 {
@@ -35,7 +37,8 @@ namespace ContentService.Api.Endpoints
                     var result = await query.GetForumWithPostsAsync(forumId);
                     return Results.Ok(result);
                 }).WithTags(tag);
-
+            
+            // Write
             app.MapPost("/forum",
                 async (IForumCommand command, CreateForumDto forumDto, string appUserId) =>
                 {
@@ -53,7 +56,7 @@ namespace ContentService.Api.Endpoints
             app.MapDelete("/forum/{forumId}", // check appUserId / moderator
                 async (IForumCommand command, [FromBody] DeleteForumDto forumDto, string appUserId, int forumId) =>
                 {
-                    await command.DeleteForumAsync(forumDto, forumId);
+                    await command.DeleteForumAsync(forumDto, appUserId, forumId);
                     return Results.Ok("Forum deleted");
                 }).WithTags(tag);
 

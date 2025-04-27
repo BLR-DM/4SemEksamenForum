@@ -154,6 +154,8 @@ namespace ContentService.Application.Commands
 
                 // Save
                 await _unitOfWork.Commit();
+
+                await _eventHandler.CommentDeleted(forum.Id, post.Id, comment.Id);
             }
             catch (Exception)
             {

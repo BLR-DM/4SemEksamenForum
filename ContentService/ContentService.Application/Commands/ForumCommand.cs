@@ -231,7 +231,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IForumCommand.DeleteForumAsync(DeleteForumDto forumDto, int forumId)
+        async Task IForumCommand.DeleteForumAsync(DeleteForumDto forumDto, string appUserId, int forumId)
         {
             try
             {
@@ -241,10 +241,14 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumOnlyAsync(forumId);
 
                 // Do
+                forum.Delete(appUserId);
                 _forumRepository.DeleteForum(forum, forumDto.RowVersion);
 
                 // Save
                 await _unitOfWork.Commit();
+
+                // Event
+                await _eventHandler.ForumDeleted(forum.Id);
             }
             catch (Exception)
             {
@@ -306,7 +310,7 @@ namespace ContentService.Application.Commands
         {
             try
             {
-                // await _unitOfWork.BeginTransaction();
+                await _unitOfWork.BeginTransaction();
 
                 // Load
                 var forum = await _forumRepository.GetForumAsync(forumId);
@@ -317,6 +321,8 @@ namespace ContentService.Application.Commands
 
                 //Save
                 await _unitOfWork.Commit();
+
+                await _eventHandler.PostDeleted(forum.Id, post.Id);
             }
             catch (Exception)
             {
