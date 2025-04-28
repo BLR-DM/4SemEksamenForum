@@ -25,13 +25,23 @@ public class PostVoteCommand : IPostVoteCommand
         switch (voteAction)
         {
             case VoteAction.Created:
-                await _eventHandler.PostVoteCreated(postId, dto.UserId, dto.VoteType);
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.PostUpVoteCreated(postId, dto.UserId); 
+                }
                 break;
             case VoteAction.Deleted:
-                await _eventHandler.PostVoteDeleted(postId, dto.UserId, dto.VoteType);
+                await _eventHandler.PostUpVoteRemoved(postId, dto.UserId);
                 break;
             case VoteAction.Updated:
-                await _eventHandler.PostVoteUpdated(postId, dto.UserId, dto.VoteType);
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.PostUpVoteCreated(postId, dto.UserId);
+                }
+                else
+                {
+                    await _eventHandler.PostUpVoteRemoved(postId, dto.UserId);
+                }
                 break;
         }
     }

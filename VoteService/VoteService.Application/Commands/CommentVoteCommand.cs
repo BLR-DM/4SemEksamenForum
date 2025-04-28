@@ -25,13 +25,24 @@ public class CommentVoteCommand : ICommentVoteCommand
         switch (voteAction)
         {
             case VoteAction.Created:
-                await _eventHandler.CommentVoteCreated(commentId, dto.UserId, dto.VoteType);
+
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.CommentUpVoteCreated(commentId, dto.UserId); 
+                }
                 break;
             case VoteAction.Deleted:
-                await _eventHandler.CommentVoteDeleted(commentId, dto.UserId, dto.VoteType);
+                await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
                 break;
             case VoteAction.Updated:
-                await _eventHandler.CommentVoteUpdated(commentId, dto.UserId, dto.VoteType);
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.CommentUpVoteCreated(commentId, dto.UserId);
+                }
+                else
+                {
+                    await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
+                }
                 break;
         }
     }
