@@ -12,40 +12,29 @@ namespace VoteService.Application.Services
             _publisherService = publisherService;
         }
 
-        async Task IEventHandler.CommentVoteCreated(string commentId, string userId, bool voteType)
+        async Task IEventHandler.CommentUpVoteCreated(string commentId, string userId)
         {
-            var commentVoteCreatedDto = new CommentVoteEventDto(commentId, userId, voteType);
+            var commentVoteCreatedDto = new CommentVoteEventDto(commentId, userId);
             await _publisherService.PublishEvent("commentvote-created", commentVoteCreatedDto);
         }
 
-        async Task IEventHandler.CommentVoteDeleted(string commentId, string userId, bool voteType)
+        async Task IEventHandler.CommentUpVoteRemoved(string commentId, string userId)
         {
-            var commentVoteDeletedDto = new CommentVoteEventDto(commentId, userId, voteType);
+            var commentVoteDeletedDto = new CommentVoteEventDto(commentId, userId);
             await _publisherService.PublishEvent("commentvote-deleted", commentVoteDeletedDto);
         }
 
-        async Task IEventHandler.CommentVoteUpdated(string commentId, string userId, bool voteType)
+        async Task IEventHandler.PostUpVoteCreated(string postId, string userId)
         {
-            var commentVoteUpdatedDto = new CommentVoteEventDto(commentId, userId, voteType);
-            await _publisherService.PublishEvent("commentvote-updated", commentVoteUpdatedDto);
-        }
-
-        async Task IEventHandler.PostVoteCreated(string postId, string userId, bool voteType)
-        {
-            var postVoteCreatedDto = new PostVoteEventDto(postId, userId, voteType);
+            var postVoteCreatedDto = new PostVoteEventDto(postId, userId);
             await _publisherService.PublishEvent("postvote-created", postVoteCreatedDto);
         }
 
-        async Task IEventHandler.PostVoteDeleted(string postId, string userId, bool voteType)
+        async Task IEventHandler.PostUpVoteRemoved(string postId, string userId)
         {
-            var postVoteDeletedDto = new PostVoteEventDto(postId, userId, voteType);
+            var postVoteDeletedDto = new PostVoteEventDto(postId, userId);
             await _publisherService.PublishEvent("postvote-deleted", postVoteDeletedDto);
         }
 
-        async Task IEventHandler.PostVoteUpdated(string postId, string userId, bool voteType)
-        {
-            var postVoteUpdatedDto = new PostVoteEventDto(postId, userId, voteType);
-            await _publisherService.PublishEvent("postvote-updated", postVoteUpdatedDto);
-        }
     }
 }
