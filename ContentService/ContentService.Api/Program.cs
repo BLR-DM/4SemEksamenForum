@@ -169,17 +169,27 @@ app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 //    .AllowAnonymous();
 
 
-app.MapPost("/content-moderated",
-        async (IModerationResultHandler handler, ContentModeratedDto dto) =>
-        {
-            Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
-            await handler.HandleModerationResultAsync(dto);
-            return Results.Ok();
-        })
+var eventGroup = app.MapGroup("/events"); //.RequireAuthorization("Internal")
+
+eventGroup.MapPost("/content-moderated",
+    async (IModerationResultHandler handler, ContentModeratedDto dto) =>
+    {
+        Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
+        await handler.HandleModerationResultAsync(dto);
+        return Results.Ok();
+    })
     .WithTopic("pubsub", "content-moderated")
     .AllowAnonymous();
 
-
+// Event
+eventGroup.MapPost("/compensate-delete-forum",
+    async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
+    {
+        await command.DeleteForumAsync(evt.AppUserId, evt.ForumId);
+        return Results.NoContent();
+    })
+    .WithTopic("pubsub", "user-subscribed-to-forum-on-creation-failed")
+    .AllowAnonymous();
 
 
 

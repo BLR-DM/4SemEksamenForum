@@ -25,10 +25,18 @@ namespace SubscriptionService.Application.Commands
         {
             var forumSub = ForumSubscription.Create(forumId, appUserId);
 
-            await _forumSubRepository.AddAsync(forumSub);
+            try
+            {
+                await _forumSubRepository.AddAsync(forumSub);
+            }
+            catch (Exception ex)
+            {
+                await _eventHandler.FailedToSubscribeUserOnForumCreation(appUserId, forumId);
+                Console.WriteLine(ex.Message);
+                throw;
+            }
 
             await _eventHandler.UserSubscribedToForum(appUserId, forumSub.Id, forumId);
-
         }
 
         async Task IForumSubCommand.DeleteAsync(int forumId, string appUserId)
