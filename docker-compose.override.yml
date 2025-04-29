@@ -112,6 +112,27 @@ services:
       - ./components/:/components
       - ./dapr/config.yaml:/dapr/config.yaml
 
+  notificationservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  notificationservice-dapr:    
+    command: >
+      ./daprd
+      --app-id notificationservice-api
+      --app-port 8080
+      --resources-path /components
+      --config /dapr/config.yaml
+    volumes:
+      - ./components/:/components
+      - ./dapr/config.yaml:/dapr/config.yaml
+
   gateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -151,3 +172,4 @@ services:
 volumes:
   rabbitmq_data:
   redis_data:
+

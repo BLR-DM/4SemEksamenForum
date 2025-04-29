@@ -12,10 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
-var app = builder.Build();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -40,6 +39,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -55,7 +56,7 @@ app.UseCloudEvents();
 
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
-app.MapPost("/notification",
+app.MapPost("/events/notification",
     async (CreateNotificationDto notificationDto, INotificationCommand command) =>
     {
         try
@@ -69,7 +70,7 @@ app.MapPost("/notification",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    });
+    }).AllowAnonymous();
 
 app.MapGet("/{userId}/notifications",
     async (string userId, INotificationQuery query) =>
