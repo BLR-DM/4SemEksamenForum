@@ -21,5 +21,10 @@ namespace PointService.Domain.Entities
             return new PointAction(action, points);
         }
 
+        public void UpdatePoints(int points)
+        {
+            Points = points;
+        }
+
     }
 }

@@ -15,14 +15,41 @@ namespace PointService.Application.Command
 
         async Task IPointActionCommand.CreatePointActionAsync(CreatePointActionDto createPointActionDto)
         {
-            var pointAction = PointAction.Create(createPointActionDto.Action, createPointActionDto.Points);
+            try
+            {
+                var pointAction = PointAction.Create(createPointActionDto.Action, createPointActionDto.Points);
 
-            await _pointActionRepository.AddAsync(pointAction);
+                await _pointActionRepository.AddAsync(pointAction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        async Task IPointActionCommand.UpdatePointActionAsync(UpdatePointActionDto updatePointActionDto)
+        {
+            try
+            {
+                var pointAction = await _pointActionRepository.GetAsync(updatePointActionDto.PointActionId);
+
+                pointAction.UpdatePoints(updatePointActionDto.NewPoints);
+
+                await _pointActionRepository.UpdateAsync(pointAction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+
         }
     }
 
     public interface IPointActionCommand
     {
         Task CreatePointActionAsync(CreatePointActionDto createPointActionDto);
+        Task UpdatePointActionAsync(UpdatePointActionDto updatePointActionDto);
     }
 }

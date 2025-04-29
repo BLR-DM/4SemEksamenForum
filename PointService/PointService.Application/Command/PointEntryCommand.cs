@@ -29,5 +29,6 @@ namespace PointService.Application.Command
     public interface IPointEntryCommand
     {
         Task CreatePointEntryAsync(CreatePointEntryDto createPointEntry, string userId);
+      
     }
 }

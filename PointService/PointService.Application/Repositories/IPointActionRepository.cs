@@ -6,5 +6,6 @@ namespace PointService.Application.Repositories
     {
         Task AddAsync(PointAction pointAction);
         Task<PointAction> GetAsync(string pointActionId);
+        Task<bool> UpdateAsync(PointAction pointAction);
     }
 }

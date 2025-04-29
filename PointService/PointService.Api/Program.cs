@@ -109,6 +109,19 @@ app.MapPost("/postvote-created", (PostVoteDto dto) =>
 
 }).WithTopic("pubsub", "postvote-created").AllowAnonymous();
 
+app.MapPut("/PointAction",
+    async (UpdatePointActionDto dto, IPointActionCommand command) =>
+    {
+        try
+        {
+            await command.UpdatePointActionAsync(dto);
+            return Results.Ok();
+        }
+        catch (Exception)
+        {
+            return Results.Problem();
+        }
+    });
 
 
 app.Run();

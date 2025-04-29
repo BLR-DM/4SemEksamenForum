@@ -23,5 +23,10 @@ namespace PointService.Infrastructure.Repositories
         {
             return await _db.PointActions.FirstOrDefaultAsync(pa => pa.Action == pointActionId);
         }
+
+        async Task<bool> IPointActionRepository.UpdateAsync(PointAction pointAction)
+        {
+            return await _db.SaveChangesAsync() > 0;
+        }
     }
 }
