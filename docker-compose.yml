@@ -90,6 +90,21 @@ services:
       rabbitmq:
         condition: service_healthy 
 
+  notificationservice-api:
+    image: ${DOCKER_REGISTRY-}notificationserviceapi
+    build:
+      context: .
+      dockerfile: NotificationService/NotificationService.Api/Dockerfile
+   
+  notificationservice-dapr:
+    image: "daprio/daprd:1.15.4"
+    network_mode: service:notificationservice-api
+    depends_on:
+      notificationservice-api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy 
+
   gateway-api:
     image: ${DOCKER_REGISTRY-}gatewayapi
     build:
@@ -112,4 +127,6 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim:latest
     container_name: zipkin
+
+
 

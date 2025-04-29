@@ -9,7 +9,8 @@
         "subscriptionservice.api": "StartDebugging",
         "voteservice.api": "StartDebugging",
         "gateway.api": "StartDebugging",
-        "pointservice.api": "StartDebugging"
+        "pointservice.api": "StartDebugging",
+        "notificationservice.api": "StartDebugging"
       }
     }
   }
