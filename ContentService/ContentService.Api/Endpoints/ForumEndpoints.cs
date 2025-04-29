@@ -73,6 +73,4 @@ namespace ContentService.Api.Endpoints
             //    }).WithTopic("pubsub", "forumToPublish");
         }
     }
-
-    public record FailedToSubscribeUserToForumEventDto(string AppUserId, int ForumId);
 }

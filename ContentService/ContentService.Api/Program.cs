@@ -155,23 +155,11 @@ app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 
-//app.MapPost("/content-moderated",
-//    async (IForumCommand command, ContentApprovedDto contentId) =>
-//    {
-//        Console.WriteLine(contentId.ContentId);
-//        var contentType = contentId.ContentId.Split(':')[0]; // Forum
-//        // If forum
-//        var publishForumDto = new PublishForumDto(14);
-//        await command.HandleForumApprovalAsync(publishForumDto);
-//        return Results.Ok();
-//    })
-//    .WithTopic("pubsub", "content-moderated")
-//    .AllowAnonymous();
 
 
-var eventGroup = app.MapGroup("/events"); //.RequireAuthorization("Internal")
+var events = app.MapGroup("/events"); //.RequireAuthorization("Internal")
 
-eventGroup.MapPost("/content-moderated",
+events.MapPost("/content-moderated",
     async (IModerationResultHandler handler, ContentModeratedDto dto) =>
     {
         Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
@@ -182,7 +170,7 @@ eventGroup.MapPost("/content-moderated",
     .AllowAnonymous();
 
 // Event
-eventGroup.MapPost("/compensate-delete-forum",
+events.MapPost("/compensate-delete-forum",
     async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
     {
         await command.DeleteForumAsync(evt.AppUserId, evt.ForumId);
@@ -192,36 +180,16 @@ eventGroup.MapPost("/compensate-delete-forum",
     .AllowAnonymous();
 
 
-
-
-
 //app.MapPost("/publish", async (DaprClient daprClient) =>
 //{
 //    await daprClient.PublishEventAsync("pubsub", "test-topic", new MessagePayload("Hello From ContentService API!"));
 //    return Results.Ok();
 //}).AllowAnonymous();
 
-
-/* Flow:
-ContentService => contentSubmitted => ContentSafetyService moderates => contentApproved => ContentService saves => contentToPublish => ContentService saves => contentPublished
-
-With workflow:
-// High-Level Overview //
-
-1. User Creates Forum → ContentService receives request.
-
-2. Triggers Workflow → WorkflowService orchestrates the process.
-
-3. Runs Content Safety Checks → ContentSafetyService validates content.
-
-4. Updates State Store → If approved, ContentService persists forum.
-
-5. Workflow Completes → Final status is updated, and forum is published.
-
-*/
 app.MapForumEndpoints();
 app.MapPostEndpoints();
 app.MapCommentEndpoints();
 
 app.Run();
-public record MessagePayload(string Text);
+
+public record FailedToSubscribeUserToForumEventDto(string AppUserId, int ForumId);
