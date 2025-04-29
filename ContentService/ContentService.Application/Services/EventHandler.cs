@@ -1,6 +1,4 @@
-﻿using ContentService.Application.EventDto.CommentEventDto;
-using ContentService.Application.EventDto.ForumEventDto;
-using ContentService.Application.EventDto.PostEventDto;
+﻿using ContentService.Application.EventDto;
 
 namespace ContentService.Application.Services
 {
@@ -34,14 +32,11 @@ namespace ContentService.Application.Services
 
         async Task IEventHandler.ForumDeleted(int forumId)
         {
-            var forumDeletedDto = new ForumDeletedDto(forumId);
+            var forumDeletedDto = new ForumEventDtos(forumId);
             await _publisherService.PublishEvent("forum-deleted", forumDeletedDto);
         }
 
-
-
         // Post
-
         async Task IEventHandler.PostSubmitted(string postId, string content)
         {
             var postSubmittedDto = new PostSubmittedDto(postId, content);
@@ -62,7 +57,7 @@ namespace ContentService.Application.Services
 
         async Task IEventHandler.PostDeleted(int forumId, int postId)
         {
-            var postDeletedDto = new PostDeletedDto(forumId, postId);
+            var postDeletedDto = new PostEventDtos(forumId, postId);
             await _publisherService.PublishEvent("post-deleted", postDeletedDto);
         }
 
@@ -87,7 +82,7 @@ namespace ContentService.Application.Services
 
         async Task IEventHandler.CommentDeleted(int forumId, int postId, int commentId)
         {
-            var commentDeletedDto = new CommentDeletedDto(forumId, postId, commentId);
+            var commentDeletedDto = new CommentEventDtos(forumId, postId, commentId);
             await _publisherService.PublishEvent("comment-deleted", commentDeletedDto);
         }
     }
@@ -108,6 +103,5 @@ namespace ContentService.Application.Services
         Task CommentPublished(string userId, int forumId, int postId, int commentId);
         Task CommentRejected(string userId, int forumId, int postId, int commentId);
         Task CommentDeleted(int forumId, int postId, int commentId);
-
     }
 }

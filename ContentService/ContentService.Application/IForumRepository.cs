@@ -9,7 +9,7 @@ namespace ContentService.Application
         Task<Forum> GetForumOnlyAsync(int forumId);
         Task<Forum> GetForumAsync(int id);
         Task<Forum> GetForumWithSinglePostAsync(int forumId, int postId);
-        void DeleteForum(Forum forum, uint rowVersion);
+        void DeleteForum(Forum forum);
         void UpdatePost(Post post, uint rowVersion);
         void DeletePost(Post post, uint rowVersion);
         void UpdateComment(Comment comment, uint rowVersion);

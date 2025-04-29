@@ -11,7 +11,7 @@ namespace ContentService.Application.Commands.Interfaces
         Task HandleForumApprovalAsync(PublishForumDto forumDto);
         Task HandleForumRejectionAsync(RejectForumDto forumDto);
         Task HandlePostApprovalAsync(PublishPostDto postDto);
-        Task DeleteForumAsync(DeleteForumDto forumDto, string appUserId, int forumId);
+        Task DeleteForumAsync(string appUserId, int forumId);
 
         // Post
         Task CreatePostAsync(CreatePostDto postDto, string username, string appUserId, int forumId);

@@ -54,6 +54,7 @@ namespace ContentService.Application.Commands
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -231,7 +232,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IForumCommand.DeleteForumAsync(DeleteForumDto forumDto, string appUserId, int forumId)
+        async Task IForumCommand.DeleteForumAsync(string appUserId, int forumId)
         {
             try
             {
@@ -242,7 +243,7 @@ namespace ContentService.Application.Commands
 
                 // Do
                 forum.Delete(appUserId);
-                _forumRepository.DeleteForum(forum, forumDto.RowVersion);
+                _forumRepository.DeleteForum(forum);
 
                 // Save
                 await _unitOfWork.Commit();

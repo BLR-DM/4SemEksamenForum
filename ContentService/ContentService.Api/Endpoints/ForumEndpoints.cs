@@ -2,8 +2,6 @@
 using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Application.Queries;
-using ContentService.Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ContentService.Api.Endpoints
 {
@@ -54,10 +52,10 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}", // check appUserId / moderator
-                async (IForumCommand command, [FromBody] DeleteForumDto forumDto, string appUserId, int forumId) =>
+                async (IForumCommand command, string appUserId, int forumId) =>
                 {
-                    await command.DeleteForumAsync(forumDto, appUserId, forumId);
-                    return Results.Ok("Forum deleted");
+                    await command.DeleteForumAsync(appUserId, forumId);
+                    return Results.NoContent();
                 }).WithTags(tag);
 
             //app.MapPost("/forum/approved",
