@@ -173,7 +173,7 @@ events.MapPost("/content-moderated",
 events.MapPost("/compensate-delete-forum",
     async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
     {
-        await command.DeleteForumAsync(evt.AppUserId, evt.ForumId);
+        await command.DeleteForumAsync(evt.UserId, evt.ForumId);
         return Results.NoContent();
     })
     .WithTopic("pubsub", "user-subscribed-to-forum-on-creation-failed")
@@ -192,4 +192,4 @@ app.MapCommentEndpoints();
 
 app.Run();
 
-public record FailedToSubscribeUserToForumEventDto(string AppUserId, int ForumId);
+public record FailedToSubscribeUserToForumEventDto(string UserId, int ForumId);
