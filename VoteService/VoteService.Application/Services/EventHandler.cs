@@ -12,28 +12,40 @@ namespace VoteService.Application.Services
             _publisherService = publisherService;
         }
 
+        async Task IEventHandler.CommentDownVoteCreated(string commentId, string userId)
+        {
+            var commentVoteCreatedDto = new CommentVoteEventDto(commentId, userId);
+            await _publisherService.PublishEvent("comment-downvote-created", commentVoteCreatedDto);
+        }
+
         async Task IEventHandler.CommentUpVoteCreated(string commentId, string userId)
         {
             var commentVoteCreatedDto = new CommentVoteEventDto(commentId, userId);
-            await _publisherService.PublishEvent("commentvote-created", commentVoteCreatedDto);
+            await _publisherService.PublishEvent("comment-upvote-created", commentVoteCreatedDto);
         }
 
         async Task IEventHandler.CommentUpVoteRemoved(string commentId, string userId)
         {
             var commentVoteDeletedDto = new CommentVoteEventDto(commentId, userId);
-            await _publisherService.PublishEvent("commentvote-deleted", commentVoteDeletedDto);
+            await _publisherService.PublishEvent("comment-upvote-deleted", commentVoteDeletedDto);
+        }
+
+        async Task IEventHandler.PostDownVoteCreated(string postId, string userId)
+        {
+            var postVoteCreatedDto = new PostVoteEventDto(postId, userId);
+            await _publisherService.PublishEvent("post-downvote-created", postVoteCreatedDto);
         }
 
         async Task IEventHandler.PostUpVoteCreated(string postId, string userId)
         {
             var postVoteCreatedDto = new PostVoteEventDto(postId, userId);
-            await _publisherService.PublishEvent("postvote-created", postVoteCreatedDto);
+            await _publisherService.PublishEvent("post-upvote-created", postVoteCreatedDto);
         }
 
         async Task IEventHandler.PostUpVoteRemoved(string postId, string userId)
         {
             var postVoteDeletedDto = new PostVoteEventDto(postId, userId);
-            await _publisherService.PublishEvent("postvote-deleted", postVoteDeletedDto);
+            await _publisherService.PublishEvent("post-upvote-deleted", postVoteDeletedDto);
         }
 
     }

@@ -29,10 +29,19 @@ public class PostVoteCommand : IPostVoteCommand
                 {
                     await _eventHandler.PostUpVoteCreated(postId, dto.UserId); 
                 }
+                else
+                {
+                    await _eventHandler.PostDownVoteCreated(postId, dto.UserId);
+                }
                 break;
+
             case VoteAction.Deleted:
-                await _eventHandler.PostUpVoteRemoved(postId, dto.UserId);
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.PostUpVoteRemoved(postId, dto.UserId); 
+                }
                 break;
+
             case VoteAction.Updated:
                 if (dto.VoteType == true)
                 {
@@ -40,7 +49,7 @@ public class PostVoteCommand : IPostVoteCommand
                 }
                 else
                 {
-                    await _eventHandler.PostUpVoteRemoved(postId, dto.UserId);
+                    await _eventHandler.PostDownVoteCreated(postId, dto.UserId);
                 }
                 break;
         }
