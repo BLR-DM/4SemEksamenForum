@@ -1,9 +1,14 @@
+using System.Text.Json;
+using Dapr;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using NotificationService.Application;
 using NotificationService.Application.Commands.CommandDto;
 using NotificationService.Application.Commands.Interfaces;
+using NotificationService.Application.EventDtos;
+using NotificationService.Application.Factories.Interfaces;
 using NotificationService.Application.Queries;
 using NotificationService.Infrastructure;
 
@@ -57,11 +62,15 @@ app.UseCloudEvents();
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
 app.MapPost("/events/notification",
-    async (CreateNotificationDto notificationDto, INotificationCommand command) =>
+    async (EventDto dto, HttpRequest request, INotificationMessageFactory messageFactory, INotificationCommand command) =>
     {
         try
         {
-            await command.CreateNotificationAsync(notificationDto.userId, notificationDto.Message);
+            var topic = request.Headers["ce-type"].FirstOrDefault();
+
+            var message = await messageFactory.BuildMessageAsync(topic, dto);
+
+            await command.CreateNotificationAsync(dto.UserId, message);
 
             return Results.Created();
         }
@@ -70,7 +79,15 @@ app.MapPost("/events/notification",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    }).AllowAnonymous();
+    })
+    .WithTopic("pubsub", "post-published")
+    .WithTopic("pubsub", "comment-published")
+    .WithTopic("pubsub", "post-rejected")
+    .WithTopic("pubsub", "comment-rejected")
+    .WithTopic("pubsub", "post-upvote-created")
+    .WithTopic("pubsub", "post-downvote-created")
+    .WithTopic("pubsub", "comment-upvote-created")
+    .WithTopic("pubsub", "comment-downvote-created");
 
 app.MapGet("/{userId}/notifications",
     async (string userId, INotificationQuery query) =>
@@ -87,6 +104,39 @@ app.MapGet("/{userId}/notifications",
         }
     });
 
+//app.MapPost("/events/post-published",
+//    async (PostPublishedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
+//    {
+//        try
+//        {
+//            var message = messageFactory.Build(dto);
+
+//            await command.CreateNotificationAsync(dto.UserId, message);
+
+//            return Results.Created();
+//        }
+//        catch (Exception ex)
+//        {
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "post-published");
+
+//app.MapPost("events/comment-published",
+//    async (CommentPublishedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
+//    {
+//        try
+//        {
+//            var message = messageFactory.Build(dto);
+
+//            await command.CreateNotificationAsync(dto.UserId, message);
+
+//            return Results.Created();
+//        }
+//        catch (Exception ex)
+//        {
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "comment-published");
 
 app.Run();
 
