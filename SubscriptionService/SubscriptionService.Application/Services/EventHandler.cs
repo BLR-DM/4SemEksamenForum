@@ -43,6 +43,33 @@ namespace SubscriptionService.Application.Services
             var evtDto = new UserUnSubscribedToPostEventDto(userId, subscriptionId);
             await _publisherService.PublishEvent("user-unsubscribed-from-post", evtDto);
         }
+
+
+        // Event
+        async Task IEventHandler.PublishForumNotificationRequest(int forumId, int postId)
+        {
+            var evtDto = new NotifyForumSubscriberEventDto(forumId, postId);
+            await _publisherService.PublishEvent("forum-notification-requested", evtDto); // Internal
+        }
+        
+        async Task IEventHandler.PublishPostNotificationRequest(int forumId, int postId)
+        {
+            var evtDto = new NotifyPostSubscriberEventDto(forumId, postId);
+            await _publisherService.PublishEvent("post-notification-requested", evtDto); // Internal
+        }
+
+        async Task IEventHandler.PublishNotifyForumSubscriber(string userId, int forumId, int postId)
+        {
+            var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
+            await _publisherService.PublishEvent("notify-forum-subscriber", evtDto); // <- NotificationService listens
+        }
+
+        async Task IEventHandler.PublishNotifyPostSubscriber(string userId, int forumId, int postId)
+        {
+            var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
+            await _publisherService.PublishEvent("notify-post-subscriber", evtDto); // <- NotificationService listens
+        }
+
     }
 
     public interface IEventHandler
@@ -52,5 +79,10 @@ namespace SubscriptionService.Application.Services
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
         Task UserUnsubscribedFromForum(string userId, int subscriptionId);
         Task UserUnsubscribedFromPost(string userId, int subscriptionId);
+
+        Task PublishForumNotificationRequest(int forumId, int postId);
+        Task PublishPostNotificationRequest(int forumId, int postId);
+        Task PublishNotifyForumSubscriber(string userId, int forumId, int postId);
+        Task PublishNotifyPostSubscriber(string userId, int forumId, int postId);
     }
 }
