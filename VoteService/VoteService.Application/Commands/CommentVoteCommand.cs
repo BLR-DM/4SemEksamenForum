@@ -30,10 +30,20 @@ public class CommentVoteCommand : ICommentVoteCommand
                 {
                     await _eventHandler.CommentUpVoteCreated(commentId, dto.UserId); 
                 }
+                else
+                {
+                    await _eventHandler.CommentDownVoteCreated(commentId, dto.UserId);
+                }
                 break;
+
             case VoteAction.Deleted:
-                await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
+
+                if (dto.VoteType == true)
+                {
+                    await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
+                }
                 break;
+
             case VoteAction.Updated:
                 if (dto.VoteType == true)
                 {
@@ -41,7 +51,7 @@ public class CommentVoteCommand : ICommentVoteCommand
                 }
                 else
                 {
-                    await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
+                    await _eventHandler.CommentDownVoteCreated(commentId, dto.UserId);
                 }
                 break;
         }
