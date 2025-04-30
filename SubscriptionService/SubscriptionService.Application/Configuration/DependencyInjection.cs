@@ -13,8 +13,6 @@ namespace SubscriptionService.Application.Configuration
             services.AddScoped<IForumSubCommand, ForumSubCommand>();
             services.AddScoped<IPostSubCommand, PostSubCommand>();
             services.AddScoped<IEventHandler, EventHandler>();
-            services.AddScoped<IPostPublishedHandler, PostPublishedHandler>();
-            services.AddScoped<ICommentPublishedHandler, CommentPublishedHandler>();
 
             return services;
         }

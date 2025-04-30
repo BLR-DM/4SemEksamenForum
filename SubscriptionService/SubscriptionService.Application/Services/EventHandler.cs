@@ -46,28 +46,10 @@ namespace SubscriptionService.Application.Services
 
 
         // Event
-        async Task IEventHandler.PublishForumNotificationRequest(int forumId, int postId)
+        async Task IEventHandler.RequestedForumSubscribersCollected(IEnumerable<string> userIds, int forumId, int postId)
         {
-            var evtDto = new NotifyForumSubscriberEventDto(forumId, postId);
-            await _publisherService.PublishEvent("forum-notification-requested", evtDto); // Internal
-        }
-        
-        async Task IEventHandler.PublishPostNotificationRequest(int forumId, int postId)
-        {
-            var evtDto = new NotifyPostSubscriberEventDto(forumId, postId);
-            await _publisherService.PublishEvent("post-notification-requested", evtDto); // Internal
-        }
-
-        async Task IEventHandler.NotifyForumSubscriber(string userId, int forumId, int postId)
-        {
-            var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
-            await _publisherService.PublishEvent("notify-forum-subscriber", evtDto); // <- NotificationService listens
-        }
-
-        async Task IEventHandler.NotifyPostSubscriber(string userId, int forumId, int postId)
-        {
-            var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
-            await _publisherService.PublishEvent("notify-post-subscriber", evtDto); // <- NotificationService listens
+            var evtDto = new RequestedForumSubscribersCollectedEventDto(userIds, forumId, postId);
+            await _publisherService.PublishEvent("requested-forum-subscribers-collected", evtDto); // <- NotificationService listens
         }
 
     }
@@ -80,9 +62,6 @@ namespace SubscriptionService.Application.Services
         Task UserUnsubscribedFromForum(string userId, int subscriptionId);
         Task UserUnsubscribedFromPost(string userId, int subscriptionId);
 
-        Task PublishForumNotificationRequest(int forumId, int postId);
-        Task PublishPostNotificationRequest(int forumId, int postId);
-        Task NotifyForumSubscriber(string userId, int forumId, int postId);
-        Task NotifyPostSubscriber(string userId, int forumId, int postId);
+        Task RequestedForumSubscribersCollected(IEnumerable<string> userIds, int forumId, int postId);
     }
 }
