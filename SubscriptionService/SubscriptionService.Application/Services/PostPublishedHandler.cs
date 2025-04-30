@@ -37,7 +37,7 @@ namespace SubscriptionService.Application.Services
             //    await _eventHandler.PublishNotifySubscriber(sub, evtDto.ForumId, evtDto.PostId);
 
             var tasks = subscribers.Select(sub =>
-                _eventHandler.PublishNotifyForumSubscriber(sub, evtDto.ForumId, evtDto.PostId));
+                _eventHandler.NotifyForumSubscriber(sub, evtDto.ForumId, evtDto.PostId));
 
             await Task.WhenAll(tasks);
         }

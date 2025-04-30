@@ -58,13 +58,13 @@ namespace SubscriptionService.Application.Services
             await _publisherService.PublishEvent("post-notification-requested", evtDto); // Internal
         }
 
-        async Task IEventHandler.PublishNotifyForumSubscriber(string userId, int forumId, int postId)
+        async Task IEventHandler.NotifyForumSubscriber(string userId, int forumId, int postId)
         {
             var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
             await _publisherService.PublishEvent("notify-forum-subscriber", evtDto); // <- NotificationService listens
         }
 
-        async Task IEventHandler.PublishNotifyPostSubscriber(string userId, int forumId, int postId)
+        async Task IEventHandler.NotifyPostSubscriber(string userId, int forumId, int postId)
         {
             var evtDto = new SubscriberNotificationEventDto(userId, forumId, postId);
             await _publisherService.PublishEvent("notify-post-subscriber", evtDto); // <- NotificationService listens
@@ -82,7 +82,7 @@ namespace SubscriptionService.Application.Services
 
         Task PublishForumNotificationRequest(int forumId, int postId);
         Task PublishPostNotificationRequest(int forumId, int postId);
-        Task PublishNotifyForumSubscriber(string userId, int forumId, int postId);
-        Task PublishNotifyPostSubscriber(string userId, int forumId, int postId);
+        Task NotifyForumSubscriber(string userId, int forumId, int postId);
+        Task NotifyPostSubscriber(string userId, int forumId, int postId);
     }
 }
