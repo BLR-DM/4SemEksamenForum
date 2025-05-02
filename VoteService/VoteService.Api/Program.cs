@@ -1,5 +1,6 @@
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
@@ -145,7 +146,7 @@ app.MapGet("Post/{postId}/Votes",
     });
 
 app.MapPost("Post/Votes",
-    async (List<string> postIds, IPostVoteQuery query) =>
+    async ([FromBody] List<string> postIds, IPostVoteQuery query) =>
     {
         try
         {
