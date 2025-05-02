@@ -20,7 +20,7 @@ namespace NotificationService.Application.Services
 
         Task IEventHandler.ForumSubscribersNotified(IEnumerable<string> userIds, int forumId, int postId)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); 
         }
     }
 
