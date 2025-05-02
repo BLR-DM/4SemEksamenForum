@@ -3,23 +3,32 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using WebService;
+using WebService.Proxies;
+using WebService.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("GateWayApi",
-        client => client.BaseAddress = new Uri("https://localhost:5000"))
-    .AddHttpMessageHandler(sp =>
-    {
-        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(
-                authorizedUrls: ["https://localhost:5000"]);
-    
-        return handler;
-    });
+//builder.Services.AddHttpClient("GatewayApi",
+//        client => client.BaseAddress = new Uri("http://localhost:5000"))
+//    .AddHttpMessageHandler(sp =>
+//    {
+//        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+//            .ConfigureHandler(
+//                authorizedUrls: ["http://localhost:5000"]);
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("GateWayApi"));
+//        return handler;
+//    });
+
+builder.Services.AddHttpClient("GatewayApi",
+        client => client.BaseAddress = new Uri("http://localhost:5000"));
+
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("GatewayApi"));
+
+builder.Services.AddScoped<IApiProxy, ApiProxy>();
+
+builder.Services.AddScoped<IForumService, ForumService>();
 
 
 builder.Services.AddOidcAuthentication(options =>

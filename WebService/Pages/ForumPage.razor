@@ -1,0 +1,38 @@
+﻿@page "/forum/{ForumName}"
+@inject IForumService ForumService;
+
+<div class="content-wrapper">
+    @if(Forum != null)
+    {
+        foreach (var shortPost in Forum.Posts)
+        {
+            <ShortPostComponent Post="shortPost" />
+        }
+    }
+</div>
+
+@code {
+    [Parameter] 
+    public string ForumName { get; set; } = string.Empty;
+
+    public ForumViewShort? Forum { get; set; }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        Forum = await ForumService.GetForumWithPostsShort(ForumName);
+    }
+
+
+}
+
+<style>
+.content-wrapper{
+    max-width: 900px;
+    position: relative;
+    margin: 0 auto;
+    padding: 1rem;
+    box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
+    background-color: white;
+}
+
+</style>

@@ -36,6 +36,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowWebService",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5221") // Din Blazor-klients adresse
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -47,43 +57,44 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseCors("AllowWebService");
+
 app.MapGet("/api/Forum/{forumName}/posts", async (string forumName, HttpClient httpClient) =>
 {
+    // Get Forum with Posts and Comments
     var forumRequestUri = $"http://contentservice-api:8080/forum/{forumName}/posts";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
+    if (forum == null) return Results.NotFound("Forum not found");
+    
+    // Get PostVotes for each post in forum
+    var postVoteList = new List<PostVoteListDto>();
+
+    var postVotesRequestUri = $"http://voteservice-api:8080/post/votes";
     var postIds = forum.Posts.Select(p => p.Id).ToList();
 
-    //var votes = await client.InvokeMethodAsync<object, IEnumerable<GetPostVotesDto>>(
-    //    HttpMethod.Post, "voteservice-dapr", "/posts/votes", voteRequest);
+    var response = await httpClient.PostAsJsonAsync(postVotesRequestUri, postIds);
 
-    var votesRequestUri = $"http://voteservice-api:8080/post/votes";
-    var response = await httpClient.PostAsJsonAsync(votesRequestUri, postIds);
+    if (!response.IsSuccessStatusCode) return Results.BadRequest("Failed to get PostVotes");
 
-    if (response.IsSuccessStatusCode)
+    postVoteList = await response.Content.ReadFromJsonAsync<List<PostVoteListDto>>();
+
+
+    // Map PostVotes to Posts
+    if (postVoteList != null)
     {
+        foreach (var post in forum.Posts)
+        {
+            post.Votes = postVoteList.FirstOrDefault(pv => pv.PostId == post.Id)?.PostVotes ?? null;
 
+        }
     }
-
-    var votes = await response.Content.ReadFromJsonAsync<IEnumerable<GetPostVotesDto>>();
-
-    //var votes = await httpClient.GetFromJsonAsync<IEnumerable<GetPostVotesDto>>(votesRequestUri);
-
-    foreach (var post in forum.Posts)
-    {
-        post.Votes = votes.FirstOrDefault(pv => pv.PostId == post.Id)?.PostVotes ?? null;
-
-    }
+    
+    //GET VOTES FOR COMMENT
 
     return Results.Ok(forum);
 
-    //get forum + posts from contentservice
-    //get votes from voteservice
 });
-
-//app.MapGet("/api/Forum/{forumId}/posts", (int forumId) => {
-//    return "hello";
-//});
 
 app.UseAuthentication();
 app.UseAuthorization();

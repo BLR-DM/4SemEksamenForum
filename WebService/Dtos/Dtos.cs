@@ -1,4 +1,4 @@
-﻿namespace Gateway.Api.Dtos
+﻿namespace WebService.Dtos
 {
     public record ForumDto
     {
@@ -29,13 +29,6 @@
         public string Content { get; set; }
         public string CreatedDate { get; set; }
         public string AppUserId { get; set; }
-    }
-
-
-    public record PostVoteListDto
-    {
-        public string PostId { get; set; }
-        public List<PostVoteDto> PostVotes { get; set; }
     }
 
     public record PostVoteDto
