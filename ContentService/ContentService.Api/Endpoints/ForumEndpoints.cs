@@ -29,13 +29,20 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(result);
                 }).WithTags(tag);
 
-            app.MapGet("/forum/{forumId}/posts",
-                async (IForumQuery query, int forumId) =>
+            //app.MapGet("/forum/{forumId}/posts",
+            //    async (IForumQuery query, int forumId) =>
+            //    {
+            //        var result = await query.GetForumWithPostsAsync(forumId);
+            //        return Results.Ok(result);
+            //    }).WithTags(tag);
+
+            app.MapGet("/forum/{forumName}/posts",
+                async (IForumQuery query, string forumName) =>
                 {
-                    var result = await query.GetForumWithPostsAsync(forumId);
+                    var result = await query.GetForumByNameWithPostsAsync(forumName);
                     return Results.Ok(result);
                 }).WithTags(tag);
-            
+
             // Write
             app.MapPost("/forum",
                 async (IForumCommand command, CreateForumDto forumDto, string appUserId) =>

@@ -40,6 +40,16 @@ namespace ContentService.Infrastructure.Queries
             return _forumMapper.MapToDtoWithAll(forum);
         }
 
+        async Task<ForumDto> IForumQuery.GetForumByNameWithPostsAsync(string forumName)
+        {
+            var forum = await _db.Forums.AsNoTracking()
+                .Include(f => f.Posts)
+                .ThenInclude(p => p.Comments)
+                .FirstAsync(f => f.ForumName.Equals(forumName));
+
+            return _forumMapper.MapToDtoWithAll(forum);
+        }
+
         async Task<ForumDto> IForumQuery.GetForumWithSinglePostAsync(int forumId, int postId)
         {
             var forum = await _db.Forums.AsNoTracking()
