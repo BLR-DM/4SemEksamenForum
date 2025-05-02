@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Dapr;
+using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -10,6 +11,7 @@ using NotificationService.Application.Commands.Interfaces;
 using NotificationService.Application.EventDtos;
 using NotificationService.Application.Factories.Interfaces;
 using NotificationService.Application.Queries;
+using NotificationService.Application.Services;
 using NotificationService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-
+builder.Services.AddDaprClient();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -80,7 +82,7 @@ app.MapPost("/events/notification",
             return Results.Problem(ex.Message);
         }
     })
-    .WithTopic("pubsub", "post-published")
+    //.WithTopic("pubsub", "post-published")
     .WithTopic("pubsub", "comment-published")
     .WithTopic("pubsub", "post-rejected")
     .WithTopic("pubsub", "comment-rejected")
@@ -88,6 +90,8 @@ app.MapPost("/events/notification",
     .WithTopic("pubsub", "post-downvote-created")
     .WithTopic("pubsub", "comment-upvote-created")
     .WithTopic("pubsub", "comment-downvote-created");
+
+
 
 app.MapGet("/{userId}/notifications",
     async (string userId, INotificationQuery query) =>
@@ -104,22 +108,30 @@ app.MapGet("/{userId}/notifications",
         }
     });
 
-//app.MapPost("/events/post-published",
-//    async (PostPublishedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
-//    {
-//        try
-//        {
-//            var message = messageFactory.Build(dto);
+app.MapPost("/events/post-published",
+    async (PostPublishedEventDto dto, IEventHandler eventHandler) =>
+    {
+        try
+        {
+            await eventHandler.ForumSubscribersRequested(dto.ForumId, dto.PostId);
 
-//            await command.CreateNotificationAsync(dto.UserId, message);
+            return Results.Accepted();
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+    }).WithTopic("pubsub", "post-published");
 
-//            return Results.Created();
-//        }
-//        catch (Exception ex)
-//        {
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "post-published");
+app.MapPost("/events/requested-forum-subscribers-collected",
+    async (RequestedForumSubscribersCollectedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
+    {
+        var message = messageFactory.BuildForPostPublished(dto);
+
+        var tasks = dto.UserIds.Select(userId => command.CreateNotificationAsync(userId, message));
+        await Task.WhenAll(tasks);
+
+    }).WithTopic("pubsub", "requested-forum-subscribers-collected");
 
 //app.MapPost("events/comment-published",
 //    async (CommentPublishedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>

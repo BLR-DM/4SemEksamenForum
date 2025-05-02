@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using SubscriptionService.Application.Commands;
 using SubscriptionService.Application.Commands.CommandDto;
 using SubscriptionService.Application.Commands.Interfaces;
 using SubscriptionService.Application.Configuration;
 using SubscriptionService.Application.Dto;
+using SubscriptionService.Application.EventDto;
 using SubscriptionService.Application.Queries.Interfaces;
+using SubscriptionService.Application.Services;
 using SubscriptionService.Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -155,12 +158,13 @@ app.MapPost("/Posts/{postId}/Subscriptions",
     });
 
 app.MapPost("/events/post-published",
-    async (PostPublishedDto evtDto, IPostSubCommand postCommand, IForumSubCommand forumCommand) =>
+    async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand) =>
     {
         try
         {
-            await postCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
-            await forumCommand.CreateAsync(evtDto.ForumId, evtDto.UserId);
+            await forumSubCommand.CreateAsync(evtDto.ForumId, evtDto.UserId);
+            await postSubCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
+
             return Results.Ok();
         }
         catch (Exception ex)
@@ -170,20 +174,60 @@ app.MapPost("/events/post-published",
         }
     }).WithTopic("pubsub", "post-published");
 
-app.MapPost("/events/comment-published",
-    async (CommentPublishedDto evtDto, IPostSubCommand postCommand) =>
+
+app.MapPost("/events/forum-subscribers-requested",
+    async (ForumSubscribersRequestedEventDto evtDto, IForumSubQuery query, IEventHandler eventHandler) =>
     {
-        try
-        {
-            await postCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    }).WithTopic("pubsub", "comment-published");
+        var userIds = await query.GetSubscriptionsByForumIdAsync(evtDto.ForumId);
+        await eventHandler.RequestedForumSubscribersCollected(userIds, evtDto.ForumId, evtDto.PostId);
+
+    }).WithTopic("pubsub", "forum-subscribers-requested");
+
+//app.MapPost("/events/notify-forum-subscribers",
+//    async (NotifyForumSubscriberEventDto evtDto, IPostPublishedHandler handler) =>
+//    {
+//        try
+//        {
+//            await handler.HandlePostPublishedNotification(evtDto);
+//            return Results.Ok();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "forum-notification-requested");
+
+
+//app.MapPost("/events/comment-published",
+//    async (CommentPublishedDto evtDto, ICommentPublishedHandler handler) =>
+//    {
+//        try
+//        {
+//            await handler.HandleCommentPublished(evtDto);
+//            return Results.Ok();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "comment-published");
+
+//app.MapPost("/events/notify-post-subscribers",
+//    async (NotifyPostSubscriberEventDto evtDto, ICommentPublishedHandler handler) =>
+//    {
+//        try
+//        {
+//            await handler.HandleCommentPublishedNotification(evtDto);
+//            return Results.Ok();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "post-notification-requested");
 
 app.MapDelete("/Forums/{forumId}/Subscriptions",
     async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
@@ -281,5 +325,3 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions/", async (string appUserId, I
 app.Run();
 
 public record ForumPublishedDto(string UserId, int ForumId);
-public record PostPublishedDto(string UserId, int ForumId, int PostId);
-public record CommentPublishedDto(string UserId, int PostId);

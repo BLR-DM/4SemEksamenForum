@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SubscriptionService.Application.Commands;
 using SubscriptionService.Application.Commands.Interfaces;
 using SubscriptionService.Application.Services;
+using EventHandler = SubscriptionService.Application.Services.EventHandler;
 
 namespace SubscriptionService.Application.Configuration
 {
@@ -16,7 +12,7 @@ namespace SubscriptionService.Application.Configuration
         {
             services.AddScoped<IForumSubCommand, ForumSubCommand>();
             services.AddScoped<IPostSubCommand, PostSubCommand>();
-            services.AddScoped<IEventHandler, SubscriptionService.Application.Services.EventHandler>();
+            services.AddScoped<IEventHandler, EventHandler>();
 
             return services;
         }

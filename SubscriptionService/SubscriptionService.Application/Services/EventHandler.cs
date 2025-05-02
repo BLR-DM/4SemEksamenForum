@@ -43,6 +43,15 @@ namespace SubscriptionService.Application.Services
             var evtDto = new UserUnSubscribedToPostEventDto(userId, subscriptionId);
             await _publisherService.PublishEvent("user-unsubscribed-from-post", evtDto);
         }
+
+
+        // Event
+        async Task IEventHandler.RequestedForumSubscribersCollected(IEnumerable<string> userIds, int forumId, int postId)
+        {
+            var evtDto = new RequestedForumSubscribersCollectedEventDto(userIds, forumId, postId);
+            await _publisherService.PublishEvent("requested-forum-subscribers-collected", evtDto); // <- NotificationService listens
+        }
+
     }
 
     public interface IEventHandler
@@ -52,5 +61,7 @@ namespace SubscriptionService.Application.Services
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
         Task UserUnsubscribedFromForum(string userId, int subscriptionId);
         Task UserUnsubscribedFromPost(string userId, int subscriptionId);
+
+        Task RequestedForumSubscribersCollected(IEnumerable<string> userIds, int forumId, int postId);
     }
 }

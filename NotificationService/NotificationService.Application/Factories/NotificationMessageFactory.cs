@@ -9,24 +9,18 @@ namespace NotificationService.Application.Factories
         async Task<string> INotificationMessageFactory.BuildMessageAsync(string topic, EventDto dto)
         {
             return topic switch
-            {
-                "post-published" => await BuildForPostPublished(dto),
-                "comment-published" => await BuildForCommentPublished(dto),
-                "post-rejected" => await BuildForPostRejected(dto),
+            { 
+               "post-rejected" => await BuildForPostRejected(dto),
                 "comment-rejected" => await BuildForCommentRejected(dto),
-                "post-upvote-created" => await BuildForPostUpvoteCreated(dto),
-                "post-downvote-created" => await BuildForPostDownVoteCreated(dto),
-                "comment-upvote-created" => await BuildForCommentUpvoteCreated(dto),
-                "comment-downvote-created" => await BuildForCommentDownvoteCreated(dto),
 
                 _ => await Task.FromResult("Unknown event")
             };
 
         }
 
-        private Task<string> BuildForPostPublished(EventDto dto)
+        public string BuildForPostPublished(RequestedForumSubscribersCollectedEventDto dto)
         {
-            return Task.FromResult($"A post with ID {dto.PostId} has been published in forum {dto.ForumId}");
+            return $"A post with ID {dto.PostId} has been published in forum {dto.ForumId}";
         }
 
         private Task<string> BuildForCommentPublished(EventDto dto)

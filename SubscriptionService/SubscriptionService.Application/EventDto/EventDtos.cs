@@ -9,4 +9,18 @@
     public record UserUnSubscribedToForumEventDto(string UserId, int SubscriptionId);
 
     public record UserUnSubscribedToPostEventDto(string UserId, int SubscriptionId);
+
+    public record NotifyForumSubscriberEventDto(int ForumId, int PostId);
+
+    public record PostPublishedDto(string UserId, int ForumId, int PostId);
+
+    public record NotifyPostSubscriberEventDto(int ForumId, int PostId);
+
+    public record CommentPublishedDto(string UserId, int ForumId, int PostId, int CommentId);
+
+    public record SubscriberNotificationEventDto(string UserId, int ForumId, int PostId);
+
+    public record ForumSubscribersRequestedEventDto(int ForumId, int PostId);
+
+    public record RequestedForumSubscribersCollectedEventDto(IEnumerable<string> UserIds, int ForumId, int PostId);
 }
