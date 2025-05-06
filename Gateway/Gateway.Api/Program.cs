@@ -59,7 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowWebService");
 
-app.MapGet("/api/Forum/{forumName}/posts", async (string forumName, HttpClient httpClient) =>
+app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient httpClient) =>
 {
     // Get Forum with Posts and Comments
     var forumRequestUri = $"http://contentservice-api:8080/forum/{forumName}/posts";
@@ -95,6 +95,8 @@ app.MapGet("/api/Forum/{forumName}/posts", async (string forumName, HttpClient h
     return Results.Ok(forum);
 
 });
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

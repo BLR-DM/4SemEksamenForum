@@ -2,12 +2,18 @@
 @inject IForumService ForumService;
 
 <div class="content-wrapper">
-    @if(Forum != null)
+    @if(Forum != null && Forum.Posts.Count != 0)
     {
         foreach (var shortPost in Forum.Posts)
         {
-            <ShortPostComponent Post="shortPost" />
+            <div class="post-wrapper">
+                <ShortPostComponent Post="shortPost" />
+            </div>
         }
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-info">@ErrorMessage</div>
     }
 </div>
 
@@ -15,17 +21,32 @@
     [Parameter] 
     public string ForumName { get; set; } = string.Empty;
 
+    public string ErrorMessage { get; set; } = string.Empty;
+
     public ForumViewShort? Forum { get; set; }
 
-    protected async override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        ErrorMessage = string.Empty;
         Forum = await ForumService.GetForumWithPostsShort(ForumName);
+        if (Forum == null)
+        {
+            ErrorMessage = "Forum not found";
+        }
+        else if (Forum.Posts.Count == 0)
+        {
+            ErrorMessage = "Forum doesn't have any posts";
+        }
     }
 
 
 }
 
 <style>
+.post-wrapper{
+    box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
+    margin-bottom: 10px;
+}
 .content-wrapper{
     max-width: 900px;
     position: relative;

@@ -14,7 +14,7 @@ namespace WebService.Proxies
 
         async Task<ForumDto> IApiProxy.GetForumWithPosts(string forumName)
         {
-            var forumRequestUri = $"/api/forum/{forumName}/posts";
+            var forumRequestUri = $"/api/forums/{forumName}/posts";
 
             var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 

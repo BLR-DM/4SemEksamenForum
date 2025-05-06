@@ -1,10 +1,92 @@
 ﻿@using WebService.Views
 
-<div> 
-    @Post.Username
+<div class="short-post">
+    <div class="header">
+        <span class="header-left">@Post.Username</span>
+        <span class="header-right">@Post.CreatedDate</span>
+    </div>
+    
+    <div class="title">
+        @Post.Title
+    </div>
+    
+    <div class="post-content">
+        @Post.Content
+    </div>
+    
+    <div class="interactions">
+        <div class="vote">
+            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
+            <span>@Post.UpVotesCount</span>
+            <i class="bi bi-hand-thumbs-down" style="cursor: pointer;"></i>
+            <span>@Post.DownVotesCount</span>
+        </div>
+        <div class="comments">
+            <i class="bi bi-chat-left-text"></i>
+            <span>@Post.CommentsCount</span>
+        </div>
+    </div>
+
 </div>
+
 
 @code {
     [Parameter]
     public PostViewShort Post { get; set; }
+
+
 }
+
+<style>
+    .short-post{
+        padding: 10px;
+    }
+
+    .short-post h4 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    
+    .header{
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .header-left{
+        font-size: 10px;
+    }
+
+    .post-content{
+
+    }
+
+    .header-right{
+        font-size: 12px;   
+    }
+
+    .title{
+        font-weight: bold;
+    }
+    .interactions{
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .vote, .comments {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .bi {
+        font-size: 1.2rem;
+    }
+
+        .bi:hover {
+            color: #0d6efd;
+        }
+
+</style>

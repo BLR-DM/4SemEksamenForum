@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -29,6 +30,8 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddScoped<IApiProxy, ApiProxy>();
 
 builder.Services.AddScoped<IForumService, ForumService>();
+
+builder.Services.AddScoped<IContentServiceProxy, ContentServiceProxy>();
 
 
 builder.Services.AddOidcAuthentication(options =>

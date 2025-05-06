@@ -1,31 +1,73 @@
 ﻿@using Microsoft.Extensions.FileSystemGlobbing.Internal
 @using WebService.Components
+@inject NavigationManager Navigation
+@inject IForumService ForumService
 @inherits LayoutComponentBase
 
 <MudThemeProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
+    <MudAppBar Elevation="1" Style="background-color: grey;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
-        <AuthenticationComponent/>
+
+        <MudAutocomplete T="string"
+        Value="SearchText" 
+        SearchFunc="SearchForums" 
+        ToStringFunc="x => x"
+        Placeholder="Search..." 
+        Adornment="Adornment.Start" 
+        AdornmentIcon="@Icons.Material.Filled.Search" 
+        Clearable="true"
+        ResetValueOnEmptyText="true"
+        Style="width: 300px;"
+        ValueChanged="OnForumSelected"/>
+
+        <MudSpacer />
+
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu/>
     </MudDrawer>
-    <MudMainContent>
+    <MudMainContent Style="background-color: #eeeeee;">
         @Body
     </MudMainContent>
 </MudLayout>
 
+<MudPopoverProvider />
+
 @code {
     bool _drawerOpen = true;
+
+    public string SearchText { get; set; } = string.Empty;
+
+    public List<string> ForumNames { get; set; } = [];
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ForumNames = await ForumService.GetForumNames();
+    }
+
+    private Task<IEnumerable<string>> SearchForums(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Task.FromResult(Enumerable.Empty<string>());
+
+        return Task.FromResult(ForumNames
+            .Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase))
+            .AsEnumerable());
+    }
+
+    private void OnForumSelected(string selectedForumName)
+    {
+        Navigation.NavigateTo($"/forum/{selectedForumName}");
     }
 
 }
