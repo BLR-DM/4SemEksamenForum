@@ -14,16 +14,24 @@ namespace WebService.Proxies
 
         async Task<List<ForumDto>> IContentServiceProxy.GetForumsAsync()
         {
-            var forumReuqestUri = $"/api/content/forum";
-
-            var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
-
-            if (forums == null)
+            try
             {
-                throw new Exception("No forums Found");
-            }
+                var forumReuqestUri = $"/api/content/forum";
 
-            return forums;
+                var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
+
+                if (forums == null)
+                {
+                    throw new Exception("No forums Found");
+                }
+
+                return forums;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
         }
     }
 

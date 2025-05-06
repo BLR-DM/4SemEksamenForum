@@ -29,7 +29,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu/>
+        <NavMenu Forums="Forums"/>
     </MudDrawer>
     <MudMainContent Style="background-color: #eeeeee;">
         @Body
@@ -44,6 +44,7 @@
     public string SearchText { get; set; } = string.Empty;
 
     public List<string> ForumNames { get; set; } = [];
+    public List<ForumView> Forums { get; set; }
 
     void DrawerToggle()
     {
@@ -52,7 +53,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ForumNames = await ForumService.GetForumNames();
+        Forums = await ForumService.GetForums();
+        ForumNames = Forums.Select(f => f.ForumName).ToList();
     }
 
     private Task<IEnumerable<string>> SearchForums(string value, CancellationToken token)

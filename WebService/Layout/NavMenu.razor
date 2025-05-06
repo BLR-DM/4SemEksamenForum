@@ -1,17 +1,37 @@
-﻿<MudNavMenu>
+﻿@inject ISubscriptionService SubscriptionService
+
+<MudNavMenu>
     <MudNavLink Href="/servers" Match="NavLinkMatch.Prefix">Servers</MudNavLink>
     <MudNavGroup Title="Forums" Expanded="true">
-        <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
-        <MudNavLink Href="/security" Match="NavLinkMatch.Prefix">Security</MudNavLink>
+        @if (SubscribedForums is not null && SubscribedForums.Count != 0)
+        {
+            @foreach (var forum in SubscribedForums)
+            {
+                <MudNavLink Href=@($"/forum/{forum.ForumName}") Match="NavLinkMatch.Prefix">@forum.ForumName</MudNavLink>
+            }
+        }
     </MudNavGroup>
 </MudNavMenu>
 
 @code {
+    [Parameter] 
+    public List<ForumView> Forums { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    public List<ForumView>? SubscribedForums { get; set; } = [];
+
+    protected override async Task OnParametersSetAsync()
     {
-        
-    }
+        if (Forums is null || Forums.Count == 0)
+        {
+            SubscribedForums = new List<ForumView>();
+            return;
+        }
 
+        var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds("1");
+
+        SubscribedForums = Forums
+            .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
+            .ToList();
+    }
 
 }

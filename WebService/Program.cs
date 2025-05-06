@@ -33,6 +33,10 @@ builder.Services.AddScoped<IForumService, ForumService>();
 
 builder.Services.AddScoped<IContentServiceProxy, ContentServiceProxy>();
 
+builder.Services.AddScoped<ISubscriptionServiceProxy, SubscriptionServiceProxy>();
+
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+
 
 builder.Services.AddOidcAuthentication(options =>
 {

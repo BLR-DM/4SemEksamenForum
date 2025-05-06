@@ -37,5 +37,19 @@ namespace WebService.Helpers
             };
             return postViewShort;
         }
+
+        public static ForumView MapForumToForumView(ForumDto forumDto)
+        {
+            var forumViewShort = new ForumView()
+            {
+                Id = forumDto.Id.ToString(),
+                ForumName = forumDto.ForumName,
+                Content = forumDto.Content,
+                CreatedDate = forumDto.CreatedDate,
+                UserId = forumDto.AppUserId,
+            };
+
+            return forumViewShort;
+        }
     }
 }

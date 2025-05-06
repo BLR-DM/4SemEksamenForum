@@ -41,6 +41,14 @@ namespace WebService.Services
             return forumNamesList;
         }
 
+        async Task<List<ForumView>> IForumService.GetForums()
+        {
+            var forums = await _contentServiceProxy.GetForumsAsync();
+
+            var forumViews = forums.Select(f => MapDtoToView.MapForumToForumView(f)).ToList();
+
+            return forumViews;
+        }
     }
 
     public interface IForumService
@@ -49,5 +57,6 @@ namespace WebService.Services
         Task<ForumViewShort> GetForumWithPostsShort(string forumName);
 
         Task<List<string>> GetForumNames();
+        Task<List<ForumView>> GetForums();
     }
 }
