@@ -1,6 +1,8 @@
-﻿namespace WebService.Proxies
+﻿using System.Net.Http.Json;
+
+namespace WebService.Proxies
 {
-    public class SubscriptionServiceProxy
+    public class SubscriptionServiceProxy : ISubscriptionServiceProxy
     {
         private readonly HttpClient _httpClient;
 
@@ -9,5 +11,23 @@
             _httpClient = httpClient;
         }
 
+        async Task<List<int>> ISubscriptionServiceProxy.GetSubscribedForumIds(string userId)
+        {
+            var subscriptionRequestUri = $"api/subscription/Users/{userId}/Forums/Subscriptions/";
+
+            var forumIds = await _httpClient.GetFromJsonAsync<List<int>>(subscriptionRequestUri);
+
+            if (forumIds == null)
+            {
+                throw new Exception("No subscriptions");
+            }
+
+            return forumIds;
+        }
+    }
+
+    public interface ISubscriptionServiceProxy
+    {
+        Task<List<int>> GetSubscribedForumIds(string userId);
     }
 }

@@ -7,7 +7,7 @@
         public string Content { get; set; }
         public string CreatedDate { get; set; }
         public string AppUserId { get; set; }
-        public List<PostDto> Posts { get; set; }
+        public List<PostDto>? Posts { get; set; }
     }
 
     public record PostDto
