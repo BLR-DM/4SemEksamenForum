@@ -91,9 +91,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAspire", builder =>
+    options.AddPolicy("AllowGateway", builder =>
     {
-        builder.WithOrigins("https://localhost:7293", "http://localhost:5012")
+        builder.WithOrigins("http://localhost:5000")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -108,7 +108,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
 
-        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "contentservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -124,7 +124,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.UseCors("AllowAspire");
+app.UseCors("AllowGateway");
 
 
 // Enable DI validation at startup

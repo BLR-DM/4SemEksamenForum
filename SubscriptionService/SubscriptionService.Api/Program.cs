@@ -54,7 +54,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
 
-        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "subscription-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -74,10 +74,9 @@ builder.Services.AddApplication();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAspire", builder =>
+    options.AddPolicy("AllowGateway", builder =>
     {
-        builder.WithOrigins("https://localhost:7018")
-            .WithOrigins("http://localhost:5014")
+        builder.WithOrigins("http://localhost:5000")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -103,7 +102,7 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 //app.UseHttpsRedirection();
 
-app.UseCors("AllowAspire");
+app.UseCors("AllowGateway");
 
 app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 

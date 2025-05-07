@@ -48,7 +48,7 @@ namespace ContentService.Api.Endpoints
             app.MapPost("/forum",
                 async (IForumCommand command, CreateForumDto forumDto, ClaimsPrincipal user) =>
                 {
-                    var userId = user.FindFirst("sub")?.Value;
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                     await command.CreateForumAsync(forumDto, userId);
                     return Results.Created();

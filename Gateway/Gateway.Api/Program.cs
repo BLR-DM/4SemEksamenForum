@@ -22,7 +22,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
 
-        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Authority = "https://keycloak.blrforum.dk//realms/4SemForumProjekt";
         options.Audience = "gateway-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
