@@ -1,0 +1,21 @@
+﻿@page "/loggedout"
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<h3>Logger ud...</h3>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Ryd auth-cache
+            await JS.InvokeVoidAsync("sessionStorage.removeItem", 
+                "oidc.user:https://keycloak.blrforum.dk/realms/4SemForumProjekt:webservice-client");
+
+            // Hard reload
+            await JS.InvokeVoidAsync("eval", "window.location.href = '/'");
+        }
+    }
+    
+}

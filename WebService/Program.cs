@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -37,6 +38,10 @@ builder.Services.AddScoped<IContentServiceProxy, ContentServiceProxy>();
 builder.Services.AddScoped<ISubscriptionServiceProxy, SubscriptionServiceProxy>();
 
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+
+builder.Services.AddScoped<UserSessionService, UserSessionService>();
+
+builder.Services.AddBlazoredSessionStorage();
 
 
 builder.Services.AddOidcAuthentication(options =>
