@@ -45,6 +45,10 @@ namespace WebService.Services
         {
             var forums = await _contentServiceProxy.GetForumsAsync();
 
+            if (forums == null)
+                return new List<ForumView>();
+
+
             var forumViews = forums.Select(f => MapDtoToView.MapForumToForumView(f)).ToList();
 
             return forumViews;
