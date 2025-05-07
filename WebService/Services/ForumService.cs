@@ -1,4 +1,5 @@
 ﻿using WebService.Dtos;
+using WebService.Dtos.CommandDtos;
 using WebService.Helpers;
 using WebService.Proxies;
 using WebService.Views;
@@ -53,14 +54,26 @@ namespace WebService.Services
 
             return forumViews;
         }
+
+        async Task IForumService.CreateForum(CreateForumDto dto)
+        {
+            try
+            {
+                await _contentServiceProxy.CreateForum(dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public interface IForumService
     {
 
         Task<ForumViewShort> GetForumWithPostsShort(string forumName);
-
         Task<List<string>> GetForumNames();
         Task<List<ForumView>> GetForums();
+        Task CreateForum(CreateForumDto dto);
     }
 }

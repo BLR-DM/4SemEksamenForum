@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using WebService.Dtos;
+using WebService.Dtos.CommandDtos;
 
 namespace WebService.Proxies
 {
@@ -10,6 +11,24 @@ namespace WebService.Proxies
         public ContentServiceProxy(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        async Task IContentServiceProxy.CreateForum(CreateForumDto dto)
+        {
+            try
+            {
+                var uri = $"api/content/forum";
+
+                var response = await _httpClient.PostAsJsonAsync(uri, dto);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Failed to create forum");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Failed to create forum");
+            }
         }
 
         async Task<List<ForumDto>> IContentServiceProxy.GetForumsAsync()
@@ -38,5 +57,6 @@ namespace WebService.Proxies
     public interface IContentServiceProxy
     {
         Task<List<ForumDto>> GetForumsAsync();
+        Task CreateForum(CreateForumDto dto);
     }
 }

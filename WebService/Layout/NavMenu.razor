@@ -1,8 +1,9 @@
 ﻿@inject ISubscriptionService SubscriptionService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject UserSessionService UserSession
 
 <MudNavMenu>
-    <MudNavLink Href="/servers" Match="NavLinkMatch.Prefix">Servers</MudNavLink>
+    <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
         @if (SubscribedForums is not null && SubscribedForums.Count != 0)
         {
             <MudNavGroup Title="Forums" Expanded="true">
@@ -30,10 +31,14 @@
 
         if (await UserSession.IsLoggedInAsync())
         {
-            var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds("1");
-            SubscribedForums = Forums
-                .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
-                .ToList();
+            var userId = await UserSession.GetUserIdAsync();
+            if (userId is not null)
+            {
+                var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds(userId);
+                SubscribedForums = Forums
+                    .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
+                    .ToList();
+            }
         }
     }
 

@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
 
-        options.Authority = "https://141.147.31.37:8443/realms/4SemForumProjekt";
+        options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "pointservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -41,7 +41,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGateway", builder =>
+    {
+        builder.WithOrigins("http://localhost:5000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +63,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
-
+app.UseCors("AllowGateway");
 app.MapGet("/hello", () => "Hello World!");
 
 app.MapPost("/User/{userId}/Points",
