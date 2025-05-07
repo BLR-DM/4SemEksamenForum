@@ -1,0 +1,58 @@
+﻿@page "/forum/create"
+@using WebService.Dtos.CommandDtos
+@inject IForumService ForumService
+
+<h3>CreateForumPage</h3>
+
+<div class="content-wrapper">
+    <form @onsubmit="CreateForum">
+        <div class="form-group">
+            <label for="forumName">Forum name</label>
+            <input type="text" class="form-control" @bind-value="CreateForumDto.ForumName" id="forumName" placeholder="Enter forum name">
+        </div>
+        <div class="form-group">
+            <label for="content">Description</label>
+            <textarea class="form-control" @bind="CreateForumDto.Content" id="content" rows="3"></textarea>
+        </div>
+        <div class ="mt-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-info">@ErrorMessage</div>
+    }
+</div>
+
+
+@code {
+    public CreateForumDto? CreateForumDto { get; set; } = new();
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    private async Task CreateForum()
+    {
+        try
+        {
+            await ForumService.CreateForum(CreateForumDto);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            ErrorMessage = "Failed to create forum";
+        }
+    }
+}
+
+<style>
+    .content-wrapper {
+        max-width: 900px;
+        position: relative;
+        margin: 0 auto;
+        padding: 1rem;
+        box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
+        background-color: white;
+    }
+
+
+</style>

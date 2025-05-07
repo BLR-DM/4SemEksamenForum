@@ -1,4 +1,5 @@
-﻿using ContentService.Application.Commands.CommandDto.ForumDto;
+﻿using System.Security.Claims;
+using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Application.Queries;
@@ -45,11 +46,13 @@ namespace ContentService.Api.Endpoints
 
             // Write
             app.MapPost("/forum",
-                async (IForumCommand command, CreateForumDto forumDto, string appUserId) =>
+                async (IForumCommand command, CreateForumDto forumDto, ClaimsPrincipal user) =>
                 {
-                    await command.CreateForumAsync(forumDto, appUserId);
+                    var userId = user.FindFirst("sub")?.Value;
+
+                    await command.CreateForumAsync(forumDto, userId);
                     return Results.Created();
-                }).WithTags(tag).AllowAnonymous();
+                }).WithTags(tag).RequireAuthorization();
 
             app.MapPut("/forum/{forumId}",
                 async (IForumCommand command, UpdateForumDto forumDto, string appUserId, int forumId) =>
