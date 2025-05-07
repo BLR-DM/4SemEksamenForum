@@ -1,12 +1,12 @@
 name: CI - Build and Push ContentService
 
 on:
-  workflow_dispatch:  # manual trigger from GitHub UI
+  #workflow_dispatch:  # manual trigger from GitHub UI
   # Optional: uncomment below to auto-trigger on changes
-#  push:
-#    branches: [ master ]
-#    paths:
-#      - 'ContentService/**'
+  push:
+    branches: [ master ]
+    paths:
+      - 'ContentService/**'
 
 jobs:
   build-and-push:
