@@ -30,7 +30,7 @@ namespace WebService.Proxies
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<ForumDto>();
             }
         }
     }
