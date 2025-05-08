@@ -1,4 +1,4 @@
 ﻿namespace VoteService.Application.Services.EventDto
 {
-    public record CommentVoteEventDto(string CommentId, string UserId);
+    public record CommentVoteEventDto(int CommentId, string UserId);
 }

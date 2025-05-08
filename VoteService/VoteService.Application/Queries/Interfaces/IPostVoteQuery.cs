@@ -4,6 +4,6 @@ namespace VoteService.Application.Queries.Interfaces;
 
 public interface IPostVoteQuery
 {
-    Task<GetPostVotesDto> GetVotesByPostIdAsync(string postId);
-    Task<List<GetPostVotesDto>> GetVotesByPostIdsAsync(IEnumerable<string> postIds);
+    Task<GetPostVotesDto> GetVotesByPostIdAsync(int postId);
+    Task<List<GetPostVotesDto>> GetVotesByPostIdsAsync(IEnumerable<int> postIds);
 }

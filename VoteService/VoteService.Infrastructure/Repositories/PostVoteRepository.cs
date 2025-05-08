@@ -30,7 +30,7 @@ namespace VoteService.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        async Task<PostVote?> IPostVoteRepository.GetVoteByUserIdAsync(string userId, string postId)
+        async Task<PostVote?> IPostVoteRepository.GetVoteByUserIdAsync(string userId, int postId)
         {
             //Null tjek sker i application layer (Skal bruges ift. ToggleVote metoden til at styre votes)
             return await _context.PostVotes.FirstOrDefaultAsync(v => v.UserId == userId && v.PostId == postId);

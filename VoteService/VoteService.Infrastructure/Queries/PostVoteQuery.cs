@@ -13,7 +13,7 @@ public class PostVoteQuery : IPostVoteQuery
     {
         _context = context;
     }
-    async Task<GetPostVotesDto> IPostVoteQuery.GetVotesByPostIdAsync(string postId)
+    async Task<GetPostVotesDto> IPostVoteQuery.GetVotesByPostIdAsync(int postId)
     {
         var postVotes = await _context.PostVotes
             .AsNoTracking()
@@ -31,7 +31,7 @@ public class PostVoteQuery : IPostVoteQuery
         };
     }
 
-    async Task<List<GetPostVotesDto>> IPostVoteQuery.GetVotesByPostIdsAsync(IEnumerable<string> postIds)
+    async Task<List<GetPostVotesDto>> IPostVoteQuery.GetVotesByPostIdsAsync(IEnumerable<int> postIds)
     {
         var postVotesList = await _context.PostVotes
             .AsNoTracking()

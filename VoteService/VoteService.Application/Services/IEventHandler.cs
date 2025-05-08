@@ -2,11 +2,11 @@
 {
     public interface IEventHandler
     {
-        Task CommentUpVoteCreated(string commentId, string userId);
-        Task CommentDownVoteCreated(string commentId, string userId);
-        Task CommentUpVoteRemoved(string commentId, string userId);
-        Task PostUpVoteCreated(string postId, string userId);
-        Task PostDownVoteCreated(string postId, string userId);
-        Task PostUpVoteRemoved(string postId, string userId);
+        Task CommentUpVoteCreated(int commentId, string userId);
+        Task CommentDownVoteCreated(int commentId, string userId);
+        Task CommentUpVoteRemoved(int commentId, string userId);
+        Task PostUpVoteCreated(int postId, string userId);
+        Task PostDownVoteCreated(int postId, string userId);
+        Task PostUpVoteRemoved(int postId, string userId);
     }
 }

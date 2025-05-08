@@ -20,7 +20,7 @@ public class PostVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var postId = "post1";
+        var postId = 1;
         var voteType = true;
 
         _mockRepository.Setup(repo => repo.GetVoteByUserIdAsync(userId, postId))
@@ -39,7 +39,7 @@ public class PostVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var postId = "post1";
+        var postId = 1;
         var voteType = true;
         var existingVote = PostVote.Create(userId, postId, voteType);
 
@@ -58,7 +58,7 @@ public class PostVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var postId = "post1";
+        var postId = 1;
         var initialVoteType = true;
         var existingVote = PostVote.Create(userId, postId, initialVoteType);
 

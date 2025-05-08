@@ -3,16 +3,23 @@
 @inject UserSessionService UserSession
 
 <MudNavMenu>
-    <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
-        @if (SubscribedForums is not null && SubscribedForums.Count != 0)
-        {
-            <MudNavGroup Title="Forums" Expanded="true">
-                @foreach (var forum in SubscribedForums)
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
+            <MudNavGroup Title="Subscribed Forums" Expanded="true">
+                @if (SubscribedForums is not null && SubscribedForums.Count != 0)
                 {
-                    <MudNavLink Href=@($"/forum/{forum.ForumName}") Match="NavLinkMatch.Prefix">@forum.ForumName</MudNavLink>
+                    @foreach (var forum in SubscribedForums)
+                    {
+                        <MudNavLink Href=@($"/forum/{forum.ForumName}") Match="NavLinkMatch.Prefix">@forum.ForumName</MudNavLink>
+                    }
                 }
             </MudNavGroup>
-        }
+        </Authorized>
+        <NotAuthorized>
+
+        </NotAuthorized>
+    </AuthorizeView>
 </MudNavMenu>
 
 @code {

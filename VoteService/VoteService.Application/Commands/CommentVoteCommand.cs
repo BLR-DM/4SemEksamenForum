@@ -18,9 +18,9 @@ public class CommentVoteCommand : ICommentVoteCommand
         _commentVoteService = commentVoteService;
         _eventHandler = eventHandler;
     }
-    async Task ICommentVoteCommand.ToggleCommentVote(string commentId, CommentVoteDto dto)
+    async Task ICommentVoteCommand.ToggleCommentVote(int commentId, CommentVoteDto dto, string userId)
     {
-        var voteAction = await _commentVoteService.ToggleCommentVoteAsync(dto.UserId, commentId, dto.VoteType);
+        var voteAction = await _commentVoteService.ToggleCommentVoteAsync(userId, commentId, dto.VoteType);
 
         switch (voteAction)
         {
@@ -28,11 +28,11 @@ public class CommentVoteCommand : ICommentVoteCommand
 
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.CommentUpVoteCreated(commentId, dto.UserId); 
+                    await _eventHandler.CommentUpVoteCreated(commentId, userId); 
                 }
                 else
                 {
-                    await _eventHandler.CommentDownVoteCreated(commentId, dto.UserId);
+                    await _eventHandler.CommentDownVoteCreated(commentId, userId);
                 }
                 break;
 
@@ -40,18 +40,18 @@ public class CommentVoteCommand : ICommentVoteCommand
 
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.CommentUpVoteRemoved(commentId, dto.UserId);
+                    await _eventHandler.CommentUpVoteRemoved(commentId, userId);
                 }
                 break;
 
             case VoteAction.Updated:
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.CommentUpVoteCreated(commentId, dto.UserId);
+                    await _eventHandler.CommentUpVoteCreated(commentId, userId);
                 }
                 else
                 {
-                    await _eventHandler.CommentDownVoteCreated(commentId, dto.UserId);
+                    await _eventHandler.CommentDownVoteCreated(commentId, userId);
                 }
                 break;
         }

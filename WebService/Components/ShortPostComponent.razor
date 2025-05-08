@@ -1,4 +1,6 @@
-﻿@using WebService.Views
+﻿@using WebService.Dtos.CommandDtos
+@using WebService.Views
+@inject IVoteService VoteService
 
 <div class="short-post">
     <div class="header">
@@ -16,9 +18,9 @@
     
     <div class="interactions">
         <div class="vote">
-            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
+            <i class="@GetUpvoteIcon()" @onclick="() => HandleVote(true)" style="cursor: pointer;"></i>
             <span>@Post.UpVotesCount</span>
-            <i class="bi bi-hand-thumbs-down" style="cursor: pointer;"></i>
+            <i class="@GetDownvoteIcon()" @onclick="() => HandleVote(false)" style="cursor: pointer;"></i>
             <span>@Post.DownVotesCount</span>
         </div>
         <div class="comments">
@@ -34,6 +36,93 @@
     [Parameter]
     public PostViewShort Post { get; set; }
 
+    public string? UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = await UserSession.GetUserIdAsync();
+    }
+
+    private async Task HandleVote(bool voteType)
+    {
+        var handlePostVoteDto = new HandlePostVoteDto(voteType);
+    
+        // Håndter stemme i VoteService
+        await VoteService.HandlePostVote(handlePostVoteDto, Post.Id);
+
+        // Opdater stemmetællere og stemmer
+        var existingVote = Post.Votes.FirstOrDefault(v => v.UserId == UserId);
+
+        if (existingVote != null)
+        {
+            if (existingVote.VoteType == voteType)
+            {
+                Post.Votes.Remove(existingVote);
+                if (voteType) 
+                    Post.UpVotesCount--;
+                else 
+                    Post.DownVotesCount--;
+            }
+            else
+            {
+                existingVote.VoteType = voteType;
+                if (voteType)
+                {
+                    Post.UpVotesCount++;
+                    Post.DownVotesCount--;
+                }
+                else
+                {
+                    Post.DownVotesCount++;
+                    Post.UpVotesCount--;
+                }
+            }
+        }
+        else
+        {
+            Post.Votes.Add(new PostVoteView { UserId = UserId, VoteType = voteType });
+            if (voteType) Post.UpVotesCount++;
+            else Post.DownVotesCount++;
+        }
+
+        // Tving komponenten til at re-rendre
+        StateHasChanged();
+    }
+
+
+
+
+    private string GetUpvoteIcon()
+    {
+        if (Post.Votes is null || Post.Votes.Count == 0)
+        {
+            return "bi bi-hand-thumbs-up";
+        }
+        else if (Post.Votes.Where(pv => pv.VoteType == true).Any(pv => pv.UserId == UserId))
+        {
+            return "bi bi-hand-thumbs-up-fill";
+        }
+        else
+        {
+            return "bi bi-hand-thumbs-up";
+        }
+    }
+
+    private string GetDownvoteIcon()
+    {
+        if (Post.Votes is null || Post.Votes.Count == 0)
+        {
+            return "bi bi-hand-thumbs-down";
+        }
+        else if (Post.Votes.Where(pv => pv.VoteType == false).Any(pv => pv.UserId == UserId))
+        {
+            return "bi bi-hand-thumbs-down-fill";
+        }
+        else
+        {
+            return "bi bi-hand-thumbs-down";
+        }
+    }
 
 }
 

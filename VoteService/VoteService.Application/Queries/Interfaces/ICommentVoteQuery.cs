@@ -4,6 +4,6 @@ namespace VoteService.Application.Queries.Interfaces;
 
 public interface ICommentVoteQuery
 {
-    Task<GetCommentVoteDto> GetVotesByCommentIdAsync(string commentId);
-    Task<List<GetCommentVoteDto>> GetVotesByCommentIdsAsync(IEnumerable<string> commentIds);
+    Task<GetCommentVoteDto> GetVotesByCommentIdAsync(int commentId);
+    Task<List<GetCommentVoteDto>> GetVotesByCommentIdsAsync(IEnumerable<int> commentIds);
 }

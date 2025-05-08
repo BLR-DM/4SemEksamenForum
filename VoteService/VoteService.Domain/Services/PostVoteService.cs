@@ -13,7 +13,7 @@ public class PostVoteService
         _repository = repository;
     }
 
-    public async Task<VoteAction> TogglePostVoteAsync(string userId, string postId, bool voteType)
+    public async Task<VoteAction> TogglePostVoteAsync(string userId, int postId, bool voteType)
     {
         var existingVote = await _repository.GetVoteByUserIdAsync(userId, postId);
 

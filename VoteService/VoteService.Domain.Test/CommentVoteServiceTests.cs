@@ -20,7 +20,7 @@ public class CommentVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var commentId = "comment1";
+        var commentId = 1;
         var voteType = true;
 
         _mockRepository.Setup(repo => repo.GetVoteByUserIdAsync(userId, commentId))
@@ -39,7 +39,7 @@ public class CommentVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var commentId = "comment1";
+        var commentId = 1;
         var voteType = true;
         var existingVote = CommentVote.Create(userId, commentId, voteType);
 
@@ -60,7 +60,7 @@ public class CommentVoteServiceTests
     {
         // Arrange
         var userId = "user1";
-        var commentId = "comment1";
+        var commentId = 1;
         var voteType = true;
         var existingVote = CommentVote.Create(userId, commentId, voteType);
 

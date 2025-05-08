@@ -13,7 +13,7 @@ public class CommentVoteService
         _repository = repository;
     }
 
-    public async Task<VoteAction> ToggleCommentVoteAsync(string userId, string commentId, bool voteType)
+    public async Task<VoteAction> ToggleCommentVoteAsync(string userId, int commentId, bool voteType)
     {
         var existingVote = await _repository.GetVoteByUserIdAsync(userId, commentId);
 
