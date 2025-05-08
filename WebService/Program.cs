@@ -13,16 +13,22 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("GatewayApi",
-        client => client.BaseAddress = new Uri("http://localhost:5000"))
-    .AddHttpMessageHandler(sp =>
-    {
-        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(
-                authorizedUrls: ["http://localhost:5000"]);
+var gatewayBaseUri = builder.HostEnvironment.IsDevelopment()
+    ? "http://localhost:5000"   // Dev: HTTP
+    : "https://localhost:5001"; // Prod: HTTPS
 
-        return handler;
-    });
+builder.Services.AddHttpClient("GatewayApi", client =>
+{
+    client.BaseAddress = new Uri(gatewayBaseUri);
+})
+.AddHttpMessageHandler(sp =>
+{
+    var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+        .ConfigureHandler(
+            authorizedUrls: [gatewayBaseUri]);
+
+    return handler;
+});
 
 //builder.Services.AddHttpClient("GatewayApi",
 //        client => client.BaseAddress = new Uri("http://localhost:5000"));
