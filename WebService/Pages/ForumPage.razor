@@ -1,13 +1,17 @@
 ﻿@page "/forum/{ForumName}"
 @inject IForumService ForumService;
+@inject NavigationManager Navigation
 
 <div class="content-wrapper">
-    @if(Forum != null && Forum.Posts.Count != 0)
+    <div class ="custom-button">
+        <button type="createpost" @onclick="NavigateToCreatePost" class="btn btn-primary">Create a post</button>
+    </div>
+    @if (Forum != null && Forum.Posts.Count != 0)
     {
         foreach (var shortPost in Forum.Posts)
         {
             <div class="post-wrapper">
-                <ShortPostComponent Post="shortPost" />
+                <ShortPostComponent Post="shortPost"/>
             </div>
         }
     }
@@ -39,6 +43,11 @@
         }
     }
 
+    private async void NavigateToCreatePost()
+    {
+        Navigation.NavigateTo($"/forum/{ForumName}/{Forum.Id}/post/create");
+    }
+
 
 }
 
@@ -54,6 +63,12 @@
     padding: 1rem;
     box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
     background-color: white;
+}
+
+.custom-button{
+    display: flex;
+    margin-bottom: 12px;
+    justify-content: end:
 }
 
 </style>

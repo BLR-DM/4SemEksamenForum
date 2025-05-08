@@ -17,15 +17,15 @@ namespace VoteService.DatabaseMigration.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("VoteService.Domain.Entities.CommentVote", b =>
                 {
-                    b.Property<string>("CommentId")
-                        .HasColumnType("text");
+                    b.Property<int>("CommentId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -43,8 +43,8 @@ namespace VoteService.DatabaseMigration.Migrations
 
             modelBuilder.Entity("VoteService.Domain.Entities.PostVote", b =>
                 {
-                    b.Property<string>("PostId")
-                        .HasColumnType("text");
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");

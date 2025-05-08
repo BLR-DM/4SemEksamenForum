@@ -24,7 +24,7 @@ public class CommentVoteRepository : ICommentVoteRepository
         await _context.SaveChangesAsync();
     }
 
-    async Task<CommentVote?> ICommentVoteRepository.GetVoteByUserIdAsync(string userId, string commentId)
+    async Task<CommentVote?> ICommentVoteRepository.GetVoteByUserIdAsync(string userId, int commentId)
     {
         //Null tjek sker i application layer (Skal bruges ift. ToggleVote metoden til at styre votes)
         return await _context.CommentVotes.FirstOrDefaultAsync(v => v.UserId == userId && v.CommentId == commentId);

@@ -16,7 +16,7 @@ namespace VoteService.DatabaseMigration.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    CommentId = table.Column<string>(type: "text", nullable: false),
+                    CommentId = table.Column<int>(type: "integer", nullable: false),
                     VoteType = table.Column<bool>(type: "boolean", nullable: false),
                     VotedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -30,7 +30,7 @@ namespace VoteService.DatabaseMigration.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    PostId = table.Column<string>(type: "text", nullable: false),
+                    PostId = table.Column<int>(type: "integer", nullable: false),
                     VoteType = table.Column<bool>(type: "boolean", nullable: false),
                     VotedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

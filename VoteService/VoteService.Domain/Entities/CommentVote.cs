@@ -9,20 +9,20 @@ namespace VoteService.Domain.Entities
     public class CommentVote
     {
         public string UserId { get; protected set; }
-        public string CommentId { get; protected set; }
+        public int CommentId { get; protected set; }
         public bool VoteType { get; protected set; }
         public DateTime VotedAt { get; protected set; } = DateTime.UtcNow.AddHours(2);
 
         protected CommentVote() { }
 
-        private CommentVote(string userId, string commentId, bool voteType)
+        private CommentVote(string userId, int commentId, bool voteType)
         {
             UserId = userId;
             CommentId = commentId;
             VoteType = voteType;
         }
 
-        public static CommentVote Create(string userId, string commentId, bool voteType)
+        public static CommentVote Create(string userId, int commentId, bool voteType)
         {
             return new CommentVote(userId, commentId, voteType);
         }

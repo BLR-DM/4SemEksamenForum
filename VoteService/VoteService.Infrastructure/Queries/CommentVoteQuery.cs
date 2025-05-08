@@ -12,7 +12,7 @@ public class CommentVoteQuery : ICommentVoteQuery
     {
         _context = context;
     }
-    async Task<GetCommentVoteDto> ICommentVoteQuery.GetVotesByCommentIdAsync(string commentId)
+    async Task<GetCommentVoteDto> ICommentVoteQuery.GetVotesByCommentIdAsync(int commentId)
     {
         var commentVotes = await _context.CommentVotes
             .AsNoTracking()
@@ -30,7 +30,7 @@ public class CommentVoteQuery : ICommentVoteQuery
         };
     }
 
-    async Task<List<GetCommentVoteDto>> ICommentVoteQuery.GetVotesByCommentIdsAsync(IEnumerable<string> commentIds)
+    async Task<List<GetCommentVoteDto>> ICommentVoteQuery.GetVotesByCommentIdsAsync(IEnumerable<int> commentIds)
     {
         var commentVoteList = await _context.CommentVotes
             .AsNoTracking()

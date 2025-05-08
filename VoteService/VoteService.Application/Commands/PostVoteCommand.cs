@@ -18,38 +18,38 @@ public class PostVoteCommand : IPostVoteCommand
         _postVoteService = postVoteService;
         _eventHandler = eventHandler;
     }
-    async Task IPostVoteCommand.TogglePostVote(string postId, PostVoteDto dto)
+    async Task IPostVoteCommand.TogglePostVote(int postId, PostVoteDto dto, string userId)
     {
-        var voteAction = await _postVoteService.TogglePostVoteAsync(dto.UserId, postId, dto.VoteType);
+        var voteAction = await _postVoteService.TogglePostVoteAsync(userId, postId, dto.VoteType);
 
         switch (voteAction)
         {
             case VoteAction.Created:
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.PostUpVoteCreated(postId, dto.UserId); 
+                    await _eventHandler.PostUpVoteCreated(postId, userId); 
                 }
                 else
                 {
-                    await _eventHandler.PostDownVoteCreated(postId, dto.UserId);
+                    await _eventHandler.PostDownVoteCreated(postId, userId);
                 }
                 break;
 
             case VoteAction.Deleted:
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.PostUpVoteRemoved(postId, dto.UserId); 
+                    await _eventHandler.PostUpVoteRemoved(postId, userId); 
                 }
                 break;
 
             case VoteAction.Updated:
                 if (dto.VoteType == true)
                 {
-                    await _eventHandler.PostUpVoteCreated(postId, dto.UserId);
+                    await _eventHandler.PostUpVoteCreated(postId, userId);
                 }
                 else
                 {
-                    await _eventHandler.PostDownVoteCreated(postId, dto.UserId);
+                    await _eventHandler.PostDownVoteCreated(postId, userId);
                 }
                 break;
         }

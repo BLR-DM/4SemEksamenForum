@@ -10,7 +10,7 @@ namespace WebService.Helpers
         {
             var forumViewShort = new ForumViewShort()
             {
-                Id = forumDto.Id.ToString(),
+                Id = forumDto.Id,
                 ForumName = forumDto.ForumName,
                 Content = forumDto.Content,
                 CreatedDate = forumDto.CreatedDate,
@@ -33,7 +33,8 @@ namespace WebService.Helpers
                 CreatedDate = postDto.CreatedDate,
                 UpVotesCount = postDto.Votes?.Count(v => v.VoteType == true) ?? 0,
                 DownVotesCount = postDto.Votes?.Count(v => v.VoteType == false) ?? 0,
-                CommentsCount = postDto.Comments?.Count ?? 0
+                CommentsCount = postDto.Comments?.Count ?? 0,
+                Votes = postDto.Votes?.Select(pv => MapToPostVoteView(pv)).ToList()
             };
             return postViewShort;
         }
@@ -42,7 +43,7 @@ namespace WebService.Helpers
         {
             var forumViewShort = new ForumView()
             {
-                Id = forumDto.Id.ToString(),
+                Id = forumDto.Id,
                 ForumName = forumDto.ForumName,
                 Content = forumDto.Content,
                 CreatedDate = forumDto.CreatedDate,
@@ -50,6 +51,17 @@ namespace WebService.Helpers
             };
 
             return forumViewShort;
+        }
+
+        public static PostVoteView MapToPostVoteView(PostVoteDto postVoteDto)
+        {
+            var postVoteView = new PostVoteView()
+            {
+                UserId = postVoteDto.UserId,
+                VoteType = postVoteDto.VoteType
+            };
+
+            return postVoteView;
         }
     }
 }

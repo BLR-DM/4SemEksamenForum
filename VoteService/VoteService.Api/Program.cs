@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
 
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
-        options.Audience = "vote-api";
+        options.Audience = "voteservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -102,25 +103,27 @@ app.UseCors("AllowGateway");
 
 
 app.MapPost("Post/{postId}/Vote",
-    async (string postId, PostVoteDto dto, IPostVoteCommand command) =>
+    async (int postId, PostVoteDto dto, IPostVoteCommand command, ClaimsPrincipal user) =>
     {
         try
         {
-            await command.TogglePostVote(postId, dto);
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await command.TogglePostVote(postId, dto, userId);
             return Results.Ok();
         }
         catch (Exception e)
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization();
 
 app.MapPost("Comment/{commentId}/Vote",
-    async (string commentId, CommentVoteDto dto, ICommentVoteCommand command) =>
+    async (int commentId, CommentVoteDto dto, ICommentVoteCommand command) =>
     {
         try
         {
-            await command.ToggleCommentVote(commentId, dto);
+            var userId = "";
+            await command.ToggleCommentVote(commentId, dto, userId);
             return Results.Ok();
         }
         catch (Exception e)
@@ -130,7 +133,7 @@ app.MapPost("Comment/{commentId}/Vote",
     });
 
 app.MapGet("Post/{postId}/Votes",
-    async (string postId, IPostVoteQuery query) =>
+    async (int postId, IPostVoteQuery query) =>
     {
         try
         {
@@ -145,7 +148,7 @@ app.MapGet("Post/{postId}/Votes",
     });
 
 app.MapPost("Post/Votes",
-    async ([FromBody] List<string> postIds, IPostVoteQuery query) =>
+    async ([FromBody] List<int> postIds, IPostVoteQuery query) =>
     {
         try
         {
@@ -160,7 +163,7 @@ app.MapPost("Post/Votes",
     });
 
 app.MapGet("Comment/{commentId}/Votes",
-    async (string commentId, ICommentVoteQuery query) =>
+    async (int commentId, ICommentVoteQuery query) =>
     {
         try
         {
@@ -175,7 +178,7 @@ app.MapGet("Comment/{commentId}/Votes",
     });
 
 app.MapPost("Comment/Votes",
-    async (List<string> commentIds, ICommentVoteQuery query) =>
+    async (List<int> commentIds, ICommentVoteQuery query) =>
     {
         try
         {

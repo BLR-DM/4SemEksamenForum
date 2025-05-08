@@ -41,6 +41,12 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 builder.Services.AddScoped<UserSessionService, UserSessionService>();
 
+builder.Services.AddScoped<IPostService, PostService>();
+
+builder.Services.AddScoped<IVoteService, VoteService>();
+
+builder.Services.AddScoped<IVoteServiceProxy, VoteServiceProxy>();
+
 builder.Services.AddBlazoredSessionStorage();
 
 

@@ -4,5 +4,5 @@ namespace VoteService.Application.Interfaces;
 
 public interface ICommentVoteCommand
 {
-    Task ToggleCommentVote(string commentId, CommentVoteDto dto);
+    Task ToggleCommentVote(int commentId, CommentVoteDto dto, string userId);
 }

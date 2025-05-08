@@ -31,6 +31,24 @@ namespace WebService.Proxies
             }
         }
 
+        async Task IContentServiceProxy.CreatePost(CreatePostDto dto, int forumId)
+        {
+            try
+            {
+                var uri = $"api/content/forum/{forumId}/post";
+
+                var response = await _httpClient.PostAsJsonAsync(uri, dto);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Failed to create post");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Failed to create post");
+            }
+        }
+
         async Task<List<ForumDto>> IContentServiceProxy.GetForumsAsync()
         {
             try
@@ -58,5 +76,6 @@ namespace WebService.Proxies
     {
         Task<List<ForumDto>> GetForumsAsync();
         Task CreateForum(CreateForumDto dto);
+        Task CreatePost(CreatePostDto dto, int forumId);
     }
 }

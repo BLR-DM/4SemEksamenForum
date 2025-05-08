@@ -2,6 +2,6 @@
 
 public class GetPostVotesDto
 {
-    public string PostId { get; set; }
+    public int PostId { get; set; }
     public List<PostVoteDto> PostVotes { get; set; }
 }

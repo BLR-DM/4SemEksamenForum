@@ -2,6 +2,7 @@
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ContentService.Api.Endpoints
 {
@@ -21,9 +22,11 @@ namespace ContentService.Api.Endpoints
 
             // Write
             app.MapPost("/forum/{forumId}/post",
-                async (IForumCommand command, CreatePostDto postDto, string appUserId, int forumId) =>
+                async (IForumCommand command, CreatePostDto postDto, int forumId, ClaimsPrincipal user) =>
                 {
-                    var username = "Lucas MacQ";
+                    var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var username = user.FindFirst("preferred_username")?.Value;
+
                     await command.CreatePostAsync(postDto, username, appUserId, forumId);
                     return Results.Created();
                 }).WithTags(tag);
