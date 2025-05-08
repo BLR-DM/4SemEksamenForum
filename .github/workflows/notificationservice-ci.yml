@@ -22,6 +22,6 @@ jobs:
     - name: Build and Push Docker image (ARM64)
       run: |
         docker build -t bilalkinali/notificationservice-api:latest \
-          -f notificationservice/notificationservice.Api/Dockerfile \
+          -f NotificationService/NotificationService.Api/Dockerfile \
           .
         docker push bilalkinali/notificationservice-api:latest
