@@ -16,13 +16,13 @@ namespace WebService.Services
             _apiProxy = apiProxy;
             _contentServiceProxy = contentServiceProxy;
         }
-        async Task<ForumViewShort?> IForumService.GetForumWithPostsShort(string forumName)
+        async Task<ForumView?> IForumService.GetForumWithPostsShort(string forumName)
         {
             try
             {
                 var forum = await _apiProxy.GetForumWithPosts(forumName);
 
-                var forumViewShort = MapDtoToView.MapForumWithPostsShortToView(forum);
+                var forumViewShort = MapDtoToView.MapForumWithPostsToView(forum);
 
                 return forumViewShort;
             }
@@ -71,7 +71,7 @@ namespace WebService.Services
     public interface IForumService
     {
 
-        Task<ForumViewShort> GetForumWithPostsShort(string forumName);
+        Task<ForumView> GetForumWithPostsShort(string forumName);
         Task<List<string>> GetForumNames();
         Task<List<ForumView>> GetForums();
         Task CreateForum(CreateForumDto dto);

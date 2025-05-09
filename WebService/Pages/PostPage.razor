@@ -1,0 +1,84 @@
+﻿@page "/forum/{ForumName}/post/{PostId:int}/comments"
+@using WebService.Dtos.CommandDtos
+@inject IPostService PostService
+@inject IForumService ForumService
+
+<h3>PostPage</h3>
+
+<div class="content-wrapper">
+    @if (Forum?.Posts is not null)
+    {
+        var post = Forum.Posts.FirstOrDefault(p => p.Id == PostId);
+        <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id" />
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-info">@ErrorMessage</div>
+    }
+    <div>
+        Comment text area
+        @* <form @onsubmit="CreateComment">
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea class="form-control" @bind="CreateCommentDto.Content" id="content" rows="3"></textarea>
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form> *@
+    </div>
+    <div>
+        Comments
+    </div>
+</div>
+<div class="content-wrapper">
+    Comment submit form?
+</div>
+
+@code {
+    [Parameter] public string ForumName { get; set; }
+    [Parameter] public int PostId { get; set; }
+
+    public ForumView? Forum { get; set; }
+
+    //public PostView? Post { get; set; }
+
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    //public CreateCommentDto CreateCommentDto { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // ErrorMessage = string.Empty;
+        // Post = await PostService.GetPostWithComments(ForumId, PostId);
+        // if (Post == null)
+        // {
+        //     ErrorMessage = "Post not found";
+        // }
+        ErrorMessage = string.Empty;
+        Forum = await ForumService.GetForumWithPostsShort(ForumName);
+        if (Forum == null)
+        {
+            ErrorMessage = "Forum not found";
+        }
+        else if (Forum.Posts.Count == 0)
+        {
+            ErrorMessage = "Forum doesn't have any posts";
+        }
+    }
+
+    // private async Task CreateComment()
+    // {
+    //     try
+    //     {
+    //         //await PostService.CreateComment(CreateCommentDto, ForumId, Post.Id);
+    //         //Navigation.NavigateTo($"/forum/{ForumName}");
+
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         ErrorMessage = "Failed to create comment";
+    //     }
+    // }
+}

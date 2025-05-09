@@ -70,11 +70,34 @@ namespace WebService.Proxies
                 return new List<ForumDto>();
             }
         }
+
+        async Task<ForumDto> IContentServiceProxy.GetForumWithSinglePostAsync(int forumId, int postId)
+        {
+            try
+            {
+                var forumReuqestUri = $"/api/content/forum/{forumId}/post/{postId}";
+
+                var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumReuqestUri);
+
+                if (forum == null)
+                {
+                    throw new Exception("No forum Found");
+                }
+
+                return forum;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new ForumDto();
+            }
+        }
     }
 
     public interface IContentServiceProxy
     {
         Task<List<ForumDto>> GetForumsAsync();
+        Task<ForumDto> GetForumWithSinglePostAsync(int forumId, int postId);
         Task CreateForum(CreateForumDto dto);
         Task CreatePost(CreatePostDto dto, int forumId);
     }

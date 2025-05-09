@@ -1,5 +1,5 @@
 ﻿@using WebService.Dtos.CommandDtos
-@using WebService.Views
+@inject NavigationManager Navigation
 @inject IVoteService VoteService
 
 <div class="short-post">
@@ -7,15 +7,15 @@
         <span class="header-left">@Post.Username</span>
         <span class="header-right">@Post.CreatedDate</span>
     </div>
-    
+
     <div class="title">
         @Post.Title
     </div>
-    
+
     <div class="post-content">
         @Post.Content
     </div>
-    
+
     <div class="interactions">
         <div class="vote">
             <i class="@GetUpvoteIcon()" @onclick="() => HandleVote(true)" style="cursor: pointer;"></i>
@@ -24,43 +24,72 @@
             <span>@Post.DownVotesCount</span>
         </div>
         <div class="comments">
-            <i class="bi bi-chat-left-text"></i>
+            @if (true)
+            {
+                <i class="bi bi-chat-left-text" @onclick="NavigateToPost"></i>
+            }
+            else
+            {
+                <i class="bi bi-chat-left-text"></i>
+            }
             <span>@Post.CommentsCount</span>
         </div>
     </div>
-
 </div>
+<h4>@ErrorMessage</h4>
 
 
 @code {
     [Parameter]
-    public PostViewShort Post { get; set; }
+    public PostView? Post { get; set; }
+    [Parameter]
+    public string? ForumName { get; set; }
+    [Parameter]
+    public int ForumId { get; set; }
 
     public string? UserId { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
     {
         UserId = await UserSession.GetUserIdAsync();
     }
 
+    private void NavigateToPost()
+    {
+        Navigation.NavigateTo($"/forum/{ForumName}/post/{Post.Id}/comments");
+    }
+
     private async Task HandleVote(bool voteType)
     {
+        if (string.IsNullOrEmpty(UserId))
+        {
+            ErrorMessage = "UserId is NULL";
+            return;
+        }
         var handlePostVoteDto = new HandlePostVoteDto(voteType);
-    
+
         // Håndter stemme i VoteService
+        if (Post == null)
+        {
+            ErrorMessage = "UserId is NULL";
+            return;
+        }
+
         await VoteService.HandlePostVote(handlePostVoteDto, Post.Id);
 
         // Opdater stemmetællere og stemmer
-        var existingVote = Post.Votes.FirstOrDefault(v => v.UserId == UserId);
+        var existingVote = Post.Votes?.FirstOrDefault(v => v.UserId == UserId);
 
-        if (existingVote != null)
+        if (existingVote != null && Post.Votes != null)
         {
             if (existingVote.VoteType == voteType)
             {
                 Post.Votes.Remove(existingVote);
-                if (voteType) 
+                if (voteType)
                     Post.UpVotesCount--;
-                else 
+                else
                     Post.DownVotesCount--;
             }
             else
@@ -80,6 +109,7 @@
         }
         else
         {
+            Post.Votes ??= new List<PostVoteView>();
             Post.Votes.Add(new PostVoteView { UserId = UserId, VoteType = voteType });
             if (voteType) Post.UpVotesCount++;
             else Post.DownVotesCount++;

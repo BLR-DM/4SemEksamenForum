@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using WebService.Dtos;
+using WebService.Pages;
 
 namespace WebService.Proxies
 {
@@ -25,10 +26,25 @@ namespace WebService.Proxies
 
             return forum;
         }
+
+        async Task<ForumDto> IApiProxy.GetForumWithSinglePost(int forumId, int postId)
+        {
+            var forumRequestUri = $"/api/forums/{forumId}/posts/{postId}";
+
+            var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
+
+            if (forum == null)
+            {
+                throw new Exception("Forum not found");
+            }
+
+            return forum;
+        }
     }
 
     public interface IApiProxy
     {
         Task<ForumDto> GetForumWithPosts(string forumName);
+        Task<ForumDto> GetForumWithSinglePost(int forumId, int postId);
     }
 }
