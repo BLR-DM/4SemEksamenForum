@@ -1,4 +1,5 @@
-﻿using ContentService.Application.Commands.CommandDto.CommentDto;
+﻿using System.Security.Claims;
+using ContentService.Application.Commands.CommandDto.CommentDto;
 using ContentService.Application.Commands.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,23 +12,29 @@ namespace ContentService.Api.Endpoints
             const string tag = "Comment";
 
             app.MapPost("/forum/{forumId}/post/{postId}/comment", 
-                async (IPostCommand command, CreateCommentDto commentDto, int forumId, int postId, string appUserId) =>
+                async (IPostCommand command, CreateCommentDto commentDto, int forumId, int postId, ClaimsPrincipal user) =>
                 {
-                    var username = "Bilal";
+                    var appUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var username = user.FindFirstValue("preferred_username");
+
                     await command.CreateCommentAsync(commentDto, username, postId, appUserId, forumId);
                     return Results.Created();
                 }).WithTags(tag);
 
             app.MapPut("/forum/{forumId}/post/{postId}/comment/{commentId}",
-                async (IPostCommand command, UpdateCommentDto commentDto, string appUserId, int forumId, int postId, int commentId) =>
+                async (IPostCommand command, UpdateCommentDto commentDto, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
                 {
+                    var appUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
                     await command.UpdateCommentAsync(commentDto, appUserId, forumId, postId, commentId);
                     return Results.Ok(commentDto);
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}/post/{postId}/comment/{commentId}",
-                async (IPostCommand command, [FromBody] DeleteCommentDto commentDto, string appUserId, int forumId, int postId, int commentId) =>
+                async (IPostCommand command, [FromBody] DeleteCommentDto commentDto, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
                 {
+                    var appUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
                     await command.DeleteCommentAsync(commentDto, appUserId, forumId, postId, commentId);
                     return Results.Ok("Comment deleted");
                 }).WithTags(tag);

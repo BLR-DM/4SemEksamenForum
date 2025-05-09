@@ -96,6 +96,29 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
 
 });
 
+app.MapGet("/api/forums/{forumId}/posts/{postId}", async (int forumId, int postId, HttpClient httpClient) =>
+{
+    // Get Forum with single Post and Comments
+    var forumRequestUri = $"http://contentservice-api:8080/forum/{forumId}/post/{postId}";
+    var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
+
+    if (forum == null) return Results.NotFound("Forum not found");
+
+    // Get PostVotes for post
+    var postVotesRequestUri = $"http://voteservice-api:8080/Post/{postId}/Votes";
+    var response = await httpClient.PostAsJsonAsync(postVotesRequestUri, postId);
+
+    if (!response.IsSuccessStatusCode) return Results.BadRequest("Failed to get PostVotes");
+
+    var postVotes = await response.Content.ReadFromJsonAsync<List<PostVoteDto>>();
+
+    // Map PostVotes to Post
+    if (postVotes != null)
+        forum.Posts.First().Votes = postVotes;
+
+    return Results.Ok(forum);
+});
+
 
 
 app.UseAuthentication();

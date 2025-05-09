@@ -6,37 +6,19 @@ namespace WebService.Helpers
     public class MapDtoToView
     {
 
-        public static ForumViewShort MapForumWithPostsShortToView(ForumDto forumDto)
+        public static ForumView MapForumWithPostsToView(ForumDto forumDto)
         {
-            var forumViewShort = new ForumViewShort()
+            var forumView = new ForumView()
             {
                 Id = forumDto.Id,
                 ForumName = forumDto.ForumName,
                 Content = forumDto.Content,
                 CreatedDate = forumDto.CreatedDate,
                 UserId = forumDto.AppUserId,
-                Posts = forumDto.Posts.Select(p => MapPostToViewShort(p)).ToList()
+                Posts = forumDto.Posts.Select(p => MapPostWithCommentsToView(p)).ToList()
             };
 
-            return forumViewShort;
-        }
-
-        public static PostViewShort MapPostToViewShort(PostDto postDto)
-        {
-            var postViewShort = new PostViewShort()
-            {
-                Id = postDto.Id,
-                Title = postDto.Title,
-                Content = postDto.Content,
-                Username = postDto.Username,
-                UserId = postDto.AppUserId,
-                CreatedDate = postDto.CreatedDate,
-                UpVotesCount = postDto.Votes?.Count(v => v.VoteType == true) ?? 0,
-                DownVotesCount = postDto.Votes?.Count(v => v.VoteType == false) ?? 0,
-                CommentsCount = postDto.Comments?.Count ?? 0,
-                Votes = postDto.Votes?.Select(pv => MapToPostVoteView(pv)).ToList()
-            };
-            return postViewShort;
+            return forumView;
         }
 
         public static ForumView MapForumToForumView(ForumDto forumDto)
@@ -53,7 +35,39 @@ namespace WebService.Helpers
             return forumViewShort;
         }
 
-        public static PostVoteView MapToPostVoteView(PostVoteDto postVoteDto)
+        public static PostView MapPostWithCommentsToView(PostDto postDto)
+        {
+            var postView = new PostView()
+            {
+                Id = postDto.Id,
+                Title = postDto.Title,
+                Content = postDto.Content,
+                Username = postDto.Username,
+                UserId = postDto.AppUserId,
+                CreatedDate = postDto.CreatedDate,
+                UpVotesCount = postDto.Votes?.Count(v => v.VoteType == true) ?? 0,
+                DownVotesCount = postDto.Votes?.Count(v => v.VoteType == false) ?? 0,
+                CommentsCount = postDto.Comments?.Count ?? 0,
+                Votes = postDto.Votes?.Select(pv => MapPostVoteToView(pv)).ToList(),
+                Comments = postDto.Comments?.Select(c => MapCommentToView(c)).ToList()
+            };
+            return postView;
+        }
+
+        private static CommentView MapCommentToView(CommentDto commentDto)
+        {
+            var commentView = new CommentView()
+            {
+                Id = commentDto.Id,
+                Username = commentDto.Username,
+                Content = commentDto.Content,
+                CreatedDate = commentDto.CreatedDate,
+                UserId = commentDto.AppUserId
+            };
+            return commentView;
+        }
+
+        public static PostVoteView MapPostVoteToView(PostVoteDto postVoteDto)
         {
             var postVoteView = new PostVoteView()
             {
