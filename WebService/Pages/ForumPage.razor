@@ -6,12 +6,12 @@
     <div class ="custom-button">
         <button type="createpost" @onclick="NavigateToCreatePost" class="btn btn-primary">Create a post</button>
     </div>
-    @if (Forum != null && Forum.Posts.Count != 0)
+    @if (Forum?.Posts != null && Forum.Posts.Count != 0)
     {
-        foreach (var shortPost in Forum.Posts)
+        foreach (var post in Forum.Posts)
         {
             <div class="post-wrapper">
-                <ShortPostComponent Post="shortPost"/>
+                <ShortPostComponent Post="post"/>
             </div>
         }
     }
@@ -31,6 +31,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        
         ErrorMessage = string.Empty;
         Forum = await ForumService.GetForumWithPostsShort(ForumName);
         if (Forum == null)

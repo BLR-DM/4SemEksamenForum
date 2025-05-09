@@ -7,15 +7,15 @@
         <span class="header-left">@Post.Username</span>
         <span class="header-right">@Post.CreatedDate</span>
     </div>
-    
+
     <div class="title">
         @Post.Title
     </div>
-    
+
     <div class="post-content">
         @Post.Content
     </div>
-    
+
     <div class="interactions">
         <div class="vote">
             <i class="@GetUpvoteIcon()" @onclick="() => HandleVote(true)" style="cursor: pointer;"></i>
@@ -34,26 +34,38 @@
 
 @code {
     [Parameter]
-    public PostViewShort Post { get; set; }
+    public PostViewShort? Post { get; set; }
 
+    [Parameter]
     public string? UserId { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    // protected override async Task OnParameters()
+    // {
+    //     UserId = await UserSession.GetUserIdAsync();
+    // }
+
+    protected override async Task OnParametersSetAsync()
     {
         UserId = await UserSession.GetUserIdAsync();
     }
 
     private async Task HandleVote(bool voteType)
     {
+        if (string.IsNullOrEmpty(UserId))
+        {
+            return;
+        }
         var handlePostVoteDto = new HandlePostVoteDto(voteType);
     
         // Håndter stemme i VoteService
+        if (Post == null) return;
+        
         await VoteService.HandlePostVote(handlePostVoteDto, Post.Id);
 
         // Opdater stemmetællere og stemmer
-        var existingVote = Post.Votes.FirstOrDefault(v => v.UserId == UserId);
+        var existingVote = Post.Votes?.FirstOrDefault(v => v.UserId == UserId);
 
-        if (existingVote != null)
+        if (existingVote != null && Post.Votes != null)
         {
             if (existingVote.VoteType == voteType)
             {
@@ -80,6 +92,7 @@
         }
         else
         {
+            Post.Votes ??= new List<PostVoteView>();
             Post.Votes.Add(new PostVoteView { UserId = UserId, VoteType = voteType });
             if (voteType) Post.UpVotesCount++;
             else Post.DownVotesCount++;
