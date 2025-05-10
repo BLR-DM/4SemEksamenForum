@@ -2,14 +2,15 @@
 @using WebService.Dtos.CommandDtos
 @inject IPostService PostService
 @inject IForumService ForumService
+@inject NavigationManager Navigation
 
 <h3>PostPage</h3>
 
 <div class="content-wrapper">
     @if (Forum?.Posts is not null)
     {
-        var post = Forum.Posts.FirstOrDefault(p => p.Id == PostId);
-        <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id" />
+        Post = Forum.Posts.FirstOrDefault(p => p.Id == PostId);
+        <ShortPostComponent Post="Post" ForumName="@Forum.ForumName" ForumId="@Forum.Id" />
     }
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
@@ -17,7 +18,7 @@
     }
     <div>
         Comment text area
-        @* <form @onsubmit="CreateComment">
+        <form @onsubmit="CreateComment">
             <div class="form-group">
                 <label for="content">Content</label>
                 <textarea class="form-control" @bind="CreateCommentDto.Content" id="content" rows="3"></textarea>
@@ -25,14 +26,11 @@
             <div class="mt-3">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
-        </form> *@
+        </form>
     </div>
     <div>
         Comments
     </div>
-</div>
-<div class="content-wrapper">
-    Comment submit form?
 </div>
 
 @code {
@@ -41,20 +39,14 @@
 
     public ForumView? Forum { get; set; }
 
-    //public PostView? Post { get; set; }
+    public PostView? Post { get; set; }
 
     public string ErrorMessage { get; set; } = string.Empty;
 
-    //public CreateCommentDto CreateCommentDto { get; set; } = new();
+    public CreateCommentDto CreateCommentDto { get; set; } = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        // ErrorMessage = string.Empty;
-        // Post = await PostService.GetPostWithComments(ForumId, PostId);
-        // if (Post == null)
-        // {
-        //     ErrorMessage = "Post not found";
-        // }
         ErrorMessage = string.Empty;
         Forum = await ForumService.GetForumWithPostsShort(ForumName);
         if (Forum == null)
@@ -67,18 +59,18 @@
         }
     }
 
-    // private async Task CreateComment()
-    // {
-    //     try
-    //     {
-    //         //await PostService.CreateComment(CreateCommentDto, ForumId, Post.Id);
-    //         //Navigation.NavigateTo($"/forum/{ForumName}");
+    private async Task CreateComment()
+    {
+        try
+        {
+            await PostService.CreateComment(CreateCommentDto, Forum.Id, Post.Id);
+            //Navigation.NavigateTo($"/forum/{ForumName}/");
 
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         Console.WriteLine(e);
-    //         ErrorMessage = "Failed to create comment";
-    //     }
-    // }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            ErrorMessage = "Failed to create comment";
+        }
+    }
 }

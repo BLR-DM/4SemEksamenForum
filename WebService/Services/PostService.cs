@@ -14,9 +14,15 @@ namespace WebService.Services
         {
             _proxy = proxy;
         }
+
         async Task IPostService.CreatePost(CreatePostDto dto, int forumId)
         {
             await _proxy.CreatePost(dto, forumId);
+        }
+
+        async Task IPostService.CreateComment(CreateCommentDto dto, int forumId, int postId)
+        {
+            await _proxy.CreateComment(dto, forumId, postId);
         }
 
         async Task<PostView> IPostService.GetPostWithComments(int forumId, int postId)
@@ -32,15 +38,15 @@ namespace WebService.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return new PostView();
             }
-
         }
     }
 
     public interface IPostService
     {
         Task CreatePost(CreatePostDto dto, int forumId);
+        Task CreateComment(CreateCommentDto dto, int forumId, int postId);
         Task<PostView> GetPostWithComments(int forumId, int postId);
     }
 }
