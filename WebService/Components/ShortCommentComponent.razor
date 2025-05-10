@@ -1,0 +1,45 @@
+﻿@inject NavigationManager Navigation
+@inject IVoteService VoteService
+
+<div class="short-comment">
+    <div class="header">
+        <span class="header-left">@Comment.Username</span>
+        <span class="header-right">@Comment.CreatedDate</span>
+    </div>
+
+    <div class="comment-content">
+        @Comment.Content
+    </div>
+</div>
+<h4>@ErrorMessage</h4>
+
+
+@code {
+    [Parameter]
+    public CommentView? Comment { get; set; }
+
+    public string? UserId { get; set; }
+
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        UserId = await UserSession.GetUserIdAsync();
+    }
+}
+
+<style>
+    .short-comment{
+        padding: 10px;
+    }
+
+    .short-comment h4 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .post-content {
+
+    }
+
+</style>

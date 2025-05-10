@@ -9,7 +9,6 @@
 <div class="content-wrapper">
     @if (Forum?.Posts is not null)
     {
-        Post = Forum.Posts.FirstOrDefault(p => p.Id == PostId);
         <ShortPostComponent Post="Post" ForumName="@Forum.ForumName" ForumId="@Forum.Id" />
     }
     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -28,9 +27,22 @@
             </div>
         </form>
     </div>
-    <div>
-        Comments
-    </div>
+</div>
+<div class="mt-3"></div>
+<div class="content-wrapper">
+    @if (Post is not null && Post.Comments.Count != 0)
+    {
+        foreach (var comment in Post.Comments)
+        {
+            <div class="comment-wrapper">
+                <ShortCommentComponent Comment="comment" />
+            </div>
+        }
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-info">@ErrorMessage</div>
+    }
 </div>
 
 @code {
@@ -56,6 +68,10 @@
         else if (Forum.Posts.Count == 0)
         {
             ErrorMessage = "Forum doesn't have any posts";
+        }
+        else
+        {
+            Post = Forum.Posts.FirstOrDefault(p => p.Id == PostId);
         }
     }
 
