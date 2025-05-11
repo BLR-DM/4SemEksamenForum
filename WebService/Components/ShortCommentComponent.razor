@@ -1,4 +1,5 @@
-﻿@inject NavigationManager Navigation
+﻿@using WebService.Dtos.CommandDtos
+@inject NavigationManager Navigation
 @inject IVoteService VoteService
 
 <div class="short-comment">
@@ -9,6 +10,14 @@
 
     <div class="comment-content">
         @Comment.Content
+    </div>
+    <div class="interactions">
+        <div class="vote">
+            <i class="@GetUpvoteIcon()" @onclick="() => HandleVote(true)" style="cursor: pointer;"></i>
+            <span>@Comment.UpVotesCount</span>
+            <i class="@GetDownvoteIcon()" @onclick="() => HandleVote(false)" style="cursor: pointer;"></i>
+            <span>@Comment.DownVotesCount</span>
+        </div>
     </div>
 </div>
 <h4>@ErrorMessage</h4>
@@ -26,6 +35,99 @@
     {
         UserId = await UserSession.GetUserIdAsync();
     }
+
+    private async Task HandleVote(bool voteType)
+    {
+        if (string.IsNullOrEmpty(UserId))
+        {
+            ErrorMessage = "UserId is NULL";
+            return;
+        }
+        var handleCommentVoteDto = new HandleVoteDto(voteType);
+
+        // Håndter stemme i VoteService
+        if (Comment == null)
+        {
+            ErrorMessage = "UserId is NULL";
+            return;
+        }
+
+        await VoteService.HandleCommentVote(handleCommentVoteDto, Comment.Id);
+
+        // Opdater stemmetællere og stemmer
+        var existingVote = Comment.Votes?.FirstOrDefault(v => v.UserId == UserId);
+
+        if (existingVote != null && Comment.Votes != null)
+        {
+            if (existingVote.VoteType == voteType)
+            {
+                Comment.Votes.Remove(existingVote);
+                if (voteType)
+                    Comment.UpVotesCount--;
+                else
+                    Comment.DownVotesCount--;
+            }
+            else
+            {
+                existingVote.VoteType = voteType;
+                if (voteType)
+                {
+                    Comment.UpVotesCount++;
+                    Comment.DownVotesCount--;
+                }
+                else
+                {
+                    Comment.DownVotesCount++;
+                    Comment.UpVotesCount--;
+                }
+            }
+        }
+        else
+        {
+            Comment.Votes ??= new List<VoteView>();
+            Comment.Votes.Add(new VoteView { UserId = UserId, VoteType = voteType });
+            if (voteType) Comment.UpVotesCount++;
+            else Comment.DownVotesCount++;
+        }
+
+        // Tving komponenten til at re-rendre
+        StateHasChanged();
+    }
+
+
+
+
+    private string GetUpvoteIcon()
+    {
+        if (Comment.Votes is null || Comment.Votes.Count == 0)
+        {
+            return "bi bi-hand-thumbs-up";
+        }
+        else if (Comment.Votes.Where(pv => pv.VoteType == true).Any(cv => cv.UserId == UserId))
+        {
+            return "bi bi-hand-thumbs-up-fill";
+        }
+        else
+        {
+            return "bi bi-hand-thumbs-up";
+        }
+    }
+
+    private string GetDownvoteIcon()
+    {
+        if (Comment.Votes is null || Comment.Votes.Count == 0)
+        {
+            return "bi bi-hand-thumbs-down";
+        }
+        else if (Comment.Votes.Where(pv => pv.VoteType == false).Any(cv => cv.UserId == UserId))
+        {
+            return "bi bi-hand-thumbs-down-fill";
+        }
+        else
+        {
+            return "bi bi-hand-thumbs-down";
+        }
+    }
 }
 
 <style>
@@ -40,6 +142,28 @@
 
     .post-content {
 
+    }
+
+    .interactions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .vote {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .bi {
+        font-size: 1.2rem;
+    }
+
+    .bi:hover {
+        color: #0d6efd;
     }
 
 </style>

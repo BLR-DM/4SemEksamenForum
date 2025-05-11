@@ -16,11 +16,10 @@
         <div class="alert alert-info">@ErrorMessage</div>
     }
     <div>
-        Comment text area
         <form @onsubmit="CreateComment">
             <div class="form-group">
-                <label for="content">Content</label>
-                <textarea class="form-control" @bind="CreateCommentDto.Content" id="content" rows="3"></textarea>
+                <label for="comment-content">Submit a comment</label>
+                <textarea class="form-control" @bind="CreateCommentDto.Content" id="comment-content" rows="3"></textarea>
             </div>
             <div class="mt-3">
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -60,12 +59,12 @@
     protected override async Task OnParametersSetAsync()
     {
         ErrorMessage = string.Empty;
-        Forum = await ForumService.GetForumWithPostsShort(ForumName);
+        Forum = await PostService.GetForumWithSinglePost(ForumName, PostId);
         if (Forum == null)
         {
             ErrorMessage = "Forum not found";
         }
-        else if (Forum.Posts.Count == 0)
+        else if (Forum.Posts == null || Forum.Posts.Count == 0)
         {
             ErrorMessage = "Forum doesn't have any posts";
         }
@@ -80,8 +79,6 @@
         try
         {
             await PostService.CreateComment(CreateCommentDto, Forum.Id, Post.Id);
-            //Navigation.NavigateTo($"/forum/{ForumName}/");
-
         }
         catch (Exception e)
         {

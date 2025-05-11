@@ -12,14 +12,28 @@ namespace WebService.Services
             _proxy = proxy;
         }
 
-        async Task IVoteService.HandlePostVote(HandlePostVoteDto dto, int postId)
+        async Task IVoteService.HandlePostVote(HandleVoteDto dto, int postId)
         {
             try
             {
                 await _proxy.HandlePostVote(dto, postId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        async Task IVoteService.HandleCommentVote(HandleVoteDto dto, int commentId)
+        {
+            try
+            {
+                await _proxy.HandleCommentVote(dto, commentId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -27,6 +41,7 @@ namespace WebService.Services
 
     public interface IVoteService
     {
-        Task HandlePostVote(HandlePostVoteDto dto, int postId);
+        Task HandlePostVote(HandleVoteDto dto, int postId);
+        Task HandleCommentVote(HandleVoteDto dto, int commentId);
     }
 }

@@ -19,7 +19,7 @@
         public string AppUserId { get; set; }
         public string CreatedDate { get; set; }
         public List<CommentDto>? Comments { get; set; }
-        public List<PostVoteDto>? Votes { get; set; }
+        public List<VoteDto>? Votes { get; set; }
     }
 
     public record CommentDto()
@@ -29,9 +29,10 @@
         public string Content { get; set; }
         public string CreatedDate { get; set; }
         public string AppUserId { get; set; }
+        public List<VoteDto>? Votes { get; set; }
     }
 
-    public record PostVoteDto
+    public record VoteDto
     {
         public string UserId { get; set; }
         public bool VoteType { get; set; }

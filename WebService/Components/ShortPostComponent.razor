@@ -24,14 +24,7 @@
             <span>@Post.DownVotesCount</span>
         </div>
         <div class="comments">
-            @if (true)
-            {
-                <i class="bi bi-chat-left-text" @onclick="NavigateToPost"></i>
-            }
-            else
-            {
-                <i class="bi bi-chat-left-text"></i>
-            }
+            <i class="bi bi-chat-left-text" @onclick="NavigateToPost"></i>
             <span>@Post.CommentsCount</span>
         </div>
     </div>
@@ -68,7 +61,7 @@
             ErrorMessage = "UserId is NULL";
             return;
         }
-        var handlePostVoteDto = new HandlePostVoteDto(voteType);
+        var handlePostVoteDto = new HandleVoteDto(voteType);
 
         // Håndter stemme i VoteService
         if (Post == null)
@@ -109,8 +102,8 @@
         }
         else
         {
-            Post.Votes ??= new List<PostVoteView>();
-            Post.Votes.Add(new PostVoteView { UserId = UserId, VoteType = voteType });
+            Post.Votes ??= new List<VoteView>();
+            Post.Votes.Add(new VoteView { UserId = UserId, VoteType = voteType });
             if (voteType) Post.UpVotesCount++;
             else Post.DownVotesCount++;
         }
