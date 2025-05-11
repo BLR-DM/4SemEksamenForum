@@ -68,16 +68,19 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
     if (forum == null) return Results.NotFound("Forum not found");
     
     // Get PostVotes for each post in forum
-    var postVoteList = new List<PostVoteListDto>();
+    //var postVoteList = new List<PostVoteListDto>();
 
     var postVotesRequestUri = $"http://voteservice-api:8080/post/votes";
-    var postIds = forum.Posts.Select(p => p.Id).ToList();
+    var postIds = forum.Posts?.Select(p => p.Id).ToList();
+
+    if (postIds == null || postIds.Count == 0)
+        return Results.Ok(forum);
 
     var response = await httpClient.PostAsJsonAsync(postVotesRequestUri, postIds);
 
     if (!response.IsSuccessStatusCode) return Results.BadRequest("Failed to get PostVotes");
 
-    postVoteList = await response.Content.ReadFromJsonAsync<List<PostVoteListDto>>();
+    var postVoteList = await response.Content.ReadFromJsonAsync<List<PostVoteListDto>>();
 
 
     // Map PostVotes to Posts
@@ -96,25 +99,48 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
 
 });
 
-app.MapGet("/api/forums/{forumId}/posts/{postId}", async (int forumId, int postId, HttpClient httpClient) =>
+app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, int postId, HttpClient httpClient) =>
 {
     // Get Forum with single Post and Comments
-    var forumRequestUri = $"http://contentservice-api:8080/forum/{forumId}/post/{postId}";
+    var forumRequestUri = $"http://contentservice-api:8080/forums/{forumName}/post/{postId}";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
     if (forum == null) return Results.NotFound("Forum not found");
 
-    // Get PostVotes for post
+    // Get Votes for post
     var postVotesRequestUri = $"http://voteservice-api:8080/Post/{postId}/Votes";
-    var response = await httpClient.PostAsJsonAsync(postVotesRequestUri, postId);
+    var postVotes = await httpClient.GetFromJsonAsync<PostVoteListDto>(postVotesRequestUri);
 
-    if (!response.IsSuccessStatusCode) return Results.BadRequest("Failed to get PostVotes");
+    if (postVotes == null)
+        return Results.BadRequest("Failed to get PostVotes");
 
-    var postVotes = await response.Content.ReadFromJsonAsync<List<PostVoteDto>>();
+    var post = forum.Posts.FirstOrDefault(p => p.Id == postId);
 
-    // Map PostVotes to Post
-    if (postVotes != null)
-        forum.Posts.First().Votes = postVotes;
+    if (post == null) return Results.Ok(forum);
+
+    post.Votes = postVotes.PostVotes;
+
+    // Get votes for comments
+    var commentVotesRequestUri = $"http://voteservice-api:8080/Comment/Votes";
+    var commentIds = post.Comments?.Select(c => c.Id).ToList();
+
+    if (commentIds == null || commentIds.Count == 0)
+        return Results.Ok(forum);
+
+    var commentVotesResponse = await httpClient.PostAsJsonAsync(commentVotesRequestUri, commentIds);
+
+    if (!commentVotesResponse.IsSuccessStatusCode) return Results.BadRequest("Failed to get CommentVotes");
+
+    var commentVotesList = await commentVotesResponse.Content.ReadFromJsonAsync<List<CommentVoteListDto>>();
+
+    // Map CommentVotes to Comments
+    if (commentVotesList != null && post.Comments != null)
+    {
+        foreach (var comment in post.Comments)
+        {
+            comment.Votes = commentVotesList.FirstOrDefault(cv => cv.CommentId == comment.Id)?.CommentVotes ?? null;
+        }
+    }
 
     return Results.Ok(forum);
 });

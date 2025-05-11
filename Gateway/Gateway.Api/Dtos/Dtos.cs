@@ -22,15 +22,6 @@
         public List<PostVoteDto>? Votes { get; set; }
     }
 
-    public record CommentDto()
-    {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Content { get; set; }
-        public string CreatedDate { get; set; }
-        public string AppUserId { get; set; }
-    }
-
 
     public record PostVoteListDto
     {
@@ -42,5 +33,27 @@
     {
         public string UserId { get; set; }
         public bool VoteType { get; set; }
+    }
+
+    public record CommentVoteDto
+    {
+        public string UserId { get; set; }
+        public bool VoteType { get; set; }
+    }
+
+    public record CommentDto()
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Content { get; set; }
+        public string CreatedDate { get; set; }
+        public string AppUserId { get; set; }
+        public List<CommentVoteDto>? Votes { get; set; }
+    }
+
+    public record CommentVoteListDto
+    {
+        public int CommentId { get; set; }
+        public List<CommentVoteDto> CommentVotes { get; set; }
     }
 }

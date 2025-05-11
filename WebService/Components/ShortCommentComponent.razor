@@ -2,30 +2,21 @@
 @inject NavigationManager Navigation
 @inject IVoteService VoteService
 
-<div class="short-post">
+<div class="short-comment">
     <div class="header">
-        <span class="header-left">@Post.Username</span>
-        <span class="header-right">@Post.CreatedDate</span>
+        <span class="header-left">@Comment.Username</span>
+        <span class="header-right">@Comment.CreatedDate</span>
     </div>
 
-    <div class="title">
-        @Post.Title
+    <div class="comment-content">
+        @Comment.Content
     </div>
-
-    <div class="post-content">
-        @Post.Content
-    </div>
-
     <div class="interactions">
         <div class="vote">
             <i class="@GetUpvoteIcon()" @onclick="() => HandleVote(true)" style="cursor: pointer;"></i>
-            <span>@Post.UpVotesCount</span>
+            <span>@Comment.UpVotesCount</span>
             <i class="@GetDownvoteIcon()" @onclick="() => HandleVote(false)" style="cursor: pointer;"></i>
-            <span>@Post.DownVotesCount</span>
-        </div>
-        <div class="comments">
-            <i class="bi bi-chat-left-text" @onclick="NavigateToPost"></i>
-            <span>@Post.CommentsCount</span>
+            <span>@Comment.DownVotesCount</span>
         </div>
     </div>
 </div>
@@ -34,11 +25,7 @@
 
 @code {
     [Parameter]
-    public PostView? Post { get; set; }
-    [Parameter]
-    public string? ForumName { get; set; }
-    [Parameter]
-    public int ForumId { get; set; }
+    public CommentView? Comment { get; set; }
 
     public string? UserId { get; set; }
 
@@ -49,11 +36,6 @@
         UserId = await UserSession.GetUserIdAsync();
     }
 
-    private void NavigateToPost()
-    {
-        Navigation.NavigateTo($"/forum/{ForumName}/post/{Post.Id}/comments");
-    }
-
     private async Task HandleVote(bool voteType)
     {
         if (string.IsNullOrEmpty(UserId))
@@ -61,51 +43,51 @@
             ErrorMessage = "UserId is NULL";
             return;
         }
-        var handlePostVoteDto = new HandleVoteDto(voteType);
+        var handleCommentVoteDto = new HandleVoteDto(voteType);
 
         // Håndter stemme i VoteService
-        if (Post == null)
+        if (Comment == null)
         {
             ErrorMessage = "UserId is NULL";
             return;
         }
 
-        await VoteService.HandlePostVote(handlePostVoteDto, Post.Id);
+        await VoteService.HandleCommentVote(handleCommentVoteDto, Comment.Id);
 
         // Opdater stemmetællere og stemmer
-        var existingVote = Post.Votes?.FirstOrDefault(v => v.UserId == UserId);
+        var existingVote = Comment.Votes?.FirstOrDefault(v => v.UserId == UserId);
 
-        if (existingVote != null && Post.Votes != null)
+        if (existingVote != null && Comment.Votes != null)
         {
             if (existingVote.VoteType == voteType)
             {
-                Post.Votes.Remove(existingVote);
+                Comment.Votes.Remove(existingVote);
                 if (voteType)
-                    Post.UpVotesCount--;
+                    Comment.UpVotesCount--;
                 else
-                    Post.DownVotesCount--;
+                    Comment.DownVotesCount--;
             }
             else
             {
                 existingVote.VoteType = voteType;
                 if (voteType)
                 {
-                    Post.UpVotesCount++;
-                    Post.DownVotesCount--;
+                    Comment.UpVotesCount++;
+                    Comment.DownVotesCount--;
                 }
                 else
                 {
-                    Post.DownVotesCount++;
-                    Post.UpVotesCount--;
+                    Comment.DownVotesCount++;
+                    Comment.UpVotesCount--;
                 }
             }
         }
         else
         {
-            Post.Votes ??= new List<VoteView>();
-            Post.Votes.Add(new VoteView { UserId = UserId, VoteType = voteType });
-            if (voteType) Post.UpVotesCount++;
-            else Post.DownVotesCount++;
+            Comment.Votes ??= new List<VoteView>();
+            Comment.Votes.Add(new VoteView { UserId = UserId, VoteType = voteType });
+            if (voteType) Comment.UpVotesCount++;
+            else Comment.DownVotesCount++;
         }
 
         // Tving komponenten til at re-rendre
@@ -117,11 +99,11 @@
 
     private string GetUpvoteIcon()
     {
-        if (Post.Votes is null || Post.Votes.Count == 0)
+        if (Comment.Votes is null || Comment.Votes.Count == 0)
         {
             return "bi bi-hand-thumbs-up";
         }
-        else if (Post.Votes.Where(pv => pv.VoteType == true).Any(pv => pv.UserId == UserId))
+        else if (Comment.Votes.Where(pv => pv.VoteType == true).Any(cv => cv.UserId == UserId))
         {
             return "bi bi-hand-thumbs-up-fill";
         }
@@ -133,11 +115,11 @@
 
     private string GetDownvoteIcon()
     {
-        if (Post.Votes is null || Post.Votes.Count == 0)
+        if (Comment.Votes is null || Comment.Votes.Count == 0)
         {
             return "bi bi-hand-thumbs-down";
         }
-        else if (Post.Votes.Where(pv => pv.VoteType == false).Any(pv => pv.UserId == UserId))
+        else if (Comment.Votes.Where(pv => pv.VoteType == false).Any(cv => cv.UserId == UserId))
         {
             return "bi bi-hand-thumbs-down-fill";
         }
@@ -146,40 +128,23 @@
             return "bi bi-hand-thumbs-down";
         }
     }
-
 }
 
 <style>
-    .short-post{
+    .short-comment{
         padding: 10px;
     }
 
-    .short-post h4 {
+    .short-comment h4 {
         margin: 0;
         font-size: 1.2rem;
     }
-    
-    .header{
-        display: flex;
-        justify-content: space-between;
-    }
 
-    .header-left{
-        font-size: 10px;
-    }
-
-    .post-content{
+    .post-content {
 
     }
 
-    .header-right{
-        font-size: 12px;   
-    }
-
-    .title{
-        font-weight: bold;
-    }
-    .interactions{
+    .interactions {
         display: flex;
         align-items: center;
         gap: 20px;
@@ -187,7 +152,7 @@
         color: #555;
     }
 
-    .vote, .comments {
+    .vote {
         display: flex;
         align-items: center;
         gap: 5px;
@@ -197,8 +162,8 @@
         font-size: 1.2rem;
     }
 
-        .bi:hover {
-            color: #0d6efd;
-        }
+    .bi:hover {
+        color: #0d6efd;
+    }
 
 </style>

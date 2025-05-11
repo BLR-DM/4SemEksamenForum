@@ -20,6 +20,13 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(result);
                 }).WithTags(tag);
 
+            app.MapGet("/forums/{forumName}/post/{postId}",
+                async (IForumQuery query, string forumName, int postId) =>
+                {
+                    var result = await query.GetForumByNameWithSinglePostAsync(forumName, postId);
+                    return Results.Ok(result);
+                }).WithTags(tag);
+
             // Write
             app.MapPost("/forum/{forumId}/post",
                 async (IForumCommand command, CreatePostDto postDto, int forumId, ClaimsPrincipal user) =>

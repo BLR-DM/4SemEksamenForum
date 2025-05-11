@@ -118,11 +118,11 @@ app.MapPost("Post/{postId}/Vote",
     }).RequireAuthorization();
 
 app.MapPost("Comment/{commentId}/Vote",
-    async (int commentId, CommentVoteDto dto, ICommentVoteCommand command) =>
+    async (int commentId, CommentVoteDto dto, ICommentVoteCommand command, ClaimsPrincipal user) =>
     {
         try
         {
-            var userId = "";
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             await command.ToggleCommentVote(commentId, dto, userId);
             return Results.Ok();
         }
@@ -178,7 +178,7 @@ app.MapGet("Comment/{commentId}/Votes",
     });
 
 app.MapPost("Comment/Votes",
-    async (List<int> commentIds, ICommentVoteQuery query) =>
+    async ([FromBody] List<int> commentIds, ICommentVoteQuery query) =>
     {
         try
         {

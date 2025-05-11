@@ -48,7 +48,7 @@ namespace WebService.Helpers
                 UpVotesCount = postDto.Votes?.Count(v => v.VoteType == true) ?? 0,
                 DownVotesCount = postDto.Votes?.Count(v => v.VoteType == false) ?? 0,
                 CommentsCount = postDto.Comments?.Count ?? 0,
-                Votes = postDto.Votes?.Select(pv => MapPostVoteToView(pv)).ToList(),
+                Votes = postDto.Votes?.Select(v => MapVoteToView(v)).ToList(),
                 Comments = postDto.Comments?.Select(c => MapCommentToView(c)).ToList()
             };
             return postView;
@@ -62,20 +62,23 @@ namespace WebService.Helpers
                 Username = commentDto.Username,
                 Content = commentDto.Content,
                 CreatedDate = commentDto.CreatedDate,
-                UserId = commentDto.AppUserId
+                UserId = commentDto.AppUserId,
+                UpVotesCount = commentDto.Votes?.Count(v => v.VoteType == true) ?? 0,
+                DownVotesCount = commentDto.Votes?.Count(v => v.VoteType == false) ?? 0,
+                Votes = commentDto.Votes?.Select(v => MapVoteToView(v)).ToList(),
             };
             return commentView;
         }
 
-        public static PostVoteView MapPostVoteToView(PostVoteDto postVoteDto)
+        public static VoteView MapVoteToView(VoteDto voteDto)
         {
-            var postVoteView = new PostVoteView()
+            var voteView = new VoteView()
             {
-                UserId = postVoteDto.UserId,
-                VoteType = postVoteDto.VoteType
+                UserId = voteDto.UserId,
+                VoteType = voteDto.VoteType
             };
 
-            return postVoteView;
+            return voteView;
         }
     }
 }

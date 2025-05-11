@@ -49,6 +49,24 @@ namespace WebService.Proxies
             }
         }
 
+        async Task IContentServiceProxy.CreateComment(CreateCommentDto dto, int forumId, int postId)
+        {
+            try
+            {
+                var uri = $"api/content/forum/{forumId}/post/{postId}/comment";
+
+                var response = await _httpClient.PostAsJsonAsync(uri, dto);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Failed to create comment");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Failed to create comment");
+            }
+        }
+
         async Task<List<ForumDto>> IContentServiceProxy.GetForumsAsync()
         {
             try
@@ -71,11 +89,11 @@ namespace WebService.Proxies
             }
         }
 
-        async Task<ForumDto> IContentServiceProxy.GetForumWithSinglePostAsync(int forumId, int postId)
+        async Task<ForumDto> IContentServiceProxy.GetForumByNameWithSinglePostAsync(string forumName, int postId)
         {
             try
             {
-                var forumReuqestUri = $"/api/content/forum/{forumId}/post/{postId}";
+                var forumReuqestUri = $"/api/content/forum/{forumName}/post/{postId}";
 
                 var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumReuqestUri);
 
@@ -97,8 +115,9 @@ namespace WebService.Proxies
     public interface IContentServiceProxy
     {
         Task<List<ForumDto>> GetForumsAsync();
-        Task<ForumDto> GetForumWithSinglePostAsync(int forumId, int postId);
+        Task<ForumDto> GetForumByNameWithSinglePostAsync(string forumName, int postId);
         Task CreateForum(CreateForumDto dto);
         Task CreatePost(CreatePostDto dto, int forumId);
+        Task CreateComment(CreateCommentDto dto, int forumId, int postId);
     }
 }
