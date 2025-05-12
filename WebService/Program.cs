@@ -13,32 +13,32 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-//builder.Services.AddHttpClient("GatewayApi",
-//        client => client.BaseAddress = new Uri("http://localhost:5000"))
-//    .AddHttpMessageHandler(sp =>
-//    {
-//        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-//            .ConfigureHandler(
-//                authorizedUrls: ["http://localhost:5000"]);
-
-//        return handler;
-//    });
-
-builder.Services.AddHttpClient("GatewayApi", client =>
-    {
-        client.BaseAddress = new Uri("https://blrforum.dk/api/");
-    })
+builder.Services.AddHttpClient("GatewayApi",
+        client => client.BaseAddress = new Uri("http://localhost:5000/api/"))
     .AddHttpMessageHandler(sp =>
     {
-        return sp.GetRequiredService<AuthorizationMessageHandler>()
+        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: [
-                    "https://blrforum.dk/api", 
-                    "https://www.blrforum.dk/api"
-                ],
-                scopes: ["openid", "profile"]
-            );
+                authorizedUrls: ["http://localhost:5000"]);
+
+        return handler;
     });
+
+//builder.Services.AddHttpClient("GatewayApi", client =>
+//    {
+//        client.BaseAddress = new Uri("https://blrforum.dk/api/");
+//    })
+//    .AddHttpMessageHandler(sp =>
+//    {
+//        return sp.GetRequiredService<AuthorizationMessageHandler>()
+//            .ConfigureHandler(
+//                authorizedUrls: [
+//                    "https://blrforum.dk/api", 
+//                    "https://www.blrforum.dk/api"
+//                ],
+//                scopes: ["openid", "profile"]
+//            );
+//    });
 
 
 //builder.Services.AddHttpClient("GatewayApi",
@@ -56,7 +56,7 @@ builder.Services.AddScoped<ISubscriptionServiceProxy, SubscriptionServiceProxy>(
 
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
-builder.Services.AddScoped<UserSessionService, UserSessionService>();
+builder.Services.AddScoped<UserSessionService>();
 
 builder.Services.AddScoped<IPostService, PostService>();
 
@@ -79,9 +79,9 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.DefaultScopes.Add("email");
     options.ProviderOptions.DefaultScopes.Add("webservice_api_scope");
 
-    // Explicit URIs for production deployment
-    options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
-    options.ProviderOptions.PostLogoutRedirectUri = "https://www.blrforum.dk/loggedout";
+    //// Explicit URIs for production deployment
+    //options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
+    //options.ProviderOptions.PostLogoutRedirectUri = "https://www.blrforum.dk/loggedout";
 });
 
 

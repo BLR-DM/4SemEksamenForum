@@ -1,64 +1,84 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using System.Data;
 using System.Security.Claims;
-using Microsoft.JSInterop;
-using Blazored.SessionStorage;
 using System.Text.Json;
+using Microsoft.AspNetCore.Components.Authorization;
+using Newtonsoft.Json;
+using WebService.Layout;
+using WebService.Views;
 
 namespace WebService.Services
 {
     public class UserSessionService
     {
-        private readonly ISessionStorageService _sessionStorage;
+        private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly ISubscriptionService _subscriptionService;
+        private TaskCompletionSource _readyTcs = new();
 
-        private JsonElement? _cachedUser;
+        public bool IsLoggedIn { get; private set; }
+        public string? UserId { get; private set; }
+        public string? Username { get; private set; }
+        public List<string> Roles { get; private set; } = [];
+        public List<int> SubscribedForumIds { get; set; } = [];
 
-        public UserSessionService(ISessionStorageService sessionStorage)
+        public List<ForumView>? SubscribedForums { get; set; } = [];
+
+        public event Action? OnSubscriptionsChanged;
+
+        public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService)
         {
-            _sessionStorage = sessionStorage;
+            _authStateProvider = authStateProvider;
+            _subscriptionService = subscriptionService;
         }
 
-        private async Task<JsonElement?> GetUserObjectAsync()
+        public async Task InitializeAsync()
         {
-            if (_cachedUser != null)
-                return _cachedUser;
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
-            var raw = await _sessionStorage.GetItemAsStringAsync("oidc.user:https://keycloak.blrforum.dk/realms/4SemForumProjekt:webservice-client");
-            if (string.IsNullOrEmpty(raw))
-                return null;
+            if (user.Identity is { IsAuthenticated: true })
+            {
+                IsLoggedIn = true;
+                UserId = user.FindFirst(c => c.Type == "sub")?.Value;
+                Username = user.FindFirst(c => c.Type == "preferred_username")?.Value;
+                var rawRoles = user.FindFirst(c => c.Type == "role")?.Value;
 
-            var doc = JsonDocument.Parse(raw);
-            _cachedUser = doc.RootElement.Clone(); // Clone fordi JsonDocument bliver disposed
-            return _cachedUser;
+                if(rawRoles != null)    
+                    Roles = JsonConvert.DeserializeObject<List<string>>(rawRoles) ?? [];
+
+                await GetSubscribedForumIds();
+            }
+            else
+            {
+                IsLoggedIn = false;
+                UserId = null;
+                Roles.Clear();
+            }
+
+            _readyTcs.TrySetResult();
         }
 
-        public async Task<bool> IsLoggedInAsync()
+        private async Task GetSubscribedForumIds()
         {
-            var user = await GetUserObjectAsync();
-            return user != null;
+            if(UserId != null)
+                SubscribedForumIds = await _subscriptionService.GetSubscribedForumIds(UserId);
+
         }
 
-        public async Task<string?> GetUsernameAsync()
+        public void AddForumSubscription(int forumId)
         {
-            var user = await GetUserObjectAsync();
-            return user?.GetProperty("profile").GetProperty("preferred_username").GetString();
+            SubscribedForumIds.Add(forumId);
+            OnSubscriptionsChanged?.Invoke();
+        }
+        public void RemoveForumSubscription(int forumId)
+        {
+            SubscribedForumIds.Remove(forumId);
+            OnSubscriptionsChanged?.Invoke();
         }
 
-        public async Task<string?> GetUserIdAsync()
-        {
-            var user = await GetUserObjectAsync();
-            return user?.GetProperty("profile").GetProperty("sub").GetString();
-        }
 
-        public async Task<string?> GetAccessTokenAsync()
-        {
-            var user = await GetUserObjectAsync();
-            return user?.GetProperty("access_token").GetString();
-        }
 
-        public async Task<string?> GetIdTokenAsync()
-        {
-            var user = await GetUserObjectAsync();
-            return user?.GetProperty("id_token").GetString();
-        }
+        public bool HasRole(string role) => Roles.Contains(role);
+
+        public Task WaitUntilReadyAsync() => _readyTcs.Task;
     }
 }

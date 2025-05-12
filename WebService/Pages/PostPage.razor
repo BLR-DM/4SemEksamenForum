@@ -3,6 +3,7 @@
 @inject IPostService PostService
 @inject IForumService ForumService
 @inject NavigationManager Navigation
+@inject UserSessionService Session
 
 <h3>PostPage</h3>
 
@@ -29,7 +30,7 @@
 </div>
 <div class="mt-3"></div>
 <div class="content-wrapper">
-    @if (Post is not null && Post.Comments.Count != 0)
+    @if (Post is not null && Post?.Comments?.Count != 0)
     {
         foreach (var comment in Post.Comments)
         {
@@ -59,12 +60,16 @@
     protected override async Task OnParametersSetAsync()
     {
         ErrorMessage = string.Empty;
-        Forum = await PostService.GetForumWithSinglePost(ForumName, PostId);
+
+        await Session.WaitUntilReadyAsync();
+
+        await SetForumWithSinglePost();
+
         if (Forum == null)
         {
             ErrorMessage = "Forum not found";
         }
-        else if (Forum.Posts == null || Forum.Posts.Count == 0)
+        else if (Forum?.Posts == null || Forum.Posts.Count == 0)
         {
             ErrorMessage = "Forum doesn't have any posts";
         }
@@ -74,11 +79,17 @@
         }
     }
 
+    private async Task SetForumWithSinglePost()
+    {
+        Forum = await PostService.GetForumWithSinglePost(ForumName, PostId);
+    }
+
     private async Task CreateComment()
     {
         try
         {
             await PostService.CreateComment(CreateCommentDto, Forum.Id, Post.Id);
+            StateHasChanged();
         }
         catch (Exception e)
         {
