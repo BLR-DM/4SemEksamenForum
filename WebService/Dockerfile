@@ -14,4 +14,4 @@ RUN dotnet publish -c $BUILD_CONFIGURATION -o out
 # Stage 2: Serve with custom NGINX config
 FROM nginx:alpine
 COPY WebService/nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /app/out/wwwroot /usr/share/nginx/html
+COPY --from=build /app/WebService/out/wwwroot /usr/share/nginx/html
