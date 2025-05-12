@@ -1,4 +1,4 @@
-name: CI - Build and Push Webservice Blazor WASM
+name: Webservice Blazor WASM - Build > Push > Pull > Compose
 
 on:
   workflow_dispatch:
@@ -24,3 +24,15 @@ jobs:
           -f WebService/Dockerfile \
           .
         docker push bilalkinali/webservice-wasm:latest
+    
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd Projects/4SemForumProjekt
+          docker compose pull webservice-wasm
+          docker compose up -d webservice-wasm
+          docker image prune -f
