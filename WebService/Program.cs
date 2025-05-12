@@ -24,16 +24,28 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //        return handler;
 //    });
 
+//builder.Services.AddHttpClient("GatewayApi", client =>
+//    {
+//        client.BaseAddress = new Uri("https://www.blrforum.dk/api");
+//    })
+//    .AddHttpMessageHandler(sp =>
+//    {
+//        return sp.GetRequiredService<AuthorizationMessageHandler>()
+//            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
+//    });
+
 builder.Services.AddHttpClient("GatewayApi", client =>
     {
-        client.BaseAddress = new Uri("https://www.blrforum.dk/api");
+        client.BaseAddress = new Uri("https://blrforum.dk/api");
     })
     .AddHttpMessageHandler(sp =>
     {
         return sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
+            .ConfigureHandler(
+                authorizedUrls: ["https://blrforum.dk/api"],
+                scopes: ["openid", "profile"]
+            );
     });
-
 
 
 //builder.Services.AddHttpClient("GatewayApi",
@@ -65,6 +77,7 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddOidcAuthentication(options =>
 {
     options.ProviderOptions.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
+    options.ProviderOptions.MetadataUrl = "https://keycloak.blrforum.dk/realms/4SemForumProjekt/.well-known/openid-configuration";
     options.ProviderOptions.ClientId = "webservice-client";
     options.ProviderOptions.ResponseType = "code";
 

@@ -27,12 +27,7 @@ builder.Services.AddReverseProxy()
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
-        options.Authority = "https://keycloak.blrforum.dk//realms/4SemForumProjekt";
+        options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "gateway-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -51,9 +46,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "AllowWebService",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5221") // Din Blazor-klients adresse
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins(
+                    "https://blrforum.dk",       // Production
+                    "https://www.blrforum.dk",   // Alternate production
+                    "http://localhost:5221"      // Development
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();  // Required for cookies/auth headers
         });
 });
 
