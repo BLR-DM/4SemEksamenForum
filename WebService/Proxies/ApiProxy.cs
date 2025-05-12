@@ -15,7 +15,7 @@ namespace WebService.Proxies
 
         async Task<ForumDto> IApiProxy.GetForumWithPosts(string forumName)
         {
-            var forumRequestUri = $"/forums/{forumName}/posts";
+            var forumRequestUri = $"/api/forums/{forumName}/posts";
 
             var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
@@ -29,7 +29,7 @@ namespace WebService.Proxies
 
         async Task<ForumDto> IApiProxy.GetForumWithSinglePost(string forumName, int postId)
         {
-            var forumRequestUri = $"/forums/{forumName}/posts/{postId}";
+            var forumRequestUri = $"/api/forums/{forumName}/posts/{postId}";
 
             var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 

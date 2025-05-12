@@ -17,7 +17,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"/vote/Post/{postId}/Vote";
+                var uri = $"/api/vote/Post/{postId}/Vote";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -35,7 +35,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"/vote/Comment/{commentId}/Vote";
+                var uri = $"/api/vote/Comment/{commentId}/Vote";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
