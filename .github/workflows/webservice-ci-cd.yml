@@ -1,4 +1,4 @@
-name: Webservice Blazor WASM - Build > Push > Pull > Compose
+name: Webservice - Build > Push > Pull > Compose
 
 on:
   workflow_dispatch:
