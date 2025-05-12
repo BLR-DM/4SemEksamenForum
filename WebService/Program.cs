@@ -26,12 +26,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddHttpClient("GatewayApi", client =>
     {
-        client.BaseAddress = new Uri("https://www.blrforum.dk");
+        client.BaseAddress = new Uri("https://www.blrforum.dk/api");
     })
     .AddHttpMessageHandler(sp =>
     {
         return sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk"]);
+            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
     });
 
 

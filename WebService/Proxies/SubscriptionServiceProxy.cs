@@ -13,7 +13,7 @@ namespace WebService.Proxies
 
         async Task<List<int>> ISubscriptionServiceProxy.GetSubscribedForumIds(string userId)
         {
-            var subscriptionRequestUri = $"/api/subscription/Users/{userId}/Forums/Subscriptions/";
+            var subscriptionRequestUri = $"/subscription/Users/{userId}/Forums/Subscriptions/";
 
             var forumIds = await _httpClient.GetFromJsonAsync<List<int>>(subscriptionRequestUri);
 
