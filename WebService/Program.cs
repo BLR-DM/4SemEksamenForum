@@ -24,16 +24,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //        return handler;
 //    });
 
-//builder.Services.AddHttpClient("GatewayApi", client =>
-//    {
-//        client.BaseAddress = new Uri("https://www.blrforum.dk/api");
-//    })
-//    .AddHttpMessageHandler(sp =>
-//    {
-//        return sp.GetRequiredService<AuthorizationMessageHandler>()
-//            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
-//    });
-
 builder.Services.AddHttpClient("GatewayApi", client =>
     {
         client.BaseAddress = new Uri("https://blrforum.dk/api/");
@@ -42,7 +32,10 @@ builder.Services.AddHttpClient("GatewayApi", client =>
     {
         return sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: ["https://blrforum.dk/api"],
+                authorizedUrls: [
+                    "https://blrforum.dk/api", 
+                    "https://www.blrforum.dk/api"
+                ],
                 scopes: ["openid", "profile"]
             );
     });

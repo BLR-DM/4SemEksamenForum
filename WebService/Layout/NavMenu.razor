@@ -1,6 +1,8 @@
 ﻿@inject ISubscriptionService SubscriptionService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject UserSessionService UserSession
+@inject AuthenticationStateProvider AuthProvider
+
 
 <MudNavMenu>
     <AuthorizeView>
@@ -35,16 +37,20 @@
             SubscribedForums = new List<ForumView>();
             return;
         }
-
-        if (await UserSession.IsLoggedInAsync())
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
         {
-            var userId = await UserSession.GetUserIdAsync();
-            if (userId is not null)
+
+            if (await UserSession.IsLoggedInAsync())
             {
-                var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds(userId);
-                SubscribedForums = Forums
-                    .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
-                    .ToList();
+                var userId = await UserSession.GetUserIdAsync();
+                if (userId is not null)
+                {
+                    var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds(userId);
+                    SubscribedForums = Forums
+                        .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
+                        .ToList();
+                }
             }
         }
     }

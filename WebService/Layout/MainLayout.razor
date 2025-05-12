@@ -2,7 +2,10 @@
 @using WebService.Components
 @inject NavigationManager Navigation
 @inject IForumService ForumService
+@inject UserSessionService UserSessionService
 @inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthProvider
+
 
 <MudThemeProvider />
 
@@ -54,9 +57,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Forums = await ForumService.GetForums();
-        ForumNames = Forums.Select(f => f.ForumName).ToList();
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            if (await UserSessionService.IsLoggedInAsync())
+            {
+                Forums = await ForumService.GetForums();
+                ForumNames = Forums.Select(f => f.ForumName).ToList();
+            }
+        }
     }
+
 
     private Task<IEnumerable<string>> SearchForums(string value, CancellationToken token)
     {
