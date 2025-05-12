@@ -36,7 +36,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddHttpClient("GatewayApi", client =>
     {
-        client.BaseAddress = new Uri("https://blrforum.dk/api");
+        client.BaseAddress = new Uri("https://blrforum.dk/api/");
     })
     .AddHttpMessageHandler(sp =>
     {

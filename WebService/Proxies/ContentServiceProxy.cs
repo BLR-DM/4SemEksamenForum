@@ -17,7 +17,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = "/content/forum";
+                var uri = "content/forum";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -35,7 +35,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"/content/forum/{forumId}/post";
+                var uri = $"content/forum/{forumId}/post";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -53,7 +53,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"/content/forum/{forumId}/post/{postId}/comment";
+                var uri = $"content/forum/{forumId}/post/{postId}/comment";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -71,7 +71,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = "/content/forum";
+                var forumReuqestUri = "content/forum";
 
                 var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
 
@@ -93,7 +93,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = $"/content/forum/{forumName}/post/{postId}";
+                var forumReuqestUri = $"content/forum/{forumName}/post/{postId}";
 
                 var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumReuqestUri);
 
