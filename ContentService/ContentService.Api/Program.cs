@@ -93,11 +93,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGateway", builder =>
     {
-        builder.WithOrigins("http://localhost:5000")
+        builder.WithOrigins("https://www.blrforum.dk", "https://blrforum.dk")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
 });
+
 
 //KEYCLOAK OPSÆTNING
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

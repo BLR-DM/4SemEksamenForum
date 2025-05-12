@@ -31,7 +31,7 @@ builder.Services.AddHttpClient("GatewayApi", client =>
     .AddHttpMessageHandler(sp =>
     {
         return sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
+            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk"]);
     });
 
 
