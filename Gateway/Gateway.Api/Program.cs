@@ -71,6 +71,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowWebService");
 
+Console.WriteLine("REGISTERED /api/test");
+
 app.MapGet("/api/test", async (IHttpClientFactory factory) =>
 {
     var client = factory.CreateClient();
