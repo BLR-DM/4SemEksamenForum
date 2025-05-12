@@ -71,6 +71,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowWebService");
 
+app.MapGet("/api/test", async (IHttpClientFactory factory) =>
+{
+    var client = factory.CreateClient();
+    var res = await client.GetAsync("http://contentservice-api:8080/forum");
+    var body = await res.Content.ReadAsStringAsync();
+    return Results.Content(body, "application/json");
+});
+
+
 app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient httpClient) =>
 {
     // Get Forum with Posts and Comments
