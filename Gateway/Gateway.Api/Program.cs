@@ -1,6 +1,8 @@
 using Gateway.Api.Dtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpClient();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+    // Adjust if needed – this is usually the Docker gateway IP for bridge networks
+    options.KnownProxies.Add(IPAddress.Parse("172.18.0.1"));
+});
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -48,6 +58,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
