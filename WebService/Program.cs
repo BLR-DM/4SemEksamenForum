@@ -13,16 +13,27 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("GatewayApi",
-        client => client.BaseAddress = new Uri("http://localhost:5000"))
+//builder.Services.AddHttpClient("GatewayApi",
+//        client => client.BaseAddress = new Uri("http://localhost:5000"))
+//    .AddHttpMessageHandler(sp =>
+//    {
+//        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+//            .ConfigureHandler(
+//                authorizedUrls: ["http://localhost:5000"]);
+
+//        return handler;
+//    });
+
+builder.Services.AddHttpClient("GatewayApi", client =>
+        client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
     .AddHttpMessageHandler(sp =>
     {
         var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(
-                authorizedUrls: ["http://localhost:5000"]);
+            .ConfigureHandler(authorizedUrls: [builder.HostEnvironment.BaseAddress]);
 
         return handler;
     });
+
 
 //builder.Services.AddHttpClient("GatewayApi",
 //        client => client.BaseAddress = new Uri("http://localhost:5000"));
@@ -61,7 +72,7 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.DefaultScopes.Add("email");
     options.ProviderOptions.DefaultScopes.Add("webservice_api_scope");
 
-    // 🔽 Explicit URIs for production deployment
+    // Explicit URIs for production deployment
     options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
     options.ProviderOptions.PostLogoutRedirectUri = "https://www.blrforum.dk/loggedout";
 });
