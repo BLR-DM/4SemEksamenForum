@@ -1,6 +1,7 @@
 ﻿@using WebService.Dtos.CommandDtos
 @inject NavigationManager Navigation
 @inject IVoteService VoteService
+@inject UserSessionService Session
 
 <div class="short-comment">
     <div class="header">
@@ -17,7 +18,12 @@
             <span>@Comment.UpVotesCount</span>
             <i class="@GetDownvoteIcon()" @onclick="() => HandleVote(false)" style="cursor: pointer;"></i>
             <span>@Comment.DownVotesCount</span>
+            <span>@Comment.UserId -- @Session.UserId</span>
         </div>
+        @if(Comment.UserId == Session.UserId || Session.HasRole("moderator"))
+        {
+            <i class="bi bi-trash3"></i>
+        }
     </div>
 </div>
 <h4>@ErrorMessage</h4>
@@ -27,18 +33,11 @@
     [Parameter]
     public CommentView? Comment { get; set; }
 
-    public string? UserId { get; set; }
-
     public string ErrorMessage { get; set; } = string.Empty;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        UserId = await UserSession.GetUserIdAsync();
-    }
 
     private async Task HandleVote(bool voteType)
     {
-        if (string.IsNullOrEmpty(UserId))
+        if (string.IsNullOrEmpty(Session.UserId))
         {
             ErrorMessage = "UserId is NULL";
             return;
@@ -55,7 +54,7 @@
         await VoteService.HandleCommentVote(handleCommentVoteDto, Comment.Id);
 
         // Opdater stemmetællere og stemmer
-        var existingVote = Comment.Votes?.FirstOrDefault(v => v.UserId == UserId);
+        var existingVote = Comment.Votes?.FirstOrDefault(v => v.UserId == Session.UserId);
 
         if (existingVote != null && Comment.Votes != null)
         {
@@ -85,7 +84,7 @@
         else
         {
             Comment.Votes ??= new List<VoteView>();
-            Comment.Votes.Add(new VoteView { UserId = UserId, VoteType = voteType });
+            Comment.Votes.Add(new VoteView { UserId = Session.UserId, VoteType = voteType });
             if (voteType) Comment.UpVotesCount++;
             else Comment.DownVotesCount++;
         }
@@ -99,11 +98,11 @@
 
     private string GetUpvoteIcon()
     {
-        if (Comment.Votes is null || Comment.Votes.Count == 0)
+        if (Comment?.Votes is null || Comment.Votes.Count == 0)
         {
             return "bi bi-hand-thumbs-up";
         }
-        else if (Comment.Votes.Where(pv => pv.VoteType == true).Any(cv => cv.UserId == UserId))
+        else if (Comment.Votes.Where(pv => pv.VoteType == true).Any(cv => cv.UserId == Session.UserId))
         {
             return "bi bi-hand-thumbs-up-fill";
         }
@@ -115,11 +114,11 @@
 
     private string GetDownvoteIcon()
     {
-        if (Comment.Votes is null || Comment.Votes.Count == 0)
+        if (Comment?.Votes is null || Comment.Votes.Count == 0)
         {
             return "bi bi-hand-thumbs-down";
         }
-        else if (Comment.Votes.Where(pv => pv.VoteType == false).Any(cv => cv.UserId == UserId))
+        else if (Comment.Votes.Where(pv => pv.VoteType == false).Any(cv => cv.UserId == Session.UserId))
         {
             return "bi bi-hand-thumbs-down-fill";
         }
@@ -150,6 +149,7 @@
         gap: 20px;
         font-size: 0.9rem;
         color: #555;
+        justify-content: space-between;
     }
 
     .vote {

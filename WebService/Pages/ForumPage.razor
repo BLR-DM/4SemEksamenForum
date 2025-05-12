@@ -1,18 +1,31 @@
 ﻿@page "/forum/{ForumName}"
 @inject IForumService ForumService;
 @inject NavigationManager Navigation
+@inject UserSessionService Session
 
 <div class="content-wrapper">
-    <div class ="custom-button">
-        <button type="createpost" @onclick="NavigateToCreatePost" class="btn btn-primary">Create a post</button>
-    </div>
-    @if (Forum?.Posts is not null && Forum.Posts.Count != 0) 
+    @if (Forum is not null)
     {
-        foreach (var post in Forum.Posts)
+        <div class="custom-button">
+            <button type="createpost" @onclick="NavigateToCreatePost" class="btn btn-primary">Create a post</button>
+            @if (Session.SubscribedForumIds.Any(sfid => sfid == Forum?.Id))
+            {
+                <button @onclick="UnSubscribeFromForum" class="btn btn-secondary">Unsubscribe</button>
+
+            }
+            else
+            {
+                <button @onclick="SubscribeToForum" class="btn btn-primary">Subscribe</button>
+            }
+        </div>
+        @if (Forum?.Posts is not null && Forum.Posts.Count != 0)
         {
-            <div class="post-wrapper">
-                <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id"/>
-            </div>
+            foreach (var post in Forum.Posts)
+            {
+                <div class="post-wrapper">
+                    <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id"/>
+                </div>
+            }
         }
     }
     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -32,6 +45,9 @@
     protected override async Task OnParametersSetAsync()
     {
         ErrorMessage = string.Empty;
+
+        await Session.WaitUntilReadyAsync();
+
         Forum = await ForumService.GetForumWithPostsShort(ForumName);
         if (Forum == null)
         {
@@ -46,6 +62,16 @@
     private async void NavigateToCreatePost()
     {
         Navigation.NavigateTo($"/forum/{ForumName}/{Forum.Id}/post/create");
+    }
+
+    private void SubscribeToForum()
+    {
+        Session.AddForumSubscription(Forum.Id);
+    }
+
+    private void UnSubscribeFromForum()
+    {
+        Session.RemoveForumSubscription(Forum.Id);
     }
 
 
@@ -68,7 +94,7 @@
 .custom-button{
     display: flex;
     margin-bottom: 12px;
-    justify-content: end:
+    justify-content: space-between;
 }
 
 </style>

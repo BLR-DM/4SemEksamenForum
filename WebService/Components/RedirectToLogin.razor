@@ -1,0 +1,36 @@
+﻿@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (!_redirecting)
+        {
+            <p>Redirecting to login...</p>
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private bool _redirecting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true && !_redirecting)
+        {
+            _redirecting = true;
+
+            // Undgå redirect-loop ved at tjekke om vi allerede ER på login-siden
+            if (!Navigation.Uri.Contains("authentication/login", StringComparison.OrdinalIgnoreCase))
+            {
+                Navigation.NavigateTo("authentication/login", forceLoad: true);
+            }
+        }
+    }
+
+}
+
+

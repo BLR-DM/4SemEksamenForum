@@ -2,9 +2,9 @@
 @using WebService.Components
 @inject NavigationManager Navigation
 @inject IForumService ForumService
-@inject UserSessionService UserSessionService
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthProvider
+@inject UserSessionService Session
 
 
 <MudThemeProvider />
@@ -14,7 +14,6 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
-
         <MudAutocomplete T="string"
         Value="SearchText" 
         SearchFunc="SearchForums" 
@@ -47,6 +46,7 @@
 
     public string SearchText { get; set; } = string.Empty;
 
+
     public List<string> ForumNames { get; set; } = [];
     public List<ForumView> Forums { get; set; }
 
@@ -57,14 +57,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
+        await Task.Delay(1500);
+        await Session.InitializeAsync();
+
+        if (Session.IsLoggedIn)
         {
-            if (await UserSessionService.IsLoggedInAsync())
-            {
-                Forums = await ForumService.GetForums();
-                ForumNames = Forums.Select(f => f.ForumName).ToList();
-            }
+            Forums = await ForumService.GetForums();
+            ForumNames = Forums.Select(f => f.ForumName).ToList();
         }
     }
 

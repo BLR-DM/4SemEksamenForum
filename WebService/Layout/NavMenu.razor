@@ -1,7 +1,8 @@
 ﻿@inject ISubscriptionService SubscriptionService
 @inject AuthenticationStateProvider AuthStateProvider
-@inject UserSessionService UserSession
 @inject AuthenticationStateProvider AuthProvider
+
+@inject UserSessionService Session
 
 
 <MudNavMenu>
@@ -30,30 +31,36 @@
 
     public List<ForumView>? SubscribedForums { get; set; } = [];
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnInitialized()
+    {
+        Session.OnSubscriptionsChanged += SetSubscribedForums;
+    }
+
+    protected override void OnParametersSet()
     {
         if (Forums is null || Forums.Count == 0)
         {
             SubscribedForums = new List<ForumView>();
             return;
         }
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
 
-            if (await UserSession.IsLoggedInAsync())
-            {
-                var userId = await UserSession.GetUserIdAsync();
-                if (userId is not null)
-                {
-                    var subscribedForumIds = await SubscriptionService.GetSubscribedForumIds(userId);
-                    SubscribedForums = Forums
-                        .Where(f => subscribedForumIds.Contains(Convert.ToInt32(f.Id)))
-                        .ToList();
-                }
-            }
+        if (Session.IsLoggedIn)
+        {
+            SetSubscribedForums();
         }
+
     }
 
+    private void SetSubscribedForums()
+    {
+        SubscribedForums = Forums?
+            .Where(f => Session.SubscribedForumIds.Contains(f.Id))
+            .ToList();
+    }
+
+    public void Dispose()
+    {
+        Session.OnSubscriptionsChanged -= SetSubscribedForums;
+    }
 
 }
