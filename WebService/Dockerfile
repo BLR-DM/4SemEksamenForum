@@ -1,11 +1,16 @@
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
-COPY WebService/*.csproj ./
-RUN dotnet restore
-COPY WebService/. ./
-RUN dotnet publish -c Release -o out
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
 
-# Stage 2: Serve with NGINX
+COPY Directory.Packages.props ./
+COPY WebService/WebService.csproj WebService/
+RUN dotnet restore WebService/WebService.csproj
+
+COPY WebService/ WebService/
+WORKDIR /src/WebService
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish
+
+# Stage 2: Serve with lightweight NGINX
 FROM nginx:alpine
-COPY --from=build /app/out/wwwroot /usr/share/nginx/html
+COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
