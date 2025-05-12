@@ -25,14 +25,15 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //    });
 
 builder.Services.AddHttpClient("GatewayApi", client =>
-        client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    {
+        client.BaseAddress = new Uri("https://www.blrforum.dk/api/");
+    })
     .AddHttpMessageHandler(sp =>
     {
-        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(authorizedUrls: [builder.HostEnvironment.BaseAddress]);
-
-        return handler;
+        return sp.GetRequiredService<AuthorizationMessageHandler>()
+            .ConfigureHandler(authorizedUrls: ["https://www.blrforum.dk/api"]);
     });
+
 
 
 //builder.Services.AddHttpClient("GatewayApi",
