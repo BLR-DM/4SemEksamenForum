@@ -17,7 +17,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"api/content/forum";
+                var uri = "api/content/forum";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -71,7 +71,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = $"/api/content/forum";
+                var forumReuqestUri = "/content/forum";
 
                 var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
 
