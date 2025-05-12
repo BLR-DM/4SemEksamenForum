@@ -55,12 +55,16 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
     options.ProviderOptions.ClientId = "webservice-client";
     options.ProviderOptions.ResponseType = "code";
+
     options.ProviderOptions.DefaultScopes.Add("openid");
     options.ProviderOptions.DefaultScopes.Add("profile");
     options.ProviderOptions.DefaultScopes.Add("email");
     options.ProviderOptions.DefaultScopes.Add("webservice_api_scope");
-});
 
+    // 🔽 Explicit URIs for production deployment
+    options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
+    options.ProviderOptions.PostLogoutRedirectUri = "https://www.blrforum.dk/loggedout";
+});
 
 
 builder.Services.AddMudServices();
