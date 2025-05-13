@@ -8,7 +8,7 @@
 
     public record UserUnSubscribedFromForumEventDto(string UserId, int SubscriptionId, int ForumId);
 
-    public record UserUnSubscribedToPostEventDto(string UserId, int SubscriptionId);
+    public record UserUnSubscribedFromPostEventDto(string UserId, int SubscriptionId, int PostId);
 
     public record NotifyForumSubscriberEventDto(int ForumId, int PostId);
 

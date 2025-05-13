@@ -38,9 +38,9 @@ namespace SubscriptionService.Application.Services
             await _publisherService.PublishEvent("user-subscribed-to-post", evtDto);
         }
 
-        async Task IEventHandler.UserUnsubscribedFromPost(string userId, int subscriptionId)
+        async Task IEventHandler.UserUnsubscribedFromPost(string userId, int subscriptionId, int postId)
         {
-            var evtDto = new UserUnSubscribedToPostEventDto(userId, subscriptionId);
+            var evtDto = new UserUnSubscribedFromPostEventDto(userId, subscriptionId, postId);
             await _publisherService.PublishEvent("user-unsubscribed-from-post", evtDto);
         }
 
@@ -60,7 +60,7 @@ namespace SubscriptionService.Application.Services
         Task FailedToSubscribeUserOnForumCreation(string userId, int forumId);
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
         Task UserUnsubscribedFromForum(string userId, int subscriptionId, int forumId);
-        Task UserUnsubscribedFromPost(string userId, int subscriptionId);
+        Task UserUnsubscribedFromPost(string userId, int subscriptionId, int postId);
 
         Task RequestedForumSubscribersCollected(IEnumerable<string> userIds, int forumId, int postId);
     }

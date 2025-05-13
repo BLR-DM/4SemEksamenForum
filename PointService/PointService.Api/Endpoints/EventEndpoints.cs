@@ -192,6 +192,72 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "user-unsubscribed-from-forum").AllowAnonymous();
 
+            app.MapPost("/events/user-subscribed-to-post", async (UserSubscribedToPostEventDto userSubscribedToPostEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "user-subscribed-to-post",
+                        SourceId = userSubscribedToPostEventDto.PostId,
+                        SourceType = "Post",
+                        ContextId = userSubscribedToPostEventDto.SubscriptionId,
+                        ContextType = "Subscription"
+                    }, userSubscribedToPostEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "user-subscribed-to-post").AllowAnonymous();
+
+            app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "user-unsubscribed-from-post",
+                        SourceId = userUnSubscribedFromPostEventDto.PostId,
+                        SourceType = "Post",
+                        ContextId = userUnSubscribedFromPostEventDto.SubscriptionId,
+                        ContextType = "Subscription"
+                    }, userUnSubscribedFromPostEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "user-unsubscribed-from-post").AllowAnonymous();
+
+            app.MapPost("/events/post-upvote-created", async (PostVoteEventDto postVoteEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "post-upvote-created",
+                        SourceId = postVoteEventDto.PostId,
+                        SourceType = "Post",
+                        ContextId = 0,
+                        ContextType = "NoVoteId"
+                    }, postVoteEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "post-upvote-created").AllowAnonymous();
+
         }
     }
 }
