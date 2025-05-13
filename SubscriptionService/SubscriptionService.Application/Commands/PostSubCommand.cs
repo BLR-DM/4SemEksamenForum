@@ -36,7 +36,7 @@ namespace SubscriptionService.Application.Commands
 
             await _postSubRepository.DeleteAsync(postSub);
 
-            await _eventHandler.UserUnsubscribedFromPost(userId, postSub.Id);
+            await _eventHandler.UserUnsubscribedFromPost(userId, postSub.Id, postId);
         }
     }
 }
