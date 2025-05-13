@@ -1,4 +1,4 @@
-name: Webservice - Build > Push > Pull > Compose
+name: Webservice - Build>Push>Pull>Compose
 
 on:
   workflow_dispatch:
@@ -34,5 +34,5 @@ jobs:
         script: |
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/webservice-wasm:latest
-          docker compose up -d --force-recreate --no-deps webservice-wasm
+          docker compose up -d --force-recreate webservice-wasm
           docker image prune -f
