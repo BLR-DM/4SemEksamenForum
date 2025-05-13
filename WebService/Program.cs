@@ -1,13 +1,14 @@
-﻿using System.Collections.Immutable;
-using Blazored.SessionStorage;
+﻿using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
+using System.Collections.Immutable;
 using WebService;
 using WebService.Proxies;
 using WebService.Services;
-using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -84,6 +85,7 @@ builder.Services.AddOidcAuthentication(options =>
     if (builder.HostEnvironment.IsProduction())
     {
         // Explicit URIs for production deployment
+        options.ProviderOptions.RedirectUri = "https://blrforum.dk/authentication/login-callback";
         options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
         options.ProviderOptions.PostLogoutRedirectUri = builder.Configuration["LoggedOutUrl"];
     }
