@@ -258,6 +258,72 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "post-upvote-created").AllowAnonymous();
 
+            app.MapPost("/events/post-upvote-deleted", async (PostVoteEventDto postVoteEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "post-upvote-deleted",
+                        SourceId = postVoteEventDto.PostId,
+                        SourceType = "Post",
+                        ContextId = 0,
+                        ContextType = "NoVoteId"
+                    }, postVoteEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "post-upvote-deleted").AllowAnonymous();
+
+            app.MapPost("/events/comment-upvote-created", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "comment-upvote-created",
+                        SourceId = commentVoteEventDto.CommentId,
+                        SourceType = "Comment",
+                        ContextId = 0,
+                        ContextType = "NoVoteId"
+                    }, commentVoteEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "comment-upvote-created").AllowAnonymous();
+
+            app.MapPost("/events/comment-downvote-created", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "comment-downvote-created",
+                        SourceId = commentVoteEventDto.CommentId,
+                        SourceType = "Comment",
+                        ContextId = 0,
+                        ContextType = "NoVoteId"
+                    }, commentVoteEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "comment-downvote-created").AllowAnonymous();
+
         }
     }
 }
