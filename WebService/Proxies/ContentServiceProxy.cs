@@ -110,6 +110,11 @@ namespace WebService.Proxies
                 return new ForumDto();
             }
         }
+
+        Task IContentServiceProxy.DeletePost()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IContentServiceProxy
@@ -119,5 +124,6 @@ namespace WebService.Proxies
         Task CreateForum(CreateForumDto dto);
         Task CreatePost(CreatePostDto dto, int forumId);
         Task CreateComment(CreateCommentDto dto, int forumId, int postId);
+        Task DeletePost();
     }
 }

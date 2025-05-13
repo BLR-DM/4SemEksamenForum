@@ -30,9 +30,9 @@ namespace ContentService.Application.Services
             await _publisherService.PublishEvent("forum-rejected", forumRejectedDto);
         }
 
-        async Task IEventHandler.ForumDeleted(int forumId)
+        async Task IEventHandler.ForumDeleted(string userId, int forumId)
         {
-            var forumDeletedDto = new ForumEventDtos(forumId);
+            var forumDeletedDto = new ForumDeletedDto(userId, forumId);
             await _publisherService.PublishEvent("forum-deleted", forumDeletedDto);
         }
 
@@ -55,9 +55,9 @@ namespace ContentService.Application.Services
             await _publisherService.PublishEvent("post-rejected", postRejectedDto);
         }
 
-        async Task IEventHandler.PostDeleted(int forumId, int postId)
+        async Task IEventHandler.PostDeleted(string userId, int forumId, int postId)
         {
-            var postDeletedDto = new PostEventDtos(forumId, postId);
+            var postDeletedDto = new PostDeletedDto(userId, forumId, postId);
             await _publisherService.PublishEvent("post-deleted", postDeletedDto);
         }
 
@@ -80,9 +80,9 @@ namespace ContentService.Application.Services
             await _publisherService.PublishEvent("comment-rejected", commentRejectedDto);
         }
 
-        async Task IEventHandler.CommentDeleted(int forumId, int postId, int commentId)
+        async Task IEventHandler.CommentDeleted(string userId, int forumId, int postId, int commentId)
         {
-            var commentDeletedDto = new CommentEventDtos(forumId, postId, commentId);
+            var commentDeletedDto = new CommentDeletedDto(userId, forumId, postId, commentId);
             await _publisherService.PublishEvent("comment-deleted", commentDeletedDto);
         }
     }
@@ -92,16 +92,16 @@ namespace ContentService.Application.Services
         Task ForumSubmitted(string forumId, string content);
         Task ForumPublished(string userId, int forumId);
         Task ForumRejected(string userId, int forumId);
-        Task ForumDeleted(int forumId);
+        Task ForumDeleted(string userId, int forumId);
 
         Task PostSubmitted(string postId, string content);
         Task PostPublished(string userId, int forumId, int postId);
         Task PostRejected(string userId, int forumId, int postId);
-        Task PostDeleted(int forumId, int postId);
+        Task PostDeleted(string userId, int forumId, int postId);
 
         Task CommentSubmitted(string commentId, string content);
         Task CommentPublished(string userId, int forumId, int postId, int commentId);
         Task CommentRejected(string userId, int forumId, int postId, int commentId);
-        Task CommentDeleted(int forumId, int postId, int commentId);
+        Task CommentDeleted(string userId, int forumId, int postId, int commentId);
     }
 }

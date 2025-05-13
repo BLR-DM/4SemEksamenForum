@@ -8,6 +8,6 @@ namespace SubscriptionService.Application.Commands.CommandDto
 {
     public class CreateSubDto
     {
-        public string AppUserId { get; set; } = string.Empty;
+        public int ForumId { get; set; }
     }
 }

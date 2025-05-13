@@ -3,12 +3,14 @@ using Dapr;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
+using PointService.Api.Endpoints;
 using PointService.Application;
 using PointService.Application.Command;
 using PointService.Application.Command.CommandDto;
 using PointService.Application.EventDto.PosVoteDto;
 using PointService.Application.Queries;
 using PointService.Infrastructure;
+using PointService.Infrastructure.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,6 +111,20 @@ app.MapPost("/PointAction",
         }
     });
 
+app.MapGet("/pointactions",
+    async (IPointActionQuery query) =>
+    {
+        try
+        {
+            var pointActions = await query.GetAllPointActionsAsync();
+            return Results.Ok(pointActions);
+        }
+        catch (Exception)
+        {
+            return Results.Problem();
+        }
+    });
+
 app.MapGet("/User/{userId}/Points",
     async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>
     {
@@ -130,11 +146,13 @@ app.MapGet("/User/{userId}/Points",
         }
     }).RequireAuthorization("Moderator");
 
-app.MapPost("/postvote-created", (PostVoteDto dto) =>
-{
-    Console.WriteLine("Lets go");
+app.MapEventEndpoints();
 
-}).WithTopic("pubsub", "postvote-created").AllowAnonymous();
+//app.MapPost("/postvote-created", (PostVoteDto dto, IPointEntryCommand command) =>
+//{
+//    Console.WriteLine("Lets go");                  ////KRÆVER REFAC PÅ VOTESERVICE
+
+//}).WithTopic("pubsub", "postvote-created").AllowAnonymous();
 
 app.MapPut("/PointAction",
     async (UpdatePointActionDto dto, IPointActionCommand command) =>

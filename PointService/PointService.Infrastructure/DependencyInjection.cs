@@ -16,6 +16,7 @@ namespace PointService.Infrastructure
             services.AddScoped<IPointActionRepository, PointActionRepository>();
             services.AddScoped<IPointEntryRepository, PointEntryRepository>();
             services.AddScoped<IPointEntryQuery, PointEntryQuery>();
+            services.AddScoped<IPointActionQuery, PointActionQuery>();
 
             services.AddDbContext<PointContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("PointDbConnection"), 

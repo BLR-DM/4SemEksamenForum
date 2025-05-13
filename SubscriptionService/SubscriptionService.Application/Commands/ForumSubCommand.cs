@@ -47,7 +47,7 @@ namespace SubscriptionService.Application.Commands
            
             await _forumSubRepository.DeleteAsync(forumSub);
 
-            await _eventHandler.UserUnsubscribedFromForum(appUserId, forumSub.Id);
+            await _eventHandler.UserUnsubscribedFromForum(appUserId, forumSub.Id, forumId);
 
         }
     }

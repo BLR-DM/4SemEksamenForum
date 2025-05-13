@@ -249,7 +249,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 // Event
-                await _eventHandler.ForumDeleted(forum.Id);
+                await _eventHandler.ForumDeleted(appUserId, forum.Id);
             }
             catch (Exception)
             {
@@ -307,7 +307,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IForumCommand.DeletePostAsync(DeletePostDto postDto, string appUserId, int forumId, int postId)
+        async Task IForumCommand.DeletePostAsync(string appUserId, int forumId, int postId)
         {
             try
             {
@@ -318,12 +318,12 @@ namespace ContentService.Application.Commands
 
                 // Do
                 var post = forum.DeletePost(postId, appUserId);
-                _forumRepository.DeletePost(post, postDto.RowVersion);
+                _forumRepository.DeletePost(post);
 
                 //Save
                 await _unitOfWork.Commit();
 
-                await _eventHandler.PostDeleted(forum.Id, post.Id);
+                await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
             }
             catch (Exception)
             {

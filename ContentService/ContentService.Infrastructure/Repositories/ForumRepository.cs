@@ -33,9 +33,8 @@ namespace ContentService.Infrastructure.Repositories
             _db.Entry(post).Property(nameof(post.RowVersion)).OriginalValue = rowVersion;
         }
 
-        void IForumRepository.DeletePost(Post post, uint rowVersion)
+        void IForumRepository.DeletePost(Post post)
         {
-            _db.Entry(post).Property(nameof(post.RowVersion)).OriginalValue = rowVersion;
             _db.Posts.Remove(post);
         }
 
