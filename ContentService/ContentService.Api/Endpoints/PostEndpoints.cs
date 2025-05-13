@@ -46,8 +46,10 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}/post/{postId}",
-                async (IForumCommand command, string appUserId, int forumId, int postId) =>
+                async (IForumCommand command, int forumId, int postId, ClaimsPrincipal user) =>
                 {
+                    var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
                     await command.DeletePostAsync(appUserId, forumId, postId);
                     return Results.Ok("Post deleted");
                 }).WithTags(tag);

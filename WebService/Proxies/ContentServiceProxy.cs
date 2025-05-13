@@ -111,9 +111,40 @@ namespace WebService.Proxies
             }
         }
 
-        Task IContentServiceProxy.DeletePost()
+        async Task IContentServiceProxy.DeletePost(int forumId, int postId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var uri = $"content/forum/{forumId}/post/{postId}";
+
+                var response = await _httpClient.DeleteAsync(uri);
+
+                if(!response.IsSuccessStatusCode)
+                    throw new Exception("Could not delete post");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Could not delete post");
+            }
+        }
+
+        async Task IContentServiceProxy.DeleteComment(int forumId, int postId, int commentId)
+        {
+            try
+            {
+                var uri = $"content/forum/{forumId}/post/{postId}/comment/{commentId}";
+
+                var response = await _httpClient.DeleteAsync(uri);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Could not delete comment");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Could not delete comment");
+            }
         }
     }
 
@@ -124,6 +155,7 @@ namespace WebService.Proxies
         Task CreateForum(CreateForumDto dto);
         Task CreatePost(CreatePostDto dto, int forumId);
         Task CreateComment(CreateCommentDto dto, int forumId, int postId);
-        Task DeletePost();
+        Task DeletePost(int forumId, int postId);
+        Task DeleteComment(int forumId, int postId, int commentId);
     }
 }

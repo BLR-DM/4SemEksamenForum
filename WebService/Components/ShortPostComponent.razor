@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IVoteService VoteService
 @inject UserSessionService Session
+@inject IPostService PostService
 
 <div class="short-post">
     <div class="header">
@@ -23,7 +24,6 @@
             <span>@Post.UpVotesCount</span>
             <i class="@GetDownvoteIcon()" @onclick="() => HandleVote(false)" style="cursor: pointer;"></i>
             <span>@Post.DownVotesCount</span>
-            <span>@Post.UserId -- @Session.UserId</span>
         </div>
         <div class="comments">
             <i class="bi bi-chat-left-text" @onclick="NavigateToPost"></i>
@@ -31,7 +31,9 @@
         </div>
         @if (Post.UserId == Session.UserId || Session.HasRole("moderator"))
         {
-            <i class="bi bi-trash3"></i>
+            <div class="right">
+                <i class="bi bi-trash3 delete-button" @onclick="() => DeletePost(ForumId, Post.Id)"></i>
+            </div>
         }
     </div>
 </div>
@@ -47,6 +49,7 @@
     public int ForumId { get; set; }
 
     public string ErrorMessage { get; set; } = string.Empty;
+    [Parameter] public EventCallback<int> OnDeleted { get; set; }
 
 
     private void NavigateToPost()
@@ -145,9 +148,19 @@
         }
     }
 
-    private async Task DeletePost(int postId)
+    private async Task DeletePost(int forumId, int postId)
     {
+        try
+        {
+            await PostService.DeletePost(forumId, postId);
 
+            await OnDeleted.InvokeAsync(postId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
 }
@@ -190,6 +203,10 @@
         color: #555;
     }
 
+    .right{
+        margin-left: auto;
+    }
+
     .vote, .comments {
         display: flex;
         align-items: center;
@@ -200,8 +217,13 @@
         font-size: 1.2rem;
     }
 
-        .bi:hover {
-            color: #0d6efd;
-        }
+    .bi:hover {
+        color: #0d6efd;
+    }
+
+    .delete-button{
+        cursor: pointer;
+        color: red;
+    }
 
 </style>
