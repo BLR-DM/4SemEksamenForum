@@ -13,7 +13,7 @@ namespace ContentService.Application
         void UpdatePost(Post post, uint rowVersion);
         void DeletePost(Post post);
         void UpdateComment(Comment comment, uint rowVersion);
-        void DeleteComment(Comment comment, uint rowVersion);
+        void DeleteComment(Comment comment);
         Task SaveChangesAsync();
     }
 }

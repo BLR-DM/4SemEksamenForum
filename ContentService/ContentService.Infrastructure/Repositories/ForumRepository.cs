@@ -43,9 +43,8 @@ namespace ContentService.Infrastructure.Repositories
             _db.Entry(comment).Property(nameof(comment.RowVersion)).OriginalValue = rowVersion;
         }
 
-        void IForumRepository.DeleteComment(Comment comment, uint rowVersion)
+        void IForumRepository.DeleteComment(Comment comment)
         {
-            _db.Entry(comment).Property(nameof(comment.RowVersion)).OriginalValue = rowVersion;
             _db.Comments.Remove(comment);
         }
 

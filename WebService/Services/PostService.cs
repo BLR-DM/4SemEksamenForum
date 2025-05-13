@@ -43,6 +43,30 @@ namespace WebService.Services
                 return new ForumView();
             }
         }
+
+        async Task IPostService.DeletePost(int forumId, int postId)
+        {
+            try
+            {
+                await _proxy.DeletePost(forumId, postId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        async Task IPostService.DeleteComment(int forumId, int postId, int commentId)
+        {
+            try
+            {
+                await _proxy.DeleteComment(forumId, postId, commentId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public interface IPostService
@@ -50,5 +74,7 @@ namespace WebService.Services
         Task CreatePost(CreatePostDto dto, int forumId);
         Task CreateComment(CreateCommentDto dto, int forumId, int postId);
         Task<ForumView> GetForumWithSinglePost(string forumName, int postId);
+        Task DeletePost(int forumId, int postId);
+        Task DeleteComment(int forumId, int postId, int commentId);
     }
 }
