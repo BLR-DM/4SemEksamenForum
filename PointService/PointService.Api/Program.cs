@@ -42,11 +42,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("moderator", policy =>
+    options.AddPolicy("Moderator", policy =>
     {
         policy.RequireRole("moderator");
     });
-    options.AddPolicy("standarduser", policy =>
+    options.AddPolicy("StandardUser", policy =>
     {
         policy.RequireRole("standard-user");
     });
@@ -128,7 +128,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization();
+    }).RequireAuthorization("Moderator");
 
 app.MapPost("/postvote-created", (PostVoteDto dto) =>
 {

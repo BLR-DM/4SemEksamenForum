@@ -8,6 +8,7 @@
 <MudNavMenu>
     <AuthorizeView>
         <Authorized>
+            <MudNavLink Href="/" Match="NavLinkMatch.Prefix">My Page</MudNavLink>
             <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
             <MudNavGroup Title="Subscribed Forums" Expanded="true">
                 @if (SubscribedForums is not null && SubscribedForums.Count != 0)
@@ -18,6 +19,8 @@
                     }
                 }
             </MudNavGroup>
+            <MudNavLink Href="/" Match="NavLinkMatch.Prefix">Notifications</MudNavLink>
+            <MudNavLink Href="/" Match="NavLinkMatch.Prefix">Subscribed Content</MudNavLink>
         </Authorized>
         <NotAuthorized>
 
