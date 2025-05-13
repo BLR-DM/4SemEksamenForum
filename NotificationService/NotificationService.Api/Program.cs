@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +12,9 @@ using NotificationService.Application.Factories.Interfaces;
 using NotificationService.Application.Queries;
 using NotificationService.Application.Services;
 using NotificationService.Infrastructure;
+using System.Text.Json;
+using static Google.Rpc.Context.AttributeContext.Types;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,11 +29,6 @@ builder.Services.AddDaprClient();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "notification-api";
         options.RequireHttpsMetadata = false;
@@ -118,19 +115,42 @@ app.MapGet("/{userId}/notifications",
         }
     });
 
+//app.MapPost("/events/post-published",
+//    async (PostPublishedEventDto dto, IEventHandler eventHandler) =>
+//    {
+//        try
+//        {
+//            await eventHandler.ForumSubscribersRequested(dto.ForumId, dto.PostId);
+
+//            return Results.Accepted();
+//        }
+//        catch (Exception ex)
+//        {
+//            return Results.Problem(ex.Message);
+//        }
+//    }).WithTopic("pubsub", "post-published");
+
 app.MapPost("/events/post-published",
-    async (PostPublishedEventDto dto, IEventHandler eventHandler) =>
+    async (PostPublishedEventDtoTest postDto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
     {
         try
         {
-            await eventHandler.ForumSubscribersRequested(dto.ForumId, dto.PostId);
+            var topic = "post-published";
 
-            return Results.Accepted();
+            var eventDto = new EventDto(postDto.UserId, postDto.ForumId, postDto.PostId, 0);
+
+            var message = await messageFactory.BuildMessageAsync(topic, eventDto);
+
+            await command.CreateNotificationAsync(eventDto.UserId, message);
+
+            return Results.Created();
         }
         catch (Exception ex)
         {
-            return Results.Problem(ex.Message);
+            Console.WriteLine(ex.Message);
+            throw;
         }
+
     }).WithTopic("pubsub", "post-published");
 
 app.MapPost("/events/requested-forum-subscribers-collected",

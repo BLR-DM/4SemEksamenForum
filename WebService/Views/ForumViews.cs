@@ -68,4 +68,10 @@
         public string UserId { get; set; }
         public bool VoteType { get; set; }
     }
+
+    public record NotificationView
+    {
+        public string Message { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
 }

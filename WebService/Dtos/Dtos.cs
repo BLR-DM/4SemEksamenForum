@@ -42,4 +42,10 @@
     {
         public int Points { get; set; }
     }
+
+    public record NotificationDto
+    {
+        public string Message { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
 }
