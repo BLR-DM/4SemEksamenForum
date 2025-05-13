@@ -15,6 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var gatewayBaseUrl = builder.Configuration["GatewayBaseUrl"];
 var authorizedUrls = builder.Configuration.GetSection("AuthorizedUrls").Get<string[]>();
+var scopes = builder.Configuration.GetSection("Scopes").Get<string[]>();
 
 builder.Services.AddHttpClient("GatewayApi",
         client => client.BaseAddress = new Uri(gatewayBaseUrl!))
@@ -22,7 +23,8 @@ builder.Services.AddHttpClient("GatewayApi",
     {
         var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: authorizedUrls!);
+                authorizedUrls: authorizedUrls!,
+                scopes: scopes);
 
         return handler;
     });
@@ -82,9 +84,13 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.DefaultScopes.Add("email");
     options.ProviderOptions.DefaultScopes.Add("webservice_api_scope");
 
-    //// Explicit URIs for production deployment
-    //options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
-    //options.ProviderOptions.PostLogoutRedirectUri = "https://www.blrforum.dk/loggedout";
+    if (builder.HostEnvironment.IsProduction())
+    {
+        // Explicit URIs for production deployment
+        options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback";
+        options.ProviderOptions.PostLogoutRedirectUri = builder.Configuration["LoggedOutUrl"];
+    }
+    
 });
 
 
