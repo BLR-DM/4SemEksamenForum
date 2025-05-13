@@ -50,6 +50,19 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("standard-user", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -109,7 +122,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    });
+    }).RequireAuthorization("standard-user");
 
 app.MapPost("/postvote-created", (PostVoteDto dto) =>
 {
