@@ -1,6 +1,7 @@
 ﻿@inject IJSRuntime JS
 @inject NavigationManager Navigation
 @inject IAccessTokenProvider TokenProvider
+@inject IConfiguration Configuration
 
 <AuthorizeView Context="auth">
     <Authorized>
@@ -36,9 +37,13 @@
             return;
         }
 
+        var loggedOutUrl = Configuration["LoggedOutUrl"];
+        if (string.IsNullOrEmpty(loggedOutUrl))
+            throw new InvalidOperationException("LoggedOutUrl is not configured");
+
         var logoutUrl = $"https://keycloak.blrforum.dk/realms/4SemForumProjekt/protocol/openid-connect/logout" +
                         $"?id_token_hint={idToken}" +
-                        $"&post_logout_redirect_uri=http://localhost:5221/loggedout/";
+                        $"&post_logout_redirect_uri={loggedOutUrl}";
 
         Navigation.NavigateTo(logoutUrl, forceLoad: true);
     }

@@ -13,13 +13,16 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+var gatewayBaseUrl = builder.Configuration["GatewayBaseUrl"];
+var authorizedUrls = builder.Configuration.GetSection("AuthorizedUrls").Get<string[]>();
+
 builder.Services.AddHttpClient("GatewayApi",
-        client => client.BaseAddress = new Uri("http://localhost:5000/api/"))
+        client => client.BaseAddress = new Uri(gatewayBaseUrl!))
     .AddHttpMessageHandler(sp =>
     {
         var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: ["http://localhost:5000"]);
+                authorizedUrls: authorizedUrls!);
 
         return handler;
     });
