@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -49,13 +50,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
-        options.Audience = "subscription-api";
+        options.Audience = "subscriptionservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -108,11 +104,13 @@ app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 
 
 app.MapPost("/Forums/{forumId}/Subscriptions",
-    async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
+    async (int forumId, CreateSubDto dto, IForumSubCommand command, ClaimsPrincipal user) =>
     {
         try
         {
-            await command.CreateAsync(forumId, subDto.AppUserId);
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            await command.CreateAsync(dto.ForumId, userId);
 
             return Results.Ok();
         }
@@ -141,20 +139,20 @@ app.MapPost("/events/forum-published",
     }).WithTopic("pubsub", "forum-published");
 
 
-app.MapPost("/Posts/{postId}/Subscriptions",
-    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
-    {
-        try
-        {
-            await command.CreateAsync(postId, subDto.AppUserId);
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    });
+//app.MapPost("/Posts/{postId}/Subscriptions",
+//    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
+//    {
+//        try
+//        {
+//            await command.CreateAsync(postId, subDto.AppUserId);
+//            return Results.Ok();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    });
 
 app.MapPost("/events/post-published",
     async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand) =>
@@ -229,11 +227,13 @@ app.MapPost("/events/forum-subscribers-requested",
 //    }).WithTopic("pubsub", "post-notification-requested");
 
 app.MapDelete("/Forums/{forumId}/Subscriptions",
-    async (int forumId, [FromBody] CreateSubDto subDto, IForumSubCommand command) =>
+    async (int forumId, IForumSubCommand command, ClaimsPrincipal user) =>
     {
         try
         {
-            await command.DeleteAsync(forumId, subDto.AppUserId);
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            await command.DeleteAsync(forumId, userId);
 
             return Results.Ok();
         }
@@ -244,20 +244,20 @@ app.MapDelete("/Forums/{forumId}/Subscriptions",
         }
     });
 
-app.MapDelete("/Posts/{postId}/Subscriptions",
-    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
-    {
-        try
-        {
-            await command.DeleteAsync(postId, subDto.AppUserId);
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    });
+//app.MapDelete("/Posts/{postId}/Subscriptions",
+//    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
+//    {
+//        try
+//        {
+//            await command.DeleteAsync(postId, subDto.AppUserId);
+//            return Results.Ok();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    });
 
 app.MapGet("/Forum/{forumId}/Subscriptions/", async (int forumId, IForumSubQuery query) =>
 {

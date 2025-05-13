@@ -46,9 +46,9 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}/post/{postId}",
-                async (IForumCommand command, [FromBody] DeletePostDto postDto, string appUserId, int forumId, int postId) =>
+                async (IForumCommand command, string appUserId, int forumId, int postId) =>
                 {
-                    await command.DeletePostAsync(postDto, appUserId, forumId, postId);
+                    await command.DeletePostAsync(appUserId, forumId, postId);
                     return Results.Ok("Post deleted");
                 }).WithTags(tag);
         }
