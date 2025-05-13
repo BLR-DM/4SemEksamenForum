@@ -5,7 +5,6 @@
 @inject NavigationManager Navigation
 @inject UserSessionService Session
 
-<h3>PostPage</h3>
 
 <div class="content-wrapper">
     @if (Forum?.Posts is not null)
@@ -35,7 +34,7 @@
         foreach (var comment in Post.Comments)
         {
             <div class="comment-wrapper">
-                <ShortCommentComponent Comment="comment" />
+                <ShortCommentComponent Comment="comment" ForumId="Forum.Id" PostId="PostId" OnDeleted="HandleCommentDeleted"/>
             </div>
         }
     }
@@ -82,6 +81,7 @@
     private async Task SetForumWithSinglePost()
     {
         Forum = await PostService.GetForumWithSinglePost(ForumName, PostId);
+        Post = Forum.Posts.FirstOrDefault();
     }
 
     private async Task CreateComment()
@@ -89,12 +89,22 @@
         try
         {
             await PostService.CreateComment(CreateCommentDto, Forum.Id, Post.Id);
-            StateHasChanged();
+            CreateCommentDto.Content = String.Empty;
+            await SetForumWithSinglePost();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             ErrorMessage = "Failed to create comment";
+        }
+    }
+
+    private void HandleCommentDeleted(int commentId)
+    {
+        Post?.Comments?.RemoveAll(c => c.Id == commentId);
+        if (Post is not null)
+        {
+            Post.CommentsCount -= 1;
         }
     }
 }

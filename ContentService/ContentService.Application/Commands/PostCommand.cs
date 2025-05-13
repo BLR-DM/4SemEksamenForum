@@ -137,7 +137,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IPostCommand.DeleteCommentAsync(DeleteCommentDto commentDto, string appUserId, int forumId,
+        async Task IPostCommand.DeleteCommentAsync(string appUserId, int forumId,
             int postId, int commentId)
         {
             try
@@ -150,7 +150,7 @@ namespace ContentService.Application.Commands
 
                 // Do
                 var comment = post.DeleteComment(commentId, appUserId);
-                _forumRepository.DeleteComment(comment, commentDto.RowVersion);
+                _forumRepository.DeleteComment(comment);
 
                 // Save
                 await _unitOfWork.Commit();

@@ -25,7 +25,7 @@
             foreach (var post in Forum.Posts)
             {
                 <div class="post-wrapper">
-                    <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id"/>
+                    <ShortPostComponent Post="post" ForumName="@Forum.ForumName" ForumId="@Forum.Id" OnDeleted="HandlePostDeleted"/>
                 </div>
             }
         }
@@ -79,7 +79,10 @@
         await SubscriptionService.DeleteSubscription(Forum.Id);
     }
 
-
+    private void HandlePostDeleted(int postId)
+    {
+        Forum?.Posts.RemoveAll(p => p.Id == postId);
+    }
 }
 
 <style>

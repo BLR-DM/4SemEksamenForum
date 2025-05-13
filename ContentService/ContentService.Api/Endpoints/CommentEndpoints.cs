@@ -31,11 +31,11 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}/post/{postId}/comment/{commentId}",
-                async (IPostCommand command, [FromBody] DeleteCommentDto commentDto, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
+                async (IPostCommand command, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
                 {
-                    var appUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    await command.DeleteCommentAsync(commentDto, appUserId, forumId, postId, commentId);
+                    await command.DeleteCommentAsync(appUserId, forumId, postId, commentId);
                     return Results.Ok("Comment deleted");
                 }).WithTags(tag);
         }
