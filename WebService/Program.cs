@@ -15,16 +15,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var gatewayBaseUrl = builder.Configuration["GatewayBaseUrl"];
 var authorizedUrls = builder.Configuration.GetSection("AuthorizedUrls").Get<string[]>();
-var scopes = builder.Configuration.GetSection("Scopes").Get<string[]>();
 
 builder.Services.AddHttpClient("GatewayApi",
         client => client.BaseAddress = new Uri(gatewayBaseUrl!))
     .AddHttpMessageHandler(sp =>
     {
         var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-            .ConfigureHandler(
-                authorizedUrls: authorizedUrls!,
-                scopes: scopes);
+            .ConfigureHandler(authorizedUrls: authorizedUrls!);
 
         return handler;
     });
