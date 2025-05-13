@@ -81,15 +81,6 @@ builder.Services.AddOidcAuthentication(options =>
     options.ProviderOptions.DefaultScopes.Add("profile");
     options.ProviderOptions.DefaultScopes.Add("email");
     options.ProviderOptions.DefaultScopes.Add("webservice_api_scope");
-
-    if (builder.HostEnvironment.IsProduction())
-    {
-    //    // Explicit URIs for production deployment
-    //    options.ProviderOptions.RedirectUri = "https://blrforum.dk/authentication/login-callback";
-        options.ProviderOptions.RedirectUri = "https://www.blrforum.dk/authentication/login-callback"; 
-        options.ProviderOptions.PostLogoutRedirectUri = builder.Configuration["LoggedOutUrl"];
-    }
-
 });
 
 
