@@ -6,7 +6,7 @@
 
     public record UserSubscribedToPostEventDto(string UserId, int SubscriptionId, int PostId);
 
-    public record UserUnSubscribedToForumEventDto(string UserId, int SubscriptionId);
+    public record UserUnSubscribedFromForumEventDto(string UserId, int SubscriptionId, int ForumId);
 
     public record UserUnSubscribedToPostEventDto(string UserId, int SubscriptionId);
 

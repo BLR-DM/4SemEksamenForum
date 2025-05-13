@@ -146,7 +146,51 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            });
+            }).WithTopic("pubsub", "comment-deleted").AllowAnonymous();
+
+            app.MapPost("/events/user-subscribed-to-forum", async (UserSubscribedToForumEventDto userSubscribedToForumEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "user-subscribed-to-forum",
+                        SourceId = userSubscribedToForumEventDto.ForumId,
+                        SourceType = "Forum",
+                        ContextId = userSubscribedToForumEventDto.SubscriptionId,
+                        ContextType = "Subscription"
+                    }, userSubscribedToForumEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "user-subscribed-to-forum").AllowAnonymous();
+
+            app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command) =>
+            {
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "user-unsubscribed-from-forum",
+                        SourceId = userUnSubscribedFromForumEventDto.ForumId,
+                        SourceType = "Forum",
+                        ContextId = userUnSubscribedFromForumEventDto.SubscriptionId,
+                        ContextType = "Subscription"
+                    }, userUnSubscribedFromForumEventDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", "user-unsubscribed-from-forum").AllowAnonymous();
 
         }
     }
