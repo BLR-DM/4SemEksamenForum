@@ -37,4 +37,9 @@
         public string UserId { get; set; }
         public bool VoteType { get; set; }
     }
+
+    public record UserPointsDto
+    {
+        public int Points { get; set; }
+    }
 }

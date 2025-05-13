@@ -67,6 +67,10 @@ builder.Services.AddScoped<IVoteService, VoteService>();
 
 builder.Services.AddScoped<IVoteServiceProxy, VoteServiceProxy>();
 
+builder.Services.AddScoped<IPointService, PointService>();
+
+builder.Services.AddScoped<IPointServiceProxy, PointServiceProxy>();
+
 builder.Services.AddBlazoredSessionStorage();
 
 

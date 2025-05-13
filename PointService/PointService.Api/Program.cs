@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Dapr;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
@@ -39,8 +40,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
         };
     });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGateway", builder =>
@@ -48,18 +60,6 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("http://localhost:5000")
             .AllowAnyMethod()
             .AllowAnyHeader();
-    });
-});
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("moderator", policy =>
-    {
-        policy.RequireRole("moderator");
-    });
-    options.AddPolicy("standard-user", policy =>
-    {
-        policy.RequireRole("standard-user");
     });
 });
 
@@ -110,11 +110,17 @@ app.MapPost("/PointAction",
     });
 
 app.MapGet("/User/{userId}/Points",
-    async (string userId, IPointEntryQuery query) =>
+    async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>
     {
         try
         {
-            var points = await query.GetPointsByUserIdAsync(userId);
+            var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+            if (appUserId is null)
+                return Results.Problem();
+            
+            var points = await query.GetPointsByUserIdAsync(appUserId);
 
             return Results.Ok(points);
         }
@@ -122,7 +128,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization("standard-user");
+    }).RequireAuthorization("Moderator");
 
 app.MapPost("/postvote-created", (PostVoteDto dto) =>
 {
