@@ -1,4 +1,4 @@
-name: CI - Build and Push ContentSafetyService
+name: ContentSafetyService - Build>Push>Pull>Compose
 
 on:
   workflow_dispatch:  # manual trigger from GitHub UI
@@ -25,3 +25,15 @@ jobs:
           -f ContentSafetyService/ContentSafetyService.Api/Dockerfile \
           .
         docker push bilalkinali/contentsafetyservice-api:latest
+    
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd Projects/4SemForumProjekt
+          docker pull bilalkinali/contentsafetyservice-api:latest
+          docker compose up -d --force-recreate contentsafetyservice-api
+          docker image prune -f
