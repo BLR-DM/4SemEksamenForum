@@ -33,6 +33,6 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd Projects/4SemForumProjekt
-          docker compose pull webservice-wasm
+          docker image pull bilalkinali/webservice-wasm:latest
           docker compose up -d webservice-wasm
           docker image prune -f
