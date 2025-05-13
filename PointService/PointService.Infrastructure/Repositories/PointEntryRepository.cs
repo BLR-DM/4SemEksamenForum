@@ -14,8 +14,15 @@ namespace PointService.Infrastructure.Repositories
 
         async Task IPointEntryRepository.AddAsync(PointEntry pointEntry)
         {
-            _db.PointEntries.Add(pointEntry);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.PointEntries.Add(pointEntry);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

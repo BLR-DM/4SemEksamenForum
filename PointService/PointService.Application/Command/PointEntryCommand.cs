@@ -17,12 +17,19 @@ namespace PointService.Application.Command
 
         async Task IPointEntryCommand.CreatePointEntryAsync(CreatePointEntryDto createPointEntry, string userId)
         {
-            var pointAction = await _pointActionRepository.GetAsync(createPointEntry.PointActionId);
+            try
+            {
+                var pointAction = await _pointActionRepository.GetAsync(createPointEntry.PointActionId);
 
-            var pointEntry = PointEntry.Create(userId, createPointEntry.PointActionId, pointAction.Points, createPointEntry.SourceId, 
-                createPointEntry.SourceType, createPointEntry.ContextId, createPointEntry.ContextType);
+                var pointEntry = PointEntry.Create(userId, createPointEntry.PointActionId, pointAction.Points, createPointEntry.SourceId,
+                    createPointEntry.SourceType, createPointEntry.ContextId, createPointEntry.ContextType);
 
-            await _pointEntryRepository.AddAsync(pointEntry);
+                await _pointEntryRepository.AddAsync(pointEntry);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 

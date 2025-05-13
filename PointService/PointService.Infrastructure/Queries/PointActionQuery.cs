@@ -1,10 +1,6 @@
-﻿using PointService.Application.Queries.QueryDto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PointService.Application.Queries;
+using PointService.Application.Queries.QueryDto;
 
 namespace PointService.Infrastructure.Queries
 {
@@ -28,10 +24,5 @@ namespace PointService.Infrastructure.Queries
 
             return pointActionDtos;
         }
-    }
-
-    public interface IPointActionQuery
-    {
-        Task<List<PointActionDto>> GetAllPointActionsAsync();
     }
 }
