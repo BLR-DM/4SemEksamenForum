@@ -249,7 +249,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 // Event
-                await _eventHandler.ForumDeleted(forum.Id);
+                await _eventHandler.ForumDeleted(appUserId, forum.Id);
             }
             catch (Exception)
             {
@@ -323,7 +323,7 @@ namespace ContentService.Application.Commands
                 //Save
                 await _unitOfWork.Commit();
 
-                await _eventHandler.PostDeleted(forum.Id, post.Id);
+                await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
             }
             catch (Exception)
             {

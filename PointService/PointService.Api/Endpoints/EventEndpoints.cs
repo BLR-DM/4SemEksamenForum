@@ -11,7 +11,7 @@ namespace PointService.Api.Endpoints
         {
             const string tag = "Events";
 
-            app.MapPost("/forum-published", async (ForumPublishedDto forumPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/forum-published", async (ForumPublishedDto forumPublishedDto, IPointEntryCommand command) =>
             {
                 try
                 {
@@ -34,12 +34,29 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "forum-published").AllowAnonymous();
 
-            app.MapPost("/forum-deleted", async (IPointEntryCommand command) =>
+            app.MapPost("/events/forum-deleted", async (ForumDeletedDto forumDeletedDto, IPointEntryCommand command) =>
             {
-                // MANGER AT PUBLISH USERID PÅ FORUMMET
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "forum-deleted",
+                        SourceId = forumDeletedDto.ForumId,
+                        SourceType = "Forum",
+                        ContextId = forumDeletedDto.ForumId,
+                        ContextType = "Forum"
+                    }, forumDeletedDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
             });
 
-            app.MapPost("/post-published", async (PostPublishedDto postPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/post-published", async (PostPublishedDto postPublishedDto, IPointEntryCommand command) =>
             {
                 try
                 {
@@ -63,12 +80,29 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "post-published").AllowAnonymous();
 
-            app.MapPost("/post-deleted", async (IPointEntryCommand command) =>
+            app.MapPost("/events/post-deleted", async (PostDeletedDto postDeletedDto, IPointEntryCommand command) =>
             {
-                 // MANGER AT PUBLISH USERID PÅ POSTET
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "post-deleted",
+                        SourceId = postDeletedDto.ForumId,
+                        SourceType = "Forum",
+                        ContextId = postDeletedDto.PostId,
+                        ContextType = "Post"
+                    }, postDeletedDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
             });
 
-            app.MapPost("/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command) =>
             {
                 try
                 {
@@ -92,9 +126,26 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "comment-published").AllowAnonymous();
 
-            app.MapPost("/comment-deleted", async (IPointEntryCommand command) =>
+            app.MapPost("/events/comment-deleted", async (CommentDeletedDto commentDeletedDto, IPointEntryCommand command) =>
             {
-                // MANGER AT PUBLISH USERID PÅ COMMENT
+                try
+                {
+                    await command.CreatePointEntryAsync(new CreatePointEntryDto
+                    {
+                        PointActionId = "comment-deleted",
+                        SourceId = commentDeletedDto.PostId,
+                        SourceType = "Post",
+                        ContextId = commentDeletedDto.CommentId,
+                        ContextType = "Comment"
+                    }, commentDeletedDto.UserId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
             });
 
         }
