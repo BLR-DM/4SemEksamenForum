@@ -1,36 +1,77 @@
 ﻿@page "/"
 @inject UserSessionService Session
 
-<PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h6">MudBlazor is @Text</MudText>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ButtonOnClick">@ButtonText</MudButton>
-
-@if (Session.IsLoggedIn)
+@if (!_sessionIsLoaded)
 {
-    LoadUser();
-    @Username
-    @UserId
+    <p>Loading user....</p>
 }
+else
+{
+    <div class="profile-card">
+        <div class="info">
+            <h3>@Session.Name</h3>
+            <h6>@Session.Email</h6>
+        </div>
+        <div class="details">
+            <div><strong>Username:</strong><span>@Session.Username</span></div>
+            <div><strong>Email:</strong><span>@Session.Email</span></div>
+            <div><strong>Points:</strong><span>@Session.Points</span></div>
+            <div><strong>UserId:</strong><span>@Session.UserId</span></div>
+        </div>
+    </div>
+    <p>@Session.Token</p>
+}
+
+
 @code {
-    public string Text { get; set; } = "????";
-    public string ButtonText { get; set; } = "Click Me";
-    public int ButtonClicked { get; set; }
+    private bool _sessionIsLoaded = false;
 
-    public string? Username { get; set; }
-    public string? UserId { get; set; }
-
-
-    private void LoadUser()
+    protected override async Task OnInitializedAsync()
     {
-        Username = Session.Username;
-        UserId = Session.UserId;
+        await Session.WaitUntilReadyAsync();
+        _sessionIsLoaded = true;
     }
 
-    void ButtonOnClick()
-    {
-        ButtonClicked += 1;
-        Text = $"Awesome x {ButtonClicked}";
-        ButtonText = "Click Me Again";
-    }
 }
+
+<style>
+    .profile-card {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 40px;
+        box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
+        font-family: Arial, sans-serif;
+    }
+
+    .info{
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .info h3{
+        font-size: 28px;
+        margin-bottom: 4px;
+    }
+
+    .info h6{
+        font-size: 16px;
+        color: #666;
+        margin: 0;
+    }
+
+    .details{
+        width: 100%;
+    }
+
+    .details div {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+</style>

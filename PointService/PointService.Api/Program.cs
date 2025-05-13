@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Dapr;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
@@ -110,11 +111,17 @@ app.MapPost("/PointAction",
     });
 
 app.MapGet("/User/{userId}/Points",
-    async (string userId, IPointEntryQuery query) =>
+    async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>
     {
         try
         {
-            var points = await query.GetPointsByUserIdAsync(userId);
+            var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+            if (appUserId is null)
+                return Results.Problem();
+            
+            var points = await query.GetPointsByUserIdAsync(appUserId);
 
             return Results.Ok(points);
         }

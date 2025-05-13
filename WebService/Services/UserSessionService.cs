@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
 using WebService.Layout;
 using WebService.Views;
@@ -12,11 +13,17 @@ namespace WebService.Services
     {
         private readonly AuthenticationStateProvider _authStateProvider;
         private readonly ISubscriptionService _subscriptionService;
+        private readonly IAccessTokenProvider _tokenProvider;
+        private readonly IPointService _pointService;
         private TaskCompletionSource _readyTcs = new();
 
         public bool IsLoggedIn { get; private set; }
         public string? UserId { get; private set; }
         public string? Username { get; private set; }
+        public string? Email { get; private set; }
+        public string? Token { get; private set; }
+        public string? Name { get; private set; }
+        public int? Points { get; private set; }
         public List<string> Roles { get; private set; } = [];
         public List<int> SubscribedForumIds { get; set; } = [];
 
@@ -24,10 +31,12 @@ namespace WebService.Services
 
         public event Action? OnSubscriptionsChanged;
 
-        public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService)
+        public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService, IAccessTokenProvider tokenProvider, IPointService pointService)
         {
             _authStateProvider = authStateProvider;
             _subscriptionService = subscriptionService;
+            _tokenProvider = tokenProvider;
+            _pointService = pointService;
         }
 
         public async Task InitializeAsync()
@@ -35,11 +44,33 @@ namespace WebService.Services
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
+
             if (user.Identity is { IsAuthenticated: true })
             {
                 IsLoggedIn = true;
+
+                var tokenResult = await _tokenProvider.RequestAccessToken();
+                if (tokenResult.TryGetToken(out var token))
+                {
+                    Token = token.Value;
+                }
+
                 UserId = user.FindFirst(c => c.Type == "sub")?.Value;
                 Username = user.FindFirst(c => c.Type == "preferred_username")?.Value;
+                Email = user.FindFirst(c => c.Type == "email")?.Value;
+                Name = user.FindFirst(c => c.Type == "name")?.Value;
+
+                if(UserId != null)
+                    try
+                    {
+                        Points = await _pointService.GetPointsByUserId(UserId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Points = -1;
+                    }
+
                 var rawRoles = user.FindFirst(c => c.Type == "role")?.Value;
 
                 if(rawRoles != null)    

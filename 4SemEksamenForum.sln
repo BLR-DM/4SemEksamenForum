@@ -63,6 +63,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Packages.props = Directory.Packages.props
+		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebService", "WebService", "{70333710-6A04-4052-B471-5CFBCE79405A}"
