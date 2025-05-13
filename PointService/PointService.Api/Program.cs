@@ -40,8 +40,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
         };
     });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("standarduser", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
 
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGateway", builder =>
@@ -49,18 +60,6 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("http://localhost:5000")
             .AllowAnyMethod()
             .AllowAnyHeader();
-    });
-});
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("moderator", policy =>
-    {
-        policy.RequireRole("moderator");
-    });
-    options.AddPolicy("standard-user", policy =>
-    {
-        policy.RequireRole("standard-user");
     });
 });
 
@@ -129,7 +128,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization("standard-user");
+    }).RequireAuthorization();
 
 app.MapPost("/postvote-created", (PostVoteDto dto) =>
 {
