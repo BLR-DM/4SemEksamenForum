@@ -302,13 +302,13 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "comment-upvote-created").AllowAnonymous();
 
-            app.MapPost("/events/comment-downvote-created", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
+            app.MapPost("/events/comment-upvote-deleted", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
             {
                 try
                 {
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
-                        PointActionId = "comment-downvote-created",
+                        PointActionId = "comment-upvote-deleted",
                         SourceId = commentVoteEventDto.CommentId,
                         SourceType = "Comment",
                         ContextId = 0,
@@ -322,7 +322,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "comment-downvote-created").AllowAnonymous();
+            }).WithTopic("pubsub", "comment-upvote-deleted").AllowAnonymous();
 
         }
     }
