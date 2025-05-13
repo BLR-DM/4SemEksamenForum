@@ -113,8 +113,6 @@
     }
 
 
-
-
     private string GetUpvoteIcon()
     {
         if (Post.Votes is null || Post.Votes.Count == 0)
@@ -145,6 +143,11 @@
         {
             return "bi bi-hand-thumbs-down";
         }
+    }
+
+    private async Task DeletePost(int postId)
+    {
+
     }
 
 }

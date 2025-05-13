@@ -1,7 +1,9 @@
 ﻿@page "/forum/{ForumName}"
+@using WebService.Dtos.CommandDtos
 @inject IForumService ForumService;
 @inject NavigationManager Navigation
 @inject UserSessionService Session
+@inject ISubscriptionService SubscriptionService
 
 <div class="content-wrapper">
     @if (Forum is not null)
@@ -64,14 +66,17 @@
         Navigation.NavigateTo($"/forum/{ForumName}/{Forum.Id}/post/create");
     }
 
-    private void SubscribeToForum()
+    private async Task SubscribeToForum()
     {
         Session.AddForumSubscription(Forum.Id);
+        var createSubDto = new CreateSubDto(Forum.Id);
+        await SubscriptionService.CreateSubscription(createSubDto);
     }
 
-    private void UnSubscribeFromForum()
+    private async Task UnSubscribeFromForum()
     {
         Session.RemoveForumSubscription(Forum.Id);
+        await SubscriptionService.DeleteSubscription(Forum.Id);
     }
 
 

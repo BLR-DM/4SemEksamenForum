@@ -11,7 +11,7 @@ namespace ContentService.Application
         Task<Forum> GetForumWithSinglePostAsync(int forumId, int postId);
         void DeleteForum(Forum forum);
         void UpdatePost(Post post, uint rowVersion);
-        void DeletePost(Post post, uint rowVersion);
+        void DeletePost(Post post);
         void UpdateComment(Comment comment, uint rowVersion);
         void DeleteComment(Comment comment, uint rowVersion);
         Task SaveChangesAsync();

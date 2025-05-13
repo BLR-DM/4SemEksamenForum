@@ -307,7 +307,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IForumCommand.DeletePostAsync(DeletePostDto postDto, string appUserId, int forumId, int postId)
+        async Task IForumCommand.DeletePostAsync(string appUserId, int forumId, int postId)
         {
             try
             {
@@ -318,7 +318,7 @@ namespace ContentService.Application.Commands
 
                 // Do
                 var post = forum.DeletePost(postId, appUserId);
-                _forumRepository.DeletePost(post, postDto.RowVersion);
+                _forumRepository.DeletePost(post);
 
                 //Save
                 await _unitOfWork.Commit();
