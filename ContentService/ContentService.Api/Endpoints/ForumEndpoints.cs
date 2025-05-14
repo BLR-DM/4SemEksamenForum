@@ -55,16 +55,18 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag).RequireAuthorization();
 
             app.MapPut("/forum/{forumId}",
-                async (IForumCommand command, UpdateForumDto forumDto, string appUserId, int forumId) =>
+                async (IForumCommand command, UpdateForumDto forumDto, ClaimsPrincipal user, int forumId) =>
                 {
-                    await command.UpdateForumAsync(forumDto, appUserId, forumId);
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    await command.UpdateForumAsync(forumDto, userId, forumId);
                     return Results.Ok(forumDto);
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}", // check appUserId / moderator
-                async (IForumCommand command, string appUserId, int forumId) =>
+                async (IForumCommand command, ClaimsPrincipal user, int forumId) =>
                 {
-                    await command.DeleteForumAsync(appUserId, forumId);
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    await command.DeleteForumAsync(userId, forumId);
                     return Results.NoContent();
                 }).WithTags(tag);
 
