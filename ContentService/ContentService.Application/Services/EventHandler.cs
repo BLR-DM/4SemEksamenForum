@@ -43,9 +43,9 @@ namespace ContentService.Application.Services
             await _publisherService.PublishEvent("post-submitted", postSubmittedDto);
         }
 
-        async Task IEventHandler.PostPublished(string userId, int forumId, int postId)
+        async Task IEventHandler.PostPublished(string userId, int forumId, int postId, string forumName)
         {
-            var postPublishedDto = new PostPublishedDto(userId, forumId, postId);
+            var postPublishedDto = new PostPublishedDto(userId, forumId, postId, forumName);
             await _publisherService.PublishEvent("post-published", postPublishedDto);
         }
 
@@ -95,7 +95,7 @@ namespace ContentService.Application.Services
         Task ForumDeleted(string userId, int forumId);
 
         Task PostSubmitted(string postId, string content);
-        Task PostPublished(string userId, int forumId, int postId);
+        Task PostPublished(string userId, int forumId, int postId, string forumName);
         Task PostRejected(string userId, int forumId, int postId);
         Task PostDeleted(string userId, int forumId, int postId);
 

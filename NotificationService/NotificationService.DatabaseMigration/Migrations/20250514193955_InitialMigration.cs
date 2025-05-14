@@ -18,13 +18,29 @@ namespace NotificationService.DatabaseMigration.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
                     Message = table.Column<string>(type: "text", nullable: false),
+                    SourceId = table.Column<int>(type: "integer", nullable: false),
+                    SourceType = table.Column<string>(type: "text", nullable: false),
+                    ContextId = table.Column<int>(type: "integer", nullable: false),
+                    ContextType = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SentNotifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SentNotifications", x => new { x.NotificationId, x.UserId });
                 });
         }
 
@@ -33,6 +49,9 @@ namespace NotificationService.DatabaseMigration.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "SentNotifications");
         }
     }
 }

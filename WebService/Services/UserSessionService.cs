@@ -16,6 +16,7 @@ namespace WebService.Services
         private readonly IAccessTokenProvider _tokenProvider;
         private readonly IPointService _pointService;
         private readonly INotificationService _notificationService;
+        private readonly IForumService _forumService;
         private TaskCompletionSource _readyTcs = new();
 
         public bool IsLoggedIn { get; private set; }
@@ -31,17 +32,19 @@ namespace WebService.Services
         public List<ForumView>? SubscribedForums { get; set; } = [];
 
         public List<NotificationView>? Notifications { get; set; } = [];
+        public List<ForumView>? Forums { get; set; }
 
         public event Action? OnSubscriptionsChanged;
 
         public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService,
-            IAccessTokenProvider tokenProvider, IPointService pointService, INotificationService notificationService)
+            IAccessTokenProvider tokenProvider, IPointService pointService, INotificationService notificationService, IForumService forumService)
         {
             _authStateProvider = authStateProvider;
             _subscriptionService = subscriptionService;
             _tokenProvider = tokenProvider;
             _pointService = pointService;
             _notificationService = notificationService;
+            _forumService = forumService;
         }
 
         public async Task InitializeAsync()
@@ -73,11 +76,13 @@ namespace WebService.Services
 
                         var pointsTask = _pointService.GetPointsByUserId(UserId);
                         var notificationsTask = _notificationService.GetNotificationsByUserId(UserId);
+                        var forumsTask = _forumService.GetForums();
 
-                        await Task.WhenAll(pointsTask, notificationsTask);
+                        await Task.WhenAll(pointsTask, notificationsTask, forumsTask);
 
                         Points = pointsTask.Result;
                         Notifications = notificationsTask.Result;
+                        Forums = forumsTask.Result;
                     }
                     catch (Exception ex)
                     {

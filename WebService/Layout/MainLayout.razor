@@ -25,6 +25,9 @@
         ResetValueOnEmptyText="true"
         Style="width: 300px;"
         ValueChanged="OnForumSelected"/>
+        <MudIconButton>
+            <i class="bi bi-bell" @onclick="NavigateToNotifications"></i>
+        </MudIconButton>
 
         <MudSpacer />
         <AuthenticationComponent />
@@ -81,6 +84,11 @@
     private void OnForumSelected(string selectedForumName)
     {
         Navigation.NavigateTo($"/forum/{selectedForumName}");
+    }
+
+    private void NavigateToNotifications()
+    {
+        Navigation.NavigateTo("/notifications");
     }
 
 }

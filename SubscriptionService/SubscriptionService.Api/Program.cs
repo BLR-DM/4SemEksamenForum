@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using SubscriptionService.Api.Endpoints;
 using SubscriptionService.Application.Commands;
 using SubscriptionService.Application.Commands.CommandDto;
 using SubscriptionService.Application.Commands.Interfaces;
@@ -122,22 +123,6 @@ app.MapPost("/Forums/{forumId}/Subscriptions",
     });
 
 
-app.MapPost("/events/forum-published",
-    async (ForumPublishedDto evtDto, IForumSubCommand command) =>
-    {
-        try
-        {
-            await command.CreateAsync(evtDto.ForumId, evtDto.UserId);
-
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    }).WithTopic("pubsub", "forum-published");
-
 
 //app.MapPost("/Posts/{postId}/Subscriptions",
 //    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
@@ -153,32 +138,6 @@ app.MapPost("/events/forum-published",
 //            return Results.Problem(ex.Message);
 //        }
 //    });
-
-app.MapPost("/events/post-published",
-    async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand) =>
-    {
-        try
-        {
-            await forumSubCommand.CreateAsync(evtDto.ForumId, evtDto.UserId);
-            await postSubCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
-
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    }).WithTopic("pubsub", "post-published");
-
-
-app.MapPost("/events/forum-subscribers-requested",
-    async (ForumSubscribersRequestedEventDto evtDto, IForumSubQuery query, IEventHandler eventHandler) =>
-    {
-        var userIds = await query.GetSubscriptionsByForumIdAsync(evtDto.ForumId);
-        await eventHandler.RequestedForumSubscribersCollected(userIds, evtDto.ForumId, evtDto.PostId);
-
-    }).WithTopic("pubsub", "forum-subscribers-requested");
 
 //app.MapPost("/events/notify-forum-subscribers",
 //    async (NotifyForumSubscriberEventDto evtDto, IPostPublishedHandler handler) =>
@@ -320,6 +279,7 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IP
     }
 });
 
+app.MapEventEndpoints();
 
 app.Run();
 

@@ -12,9 +12,9 @@ namespace NotificationService.Application.Services
         }
 
 
-        async Task IEventHandler.ForumSubscribersRequested(int forumId, int postId)
+        async Task IEventHandler.ForumSubscribersRequested(int notificationId, int forumId)
         {
-            var evtDto = new ForumSubscribersRequestedEventDto(forumId, postId);
+            var evtDto = new ForumSubscribersRequestedEventDto(notificationId, forumId);
             await _publisherService.PublishEvent("forum-subscribers-requested", evtDto);
         }
 
@@ -26,7 +26,7 @@ namespace NotificationService.Application.Services
 
     public interface IEventHandler
     {
-        Task ForumSubscribersRequested(int forumId, int postId);
+        Task ForumSubscribersRequested(int notificationId, int forumId);
         Task ForumSubscribersNotified(IEnumerable<string> userIds, int forumId, int postId);
     }
 }
