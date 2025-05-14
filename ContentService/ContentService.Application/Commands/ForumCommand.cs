@@ -25,28 +25,17 @@ namespace ContentService.Application.Commands
         {
             try
             {
-                var forum = Forum.Create(forumDto.ForumName, forumDto.Content, appUserId);
-
                 await _unitOfWork.BeginTransaction();
 
+                // Load
+                var otherForums = await _forumRepository.GetForumsAsync();
+
                 // Do
-                await _forumRepository.AddForumAsync(forum);
+                var forum = Forum.Create(forumDto.ForumName, forumDto.Content, appUserId, otherForums);
 
                 // Save
+                await _forumRepository.AddForumAsync(forum);
                 await _unitOfWork.Commit();
-
-                //var test = forum.Id; // <- Works. Gets the newly created Id, need for publishing
-                /*
-                INSERT INTO "Forums" ("AppUserId", "CreatedDate", "ForumName", "Status")
-                VALUES (@p0, @p1, @p2, @p3)
-                RETURNING "Id", xmin;
-                */
-
-                // Need to moderate content, not forumName <- just for test
-                //var contentModerationDto = new ContentModerationDto(forum.Id, forum.Content);
-
-                // Testing publish -> should not be here
-                //await _daprClient.PublishEventAsync("pubsub", "contentSubmitted", contentModerationDto);
 
                 // Event
                 var forumId = ContentIdFormatter.FormatForumId(forum.Id);
@@ -82,8 +71,9 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -111,8 +101,9 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -142,8 +133,9 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -173,8 +165,9 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -225,8 +218,9 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -242,7 +236,6 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumOnlyAsync(forumId);
 
                 // Do
-                forum.Delete(appUserId);
                 _forumRepository.DeleteForum(forum);
 
                 // Save
@@ -251,8 +244,9 @@ namespace ContentService.Application.Commands
                 // Event
                 await _eventHandler.ForumDeleted(appUserId, forum.Id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -277,8 +271,9 @@ namespace ContentService.Application.Commands
                 var postId = ContentIdFormatter.FormatPostId(forum.Id, post.Id);
                 await _eventHandler.PostSubmitted(postId, post.Content);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -300,8 +295,9 @@ namespace ContentService.Application.Commands
                 //Save
                 await _unitOfWork.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -325,8 +321,9 @@ namespace ContentService.Application.Commands
 
                 await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }

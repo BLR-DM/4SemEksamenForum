@@ -31,26 +31,28 @@ namespace ContentService.Api.Endpoints
             app.MapPost("/forum/{forumId}/post",
                 async (IForumCommand command, CreatePostDto postDto, int forumId, ClaimsPrincipal user) =>
                 {
-                    var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                     var username = user.FindFirst("preferred_username")?.Value;
 
-                    await command.CreatePostAsync(postDto, username, appUserId, forumId);
+                    await command.CreatePostAsync(postDto, username, userId, forumId);
                     return Results.Created();
                 }).WithTags(tag);
 
             app.MapPut("/forum/{forumId}/post/{postId}",
-                async (IForumCommand command, UpdatePostDto postDto, string appUserId, int forumId, int postId) =>
+                async (IForumCommand command, UpdatePostDto postDto, ClaimsPrincipal user, int forumId, int postId) =>
                 {
-                    await command.UpdatePostAsync(postDto, appUserId, forumId, postId);
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    await command.UpdatePostAsync(postDto, userId, forumId, postId);
                     return Results.Ok(postDto);
                 }).WithTags(tag);
 
             app.MapDelete("/forum/{forumId}/post/{postId}",
                 async (IForumCommand command, int forumId, int postId, ClaimsPrincipal user) =>
                 {
-                    var appUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    await command.DeletePostAsync(appUserId, forumId, postId);
+                    await command.DeletePostAsync(userId, forumId, postId);
                     return Results.Ok("Post deleted");
                 }).WithTags(tag);
         }

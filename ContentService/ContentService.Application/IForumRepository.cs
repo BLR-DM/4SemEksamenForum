@@ -8,6 +8,7 @@ namespace ContentService.Application
         void UpdateForumAsync(Forum forum, uint rowVersion);
         Task<Forum> GetForumOnlyAsync(int forumId);
         Task<Forum> GetForumAsync(int id);
+        Task<IEnumerable<Forum>> GetForumsAsync();
         Task<Forum> GetForumWithSinglePostAsync(int forumId, int postId);
         void DeleteForum(Forum forum);
         void UpdatePost(Post post, uint rowVersion);

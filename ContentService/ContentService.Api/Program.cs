@@ -2,6 +2,7 @@
 using ContentService.Application;
 using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.Interfaces;
+using ContentService.Application.Services;
 using ContentService.Infrastructure;
 using ContentService.Infrastructure.Interfaces;
 using Dapr;
