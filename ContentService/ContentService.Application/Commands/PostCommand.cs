@@ -43,8 +43,9 @@ namespace ContentService.Application.Commands
                 var commentId = ContentIdFormatter.FormatCommentId(forum.Id, post.Id, comment.Id);
                 await _eventHandler.CommentSubmitted(commentId, comment.Content);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await _unitOfWork.Rollback();
                 throw;
             }
@@ -155,7 +156,7 @@ namespace ContentService.Application.Commands
                 // Save
                 await _unitOfWork.Commit();
 
-                await _eventHandler.CommentDeleted(appUserId, forum.Id, post.Id, comment.Id);
+                await _eventHandler.CommentDeleted(comment.AppUserId, forum.Id, post.Id, comment.Id);
             }
             catch (Exception)
             {
