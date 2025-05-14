@@ -42,7 +42,7 @@ namespace ContentService.Domain.Entities
 
         private bool IsForumNameUnique(IEnumerable<Forum> otherForums)
         {
-            return !otherForums.Any(other => ForumName.Equals(other.ForumName));
+            return !otherForums.Any(other => ForumName.ToLower().Equals(other.ForumName.ToLower()));
         }
 
         private bool IsForumNameWithSpaces(string forumName)
