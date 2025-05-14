@@ -2,6 +2,6 @@
 
 public interface INotificationCommand
 {
-    Task CreateNotificationAsync(string userId, string message);
-    Task MarkAsReadAsync(int id, string userId);
+    Task<int> CreateNotificationAsync(string message, int sourceId, string sourceType, int contextId, string contextType);
+    //Task MarkAsReadAsync(int id, string userId);
 }

@@ -2,11 +2,9 @@
 {
     public record EventDto(string UserId, int? ForumId, int? PostId, int? CommentId);
 
-    public record PostPublishedEventDto(int ForumId, int PostId);
+    public record PostPublishedDto(string UserId, int ForumId, int PostId, string ForumName);
 
-    public record PostPublishedEventDtoTest(string UserId, int ForumId, int PostId);
+    public record ForumSubscribersRequestedEventDto(int NotificationId, int ForumId);
 
-    public record ForumSubscribersRequestedEventDto(int ForumId, int PostId);
-
-    public record RequestedForumSubscribersCollectedEventDto(IEnumerable<string> UserIds, int ForumId, int PostId);
+    public record RequestedForumSubscribersCollectedEventDto(IEnumerable<string> UserIds, int NotificationId);
 }

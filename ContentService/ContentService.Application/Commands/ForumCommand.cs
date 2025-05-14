@@ -137,7 +137,7 @@ namespace ContentService.Application.Commands
                 post.MarkAsPublished();
 
                 // Event
-                await _eventHandler.PostPublished(post.AppUserId, forum.Id, post.Id);
+                await _eventHandler.PostPublished(post.AppUserId, forum.Id, post.Id, forum.ForumName);
 
                 // Save
                 await _unitOfWork.Commit();

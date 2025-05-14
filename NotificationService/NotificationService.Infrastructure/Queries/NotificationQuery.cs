@@ -11,20 +11,20 @@ public class NotificationQuery : INotificationQuery
     {
         _context = context;
     }
-    async Task<List<NotificationDto>> INotificationQuery.GetNotificationsForUserAsync(string userId)
-    {
-        var notificationDtos = await _context.Notifications
-            .AsNoTracking()
-            .Where(n => n.UserId == userId)
-            .Select(n => new NotificationDto
-            (
-                n.Id, 
-                n.UserId, 
-                n.Message, 
-                n.IsRead, 
-                n.CreatedAt
-            )).ToListAsync();
+    //async Task<List<NotificationDto>> INotificationQuery.GetNotificationsForUserAsync(string userId)
+    //{
+    //    var notificationDtos = await _context.Notifications
+    //        .AsNoTracking()
+    //        .Where(n => n.UserId == userId)
+    //        .Select(n => new NotificationDto
+    //        (
+    //            n.Id, 
+    //            n.UserId, 
+    //            n.Message, 
+    //            n.IsRead, 
+    //            n.CreatedAt
+    //        )).ToListAsync();
 
-        return notificationDtos;
-    }
+    //    return notificationDtos;
+    //}
 }
