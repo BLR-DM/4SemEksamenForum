@@ -92,7 +92,6 @@ namespace WebService.Services
         {
             if(UserId != null)
                 SubscribedForumIds = await _subscriptionService.GetSubscribedForumIds(UserId);
-
         }
 
         public void AddForumSubscription(int forumId)

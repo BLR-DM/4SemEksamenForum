@@ -100,7 +100,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            });
+            }).WithTopic("pubsub", "post-deleted").AllowAnonymous();
 
             app.MapPost("/events/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command) =>
             {

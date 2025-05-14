@@ -69,7 +69,7 @@ namespace ContentService.Application.Commands
                 comment.MarkAsPublished();
 
                 // Event
-                await _eventHandler.CommentPublished(post.AppUserId, forum.Id, post.Id, comment.Id);
+                await _eventHandler.CommentPublished(comment.AppUserId, forum.Id, post.Id, comment.Id);
 
                 // Save
                 await _unitOfWork.Commit();
@@ -100,7 +100,7 @@ namespace ContentService.Application.Commands
                 comment.MarkAsRejected();
 
                 // Event
-                await _eventHandler.CommentRejected(post.AppUserId, forum.Id, post.Id, comment.Id);
+                await _eventHandler.CommentRejected(comment.AppUserId, forum.Id, post.Id, comment.Id);
 
                 // Save
                 await _unitOfWork.Commit();

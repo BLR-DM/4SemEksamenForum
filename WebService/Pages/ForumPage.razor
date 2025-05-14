@@ -5,7 +5,14 @@
 @inject UserSessionService Session
 @inject ISubscriptionService SubscriptionService
 
-<div class="content-wrapper">
+<div class="content-wrapper forum-header">
+    @if (Forum is not null)
+    {
+        <h3>@Forum.ForumName</h3>
+        <h6>@Forum.Content</h6>
+    }
+</div>
+<div class="button-header">
     @if (Forum is not null)
     {
         <div class="custom-button">
@@ -20,6 +27,12 @@
                 <button @onclick="SubscribeToForum" class="btn btn-primary">Subscribe</button>
             }
         </div>
+    }
+</div>
+
+<div class="content-wrapper">
+    @if (Forum is not null)
+    {
         @if (Forum?.Posts is not null && Forum.Posts.Count != 0)
         {
             foreach (var post in Forum.Posts)
@@ -99,9 +112,29 @@
     background-color: white;
 }
 
+.forum-header{
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.forum-header h3{
+    margin-bottom: 4px;
+}
+
+.forum-header h6{
+    
+}
+
+.button-header{
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .custom-button{
     display: flex;
     margin-bottom: 12px;
+    margin-top: 12px;
     justify-content: space-between;
 }
 

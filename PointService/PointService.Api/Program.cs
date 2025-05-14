@@ -144,7 +144,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization("Moderator");
+    }).RequireAuthorization();
 
 app.MapEventEndpoints();
 
