@@ -61,6 +61,11 @@ namespace ContentService.Infrastructure.Repositories
                 .FirstAsync(forum => forum.Id == forumId);
         }
 
+        async Task<IEnumerable<Forum>> IForumRepository.GetForumsAsync()
+        {
+            return await _db.Forums.AsNoTracking().ToListAsync();
+        }
+
         async Task<Forum> IForumRepository.GetForumWithSinglePostAsync(int forumId, int postId)
         {
             return await _db.Forums

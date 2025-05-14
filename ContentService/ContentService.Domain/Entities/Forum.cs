@@ -27,10 +27,27 @@ namespace ContentService.Domain.Entities
 
 
         // Forum
-
-        public static Forum Create(string forumName, string content, string appUserId)
+        public static Forum Create(string forumName, string content, string appUserId, IEnumerable<Forum> otherForums)
         {
-            return new Forum(forumName, content, appUserId);
+            var forum = new Forum(forumName, content, appUserId);
+
+            if (forum.IsForumNameWithSpaces(forumName))
+                throw new InvalidOperationException("Forum name cannot have spaces");
+
+            if (!forum.IsForumNameUnique(otherForums))
+                throw new InvalidOperationException("Forum name already exists");
+
+            return forum;
+        }
+
+        private bool IsForumNameUnique(IEnumerable<Forum> otherForums)
+        {
+            return !otherForums.Any(other => ForumName.Equals(other.ForumName));
+        }
+
+        private bool IsForumNameWithSpaces(string forumName)
+        {
+            return forumName.Any(c => c == ' ');
         }
 
         public void MarkAsApproved() => Status = Status.Approved;
@@ -41,11 +58,6 @@ namespace ContentService.Domain.Entities
         {
             AssureUserIsCreator(appUserId);
             Content = content;
-        }
-
-        public void Delete(string appUserId)
-        {
-            AssureUserIsCreator(appUserId);
         }
 
         private void AssureUserIsCreator(string userId)

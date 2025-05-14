@@ -1,4 +1,4 @@
-﻿namespace ContentService.Infrastructure.Interfaces
+﻿namespace ContentService.Application.Services
 {
     public interface IModerationResultHandler
     {
