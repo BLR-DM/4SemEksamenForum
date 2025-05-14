@@ -68,8 +68,16 @@ namespace WebService.Services
                 if(UserId != null)
                     try
                     {
-                        Points = await _pointService.GetPointsByUserId(UserId);
-                        Notifications = await _notificationService.GetNotificationsByUserId(UserId);
+                        //Points = await _pointService.GetPointsByUserId(UserId);
+                        //Notifications = await _notificationService.GetNotificationsByUserId(UserId);
+
+                        var pointsTask = _pointService.GetPointsByUserId(UserId);
+                        var notificationsTask = _notificationService.GetNotificationsByUserId(UserId);
+
+                        await Task.WhenAll(pointsTask, notificationsTask);
+
+                        Points = pointsTask.Result;
+                        Notifications = notificationsTask.Result;
                     }
                     catch (Exception ex)
                     {
