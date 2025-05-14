@@ -1,6 +1,7 @@
 ﻿@page "/forum/create"
 @using WebService.Dtos.CommandDtos
 @inject IForumService ForumService
+@inject NavigationManager Navigation
 
 
 <div class="content-wrapper">
@@ -34,6 +35,8 @@
         try
         {
             await ForumService.CreateForum(CreateForumDto);
+
+            Navigation.NavigateTo($"forum/{CreateForumDto.ForumName}");
         }
         catch (Exception e)
         {
