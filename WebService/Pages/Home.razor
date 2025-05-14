@@ -31,12 +31,14 @@ else
             <div><strong>UserId:</strong><span>@Session.UserId</span></div>
         </div>
     </div>
-    <div class="content-wrapper"> @*Testing*@
-        <div class="notification-list">
-            @if (Session.Notifications is not null && Session.Notifications.Count > 0)
-            {
-                var testNotification = Session.Notifications.First();
-                
+
+    <div class="mt-3"></div> @*Testing*@
+    @if (Session.Notifications is not null && Session.Notifications.Count > 0) 
+    {
+        var testNotification = Session.Notifications.First();
+
+        <div class="content-wrapper"> @*Testing*@
+            <div class="notification-list">
                 <div class="content-wrapper">
                     <div>(For test display)</div>
                     <div><strong>Id:</strong><span>@testNotification.Id</span></div>
@@ -48,11 +50,11 @@ else
                 <div class="mt-3"></div>
 
                 <div>Notifications:</div>
-                foreach (var notification in Session.Notifications)
+                @foreach (var notification in Session.Notifications)
                 {
                     <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
                 }
-                
+
 
                 @*var test = Session.Notifications.First();
                 <div>
@@ -62,9 +64,9 @@ else
                     <div><strong>@test.NotificationRead</strong></div>
                     <div><strong>@test.CreatedAt</strong></div>
                 </div>*@
-            }
+            </div>
         </div>
-    </div>
+    }
 
     <form>
         <textarea>@Session.Token</textarea>
