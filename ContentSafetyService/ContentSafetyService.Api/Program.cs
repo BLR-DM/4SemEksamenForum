@@ -134,5 +134,5 @@ app.MapPost("/contentmoderation",
 app.Run();
 public record MessagePayload(string Text);
 public record ContentModerationDto(string ContentId, string Content);
-public record ContentModeratedDto(string ContentId, Action Status);
+public record ContentModeratedDto(string ContentId, Action Result);
 public record ContentRejectedDto(string ContentId, string Reason); // test, instead of reason, include the ActionByCategory / rejected ones

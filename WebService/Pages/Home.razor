@@ -31,6 +31,21 @@ else
             <div><strong>UserId:</strong><span>@Session.UserId</span></div>
         </div>
     </div>
+
+    <div class="notification-list">
+        @if (Session.Notifications is not null && Session.Notifications.Count > 0)
+        {
+            var test = Session.Notifications.First();
+            <div>
+                <div><strong>@test.Id</strong></div>
+                <div><strong>@test.UserId</strong></div>
+                <div><strong>@test.Message</strong></div>
+                <div><strong>@test.NotificationRead</strong></div>
+                <div><strong>@test.CreatedAt</strong></div>
+            </div>
+        }
+    </div>
+
     <form>
         <textarea>@Session.Token</textarea>
     </form>

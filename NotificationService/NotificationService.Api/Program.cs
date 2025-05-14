@@ -30,7 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
-        options.Audience = "notification-api";
+        options.Audience = "notificationservice-api";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -66,37 +66,38 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
+app.MapSubscribeHandler();
 
 app.UseCors("AllowGateway");
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
-app.MapPost("/events/notification",
-    async (EventDto dto, HttpRequest request, INotificationMessageFactory messageFactory, INotificationCommand command) =>
-    {
-        try
-        {
-            var topic = request.Headers["ce-type"].FirstOrDefault();
+//app.MapPost("/events/notification",
+//    async (EventDto dto, HttpRequest request, INotificationMessageFactory messageFactory, INotificationCommand command) =>
+//    {
+//        try
+//        {
+//            var topic = request.Headers["ce-type"].FirstOrDefault();
 
-            var message = await messageFactory.BuildMessageAsync(topic, dto);
+//            var message = await messageFactory.BuildMessageAsync(topic, dto);
 
-            await command.CreateNotificationAsync(dto.UserId, message);
+//            await command.CreateNotificationAsync(dto.UserId, message);
 
-            return Results.Created();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Results.Problem(ex.Message);
-        }
-    })
-    //.WithTopic("pubsub", "post-published")
-    .WithTopic("pubsub", "comment-published")
-    .WithTopic("pubsub", "post-rejected")
-    .WithTopic("pubsub", "comment-rejected")
-    .WithTopic("pubsub", "post-upvote-created")
-    .WithTopic("pubsub", "post-downvote-created")
-    .WithTopic("pubsub", "comment-upvote-created")
-    .WithTopic("pubsub", "comment-downvote-created");
+//            return Results.Created();
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message);
+//            return Results.Problem(ex.Message);
+//        }
+//    })
+//    //.WithTopic("pubsub", "post-published")
+//    .WithTopic("pubsub", "comment-published")
+//    .WithTopic("pubsub", "post-rejected")
+//    .WithTopic("pubsub", "comment-rejected")
+//    .WithTopic("pubsub", "post-upvote-created")
+//    .WithTopic("pubsub", "post-downvote-created")
+//    .WithTopic("pubsub", "comment-upvote-created")
+//    .WithTopic("pubsub", "comment-downvote-created");
 
 
 
@@ -130,7 +131,7 @@ app.MapGet("/{userId}/notifications",
 //        }
 //    }).WithTopic("pubsub", "post-published");
 
-app.MapPost("/events/post-published",
+app.MapPost("/events/post-published", // Only for testing
     async (PostPublishedEventDtoTest postDto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
     {
         try

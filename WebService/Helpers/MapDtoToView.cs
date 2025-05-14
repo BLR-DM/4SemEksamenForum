@@ -85,8 +85,11 @@ namespace WebService.Helpers
         {
             var notificationView = new NotificationView()
             {
+                Id = notificationDto.Id,
+                UserId = notificationDto.UserId,
                 Message = notificationDto.Message,
-                CreatedDate = notificationDto.CreatedAt
+                NotificationRead = notificationDto.NotificationRead,
+                CreatedAt = notificationDto.CreatedAt
             };
 
             return notificationView;

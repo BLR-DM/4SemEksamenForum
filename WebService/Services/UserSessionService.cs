@@ -15,6 +15,7 @@ namespace WebService.Services
         private readonly ISubscriptionService _subscriptionService;
         private readonly IAccessTokenProvider _tokenProvider;
         private readonly IPointService _pointService;
+        private readonly INotificationService _notificationService;
         private TaskCompletionSource _readyTcs = new();
 
         public bool IsLoggedIn { get; private set; }
@@ -29,14 +30,18 @@ namespace WebService.Services
 
         public List<ForumView>? SubscribedForums { get; set; } = [];
 
+        public List<NotificationView>? Notifications { get; set; } = [];
+
         public event Action? OnSubscriptionsChanged;
 
-        public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService, IAccessTokenProvider tokenProvider, IPointService pointService)
+        public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService,
+            IAccessTokenProvider tokenProvider, IPointService pointService, INotificationService notificationService)
         {
             _authStateProvider = authStateProvider;
             _subscriptionService = subscriptionService;
             _tokenProvider = tokenProvider;
             _pointService = pointService;
+            _notificationService = notificationService;
         }
 
         public async Task InitializeAsync()
@@ -64,6 +69,7 @@ namespace WebService.Services
                     try
                     {
                         Points = await _pointService.GetPointsByUserId(UserId);
+                        Notifications = await _notificationService.GetNotificationsByUserId(UserId);
                     }
                     catch (Exception ex)
                     {
