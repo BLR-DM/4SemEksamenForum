@@ -259,7 +259,7 @@ app.MapDelete("/Forums/{forumId}/Subscriptions",
 //        }
 //    });
 
-app.MapGet("/Forum/{forumId}/Subscriptions/", async (int forumId, IForumSubQuery query) =>
+app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery query) =>
 {
     try
     {
@@ -274,7 +274,7 @@ app.MapGet("/Forum/{forumId}/Subscriptions/", async (int forumId, IForumSubQuery
     }
 });
 
-app.MapGet("/Users/{appUserId}/Forums/Subscriptions/", async (string appUserId, IForumSubQuery query) =>
+app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, IForumSubQuery query) =>
 {
     try
     {
@@ -289,7 +289,7 @@ app.MapGet("/Users/{appUserId}/Forums/Subscriptions/", async (string appUserId, 
     }
 });
 
-app.MapGet("/Post/{postId}/Subscriptions/", async (int postId, IPostSubQuery query) =>
+app.MapGet("/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery query) =>
 {
     try
     {
@@ -303,7 +303,7 @@ app.MapGet("/Post/{postId}/Subscriptions/", async (int postId, IPostSubQuery que
     }
 });
 
-app.MapGet("/Users/{appUserId}/Posts/Subscriptions/", async (string appUserId, IPostSubQuery query) =>
+app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IPostSubQuery query) =>
 {
     try
     {
