@@ -12,7 +12,7 @@ namespace NotificationService.Api.Endpoints
         {
             const string tag = "Events";
 
-            app.MapPost($"/events/{EventNames.PostPublished}", async (PostPublishedDto dto, INotificatioHandler notificationHandler) =>
+            app.MapPost($"/events/{EventNames.PostPublished}", async (PostPublishedDto dto, INotificationHandler notificationHandler) =>
             {
                 try
                 {

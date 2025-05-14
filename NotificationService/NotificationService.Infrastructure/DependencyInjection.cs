@@ -17,6 +17,7 @@ public static class DependencyInjection
     {
         services.AddScoped<INotificationQuery, NotificationQuery>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<ISentNotificationRepository, SentNotificationRepository>();
         services.AddScoped<IPublisherService, DaprPublisherService>();
 
         // Add-Migration InitialMigration -Context NotificationContext -Project NotificationService.DatabaseMigration

@@ -26,5 +26,17 @@ public class SentNotificationCommand : ISentNotificationCommand
             throw;
         }
     }
+
+    async Task ISentNotificationCommand.MarkAsReadAsync(MarkAsReadDto dto)
+    {
+        var sentNotification = await _repository.GetSentNotificationAsync(dto.UserId, dto.NotificationId);
+
+        if (sentNotification.IsRead)
+            return;
+
+        sentNotification.MarkAsRead();
+
+        await _repository.PatchAsync();
+    }
 }
 

@@ -4,7 +4,7 @@ using NotificationService.Application.Helpers;
 
 namespace NotificationService.Application.Services
 {
-    public class NotificationHandler : INotificatioHandler
+    public class NotificationHandler : INotificationHandler
     {
         private readonly INotificationCommand _command;
         private readonly IEventHandler _eventHandler;
@@ -15,7 +15,7 @@ namespace NotificationService.Application.Services
             _eventHandler = eventHandler;
         }
 
-        async Task INotificatioHandler.Handle(string topic, object dto)
+        async Task INotificationHandler.Handle(string topic, object dto)
         {
             if (topic == EventNames.PostPublished)
             {
@@ -40,7 +40,7 @@ namespace NotificationService.Application.Services
         }
     }
 
-    public interface INotificatioHandler
+    public interface INotificationHandler
     {
         Task Handle(string topic, object dto);
     }

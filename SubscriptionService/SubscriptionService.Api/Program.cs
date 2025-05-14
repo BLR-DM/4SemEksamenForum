@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using SubscriptionService.Api.Endpoints;
 using SubscriptionService.Application.Commands;
 using SubscriptionService.Application.Commands.CommandDto;
 using SubscriptionService.Application.Commands.Interfaces;
@@ -278,6 +279,7 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IP
     }
 });
 
+app.MapEventEndpoints();
 
 app.Run();
 

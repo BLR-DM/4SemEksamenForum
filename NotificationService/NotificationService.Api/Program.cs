@@ -9,7 +9,6 @@ using NotificationService.Application;
 using NotificationService.Application.Commands.CommandDto;
 using NotificationService.Application.Commands.Interfaces;
 using NotificationService.Application.EventDtos;
-using NotificationService.Application.Factories.Interfaces;
 using NotificationService.Application.Queries;
 using NotificationService.Application.Services;
 using NotificationService.Infrastructure;
@@ -74,37 +73,37 @@ app.UseCors("AllowGateway");
 app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
 
 
-//app.MapGet("/{userId}/notifications",
-//    async (string userId, INotificationQuery query) =>
-//    {
-//        try
-//        {
-//            var notifications = await query.GetNotificationsForUserAsync(userId);
-//            return Results.Ok(notifications);
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    });
+app.MapGet("/{userId}/notifications",
+    async (string userId, INotificationQuery query) =>
+    {
+        try
+        {
+            var notifications = await query.GetNotificationsForUserAsync(userId);
+            return Results.Ok(notifications);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    });
 
 
-//app.MapPatch("/notifications/{id}/read",
-//    async (int id, ClaimsPrincipal user, INotificationCommand command) =>
-//    {
-//        try
-//        {
-//            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-//            await command.MarkAsReadAsync(id, userId);
-//            return Results.NoContent();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    });
+app.MapPatch("/notifications/{id}/read",
+    async (int id, ClaimsPrincipal user, ISentNotificationCommand command) =>
+    {
+        try
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await command.MarkAsReadAsync(new MarkAsReadDto(userId, id));
+            return Results.NoContent();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    });
 
 //app.MapPost("/events/post-published",
 //    async (PostPublishedEventDto dto, IEventHandler eventHandler) =>
