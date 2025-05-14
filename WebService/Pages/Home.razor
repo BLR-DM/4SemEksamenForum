@@ -32,19 +32,41 @@ else
         </div>
     </div>
 
-    <div class="notification-list">
-        @if (Session.Notifications is not null && Session.Notifications.Count > 0)
-        {
-            var test = Session.Notifications.First();
-            <div>
-                <div><strong>@test.Id</strong></div>
-                <div><strong>@test.UserId</strong></div>
-                <div><strong>@test.Message</strong></div>
-                <div><strong>@test.NotificationRead</strong></div>
-                <div><strong>@test.CreatedAt</strong></div>
+    <div class="mt-3"></div> @*Testing*@
+    @if (Session.Notifications is not null && Session.Notifications.Count > 0) 
+    {
+        var testNotification = Session.Notifications.First();
+
+        <div class="content-wrapper"> @*Testing*@
+            <div class="notification-list">
+                <div class="content-wrapper">
+                    <div>(For test display)</div>
+                    <div><strong>Id:</strong><span>@testNotification.Id</span></div>
+                    <div><strong>UserId:</strong><span>@testNotification.UserId</span></div>
+                    <div><strong>Message:</strong><span>@testNotification.Message</span></div>
+                    <div><strong>NotificationRead:</strong><span>@testNotification.NotificationRead</span></div>
+                    <div><strong>CreatedAt:</strong><span>@testNotification.CreatedAt</span></div>
+                </div>
+                <div class="mt-3"></div>
+
+                <div>Notifications:</div>
+                @foreach (var notification in Session.Notifications)
+                {
+                    <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
+                }
+
+
+                @*var test = Session.Notifications.First();
+                <div>
+                    <div><strong>@test.Id</strong></div>
+                    <div><strong>@test.UserId</strong></div>
+                    <div><strong>@test.Message</strong></div>
+                    <div><strong>@test.NotificationRead</strong></div>
+                    <div><strong>@test.CreatedAt</strong></div>
+                </div>*@
             </div>
-        }
-    </div>
+        </div>
+    }
 
     <form>
         <textarea>@Session.Token</textarea>
