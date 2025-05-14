@@ -71,6 +71,10 @@ builder.Services.AddScoped<IPointService, PointService>();
 
 builder.Services.AddScoped<IPointServiceProxy, PointServiceProxy>();
 
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddScoped<INotificationServiceProxy, NotificationServiceProxy>();
+
 builder.Services.AddBlazoredSessionStorage();
 
 

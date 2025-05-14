@@ -80,5 +80,19 @@ namespace WebService.Helpers
 
             return voteView;
         }
+
+        public static NotificationView MapNotificationToView(NotificationDto notificationDto)
+        {
+            var notificationView = new NotificationView()
+            {
+                Id = notificationDto.Id,
+                UserId = notificationDto.UserId,
+                Message = notificationDto.Message,
+                NotificationRead = notificationDto.NotificationRead,
+                CreatedAt = notificationDto.CreatedAt
+            };
+
+            return notificationView;
+        }
     }
 }

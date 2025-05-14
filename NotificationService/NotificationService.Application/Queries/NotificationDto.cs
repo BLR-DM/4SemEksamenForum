@@ -1,6 +1,6 @@
 ﻿namespace NotificationService.Application.Queries;
 
-public record NotificationDto(string Message, DateTime CreatedAt);
+public record NotificationDto(int Id, string UserId, string Message, bool NotificationRead, DateTime CreatedAt);
 
 //public class NotificationDto
 //{

@@ -14,10 +14,14 @@ public class NotificationQuery : INotificationQuery
     }
     async Task<List<NotificationDto>> INotificationQuery.GetNotificationsForUserAsync(string userId)
     {
-        return await _context.Notifications
+        var notifications = await _context.Notifications
             .AsNoTracking()
             .Where(n => n.UserId == userId)
-            .Select(n => new NotificationDto(n.Message, n.CreatedAt))
             .ToListAsync();
+
+        var notificationDtos = notifications.Select(n => 
+            new NotificationDto(n.Id, n.UserId, n.Message, n.NotificationRead, n.CreatedAt)).ToList();
+
+        return notificationDtos;
     }
 }
