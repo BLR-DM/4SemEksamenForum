@@ -1,20 +1,39 @@
-﻿@if (Notification is not null)
-{
-    <div class="notification-wrapper">
-        <div><strong>Message:</strong><span>@Notification.Message</span></div>
-        <div><strong>CreatedAt:</strong><span>@Notification.CreatedAt</span></div>
-        
-        @if (!Notification.NotificationRead)
-        {
-            <div class="notification-indicator"></div>
-        }
-    </div>
-}
+﻿@inject INotificationService NotificationService
+
+<AuthorizeView>
+    @if (Notification is not null)
+    {
+        <div class="notification-wrapper">
+            <div class="notification-content @(Notification.IsRead ? "notification-read" : "")" 
+                 @onclick="() => OnNotificationClicked(Notification.Id)">
+                <div><strong>Message:</strong><span>@Notification.Message</span></div>
+                <div><strong>CreatedAt:</strong><span>@Notification.CreatedAt</span></div>
+                @if (!Notification.IsRead)
+                {
+                    <div class="notification-indicator"></div>
+                }
+            </div>
+        </div>
+    }
+</AuthorizeView>
 
 @code {
     [Parameter]
     public NotificationView? Notification { get; set; }
+
+    private async Task OnNotificationClicked(int notificationId)
+    {
+        if (Notification is not null && !Notification.IsRead)
+        {
+            await NotificationService.MarkNotificationAsRead(notificationId);
+            Notification.IsRead = true;
+            StateHasChanged();
+        }
+
+        // NavigationManager.NavigateTo("");
+    }
 }
+
 
 <style>
     .notification-wrapper {
@@ -24,6 +43,7 @@
         border: 1px solid #ddd;
         border-radius: 6px;
         background-color: white;
+        cursor: pointer;
     }
 
     .notification-indicator {
@@ -35,5 +55,9 @@
         height: 25px;
         background-color: #007fff;
         border-radius: 0%;
+    }
+
+    .notification-read {
+        color: #888;
     }
 </style>

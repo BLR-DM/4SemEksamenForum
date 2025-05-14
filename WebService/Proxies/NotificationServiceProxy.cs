@@ -28,11 +28,31 @@ namespace WebService.Proxies
                 throw;
             }
         }
+
+        async Task INotificationServiceProxy.MarkNotificationAsRead(int notificationId)
+        {
+            try
+            {
+                var requestUri = $"notification/notifications/{notificationId}/read";
+
+                var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+                var response = await _httpClient.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Failed to mark notification as read");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Failed to mark notification as read");
+            }
+        }
     }
 
     public interface INotificationServiceProxy
     {
         Task<List<NotificationDto>> GetNotificationsByUserId(string userId);
+        Task MarkNotificationAsRead(int notificationId);
 
     }
 }

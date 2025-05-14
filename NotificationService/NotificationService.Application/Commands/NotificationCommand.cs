@@ -18,4 +18,16 @@ public class NotificationCommand : INotificationCommand
 
         await _repository.AddAsync(notification);
     }
+
+    async Task INotificationCommand.MarkAsReadAsync(int id, string userId)
+    {
+        var notification = await _repository.GetNotificationAsync(id);
+
+        if (notification.IsRead)
+            return;
+
+        notification.MarkAsRead();
+
+        await _repository.PatchAsync();
+    }
 }

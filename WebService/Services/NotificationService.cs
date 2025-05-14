@@ -31,10 +31,16 @@ namespace WebService.Services
                 return new List<NotificationView>();
             }
         }
+
+        async Task INotificationService.MarkNotificationAsRead(int notificationId)
+        {
+            await _proxy.MarkNotificationAsRead(notificationId);
+        }
     }
 
     public interface INotificationService
     {
         Task<List<NotificationView>> GetNotificationsByUserId(string userId);
+        Task MarkNotificationAsRead(int notificationId);
     }
 }

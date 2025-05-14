@@ -88,7 +88,7 @@ namespace WebService.Helpers
                 Id = notificationDto.Id,
                 UserId = notificationDto.UserId,
                 Message = notificationDto.Message,
-                NotificationRead = notificationDto.NotificationRead,
+                IsRead = notificationDto.IsRead,
                 CreatedAt = notificationDto.CreatedAt
             };
 

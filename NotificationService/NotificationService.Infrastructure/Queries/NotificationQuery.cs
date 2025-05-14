@@ -21,7 +21,7 @@ public class NotificationQuery : INotificationQuery
                 n.Id, 
                 n.UserId, 
                 n.Message, 
-                n.NotificationRead, 
+                n.IsRead, 
                 n.CreatedAt
             )).ToListAsync();
 

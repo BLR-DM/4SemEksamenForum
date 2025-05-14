@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -108,6 +109,23 @@ app.MapGet("/{userId}/notifications",
         {
             var notifications = await query.GetNotificationsForUserAsync(userId);
             return Results.Ok(notifications);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
+    });
+
+
+app.MapPatch("/notifications/{id}/read",
+    async (int id, ClaimsPrincipal user, INotificationCommand command) =>
+    {
+        try
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await command.MarkAsReadAsync(id, userId);
+            return Results.NoContent();
         }
         catch (Exception ex)
         {
