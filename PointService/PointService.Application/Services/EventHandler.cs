@@ -11,23 +11,23 @@ namespace PointService.Application.Services
             _publisherService = publisherService;
         }
 
-        Task IEventHandler.FailedToAddPointsOnForumPublished(int forumId)
+        async Task IEventHandler.FailedToAddPointsOnForumPublished(string userId, int forumId)
         {
-            var evtDto = new FailedToAddPointsOnForumPublishedDto(forumId);
+            var evtDto = new FailedToAddPointsOnForumPublishedDto(userId, forumId);
             await _publisherService.PublishEvent("failed-to-add-points-on-forum-published", evtDto);
         }
 
-        async Task IEventHandler.FailedToAddPointsOnPostPublished(int forumId, int postId)
+        async Task IEventHandler.FailedToAddPointsOnPostPublished(string userId, int forumId, int postId)
         {
-            var evtDto = new FailedToAddPointsOnPostPublishedDto(forumId, postId);
+            var evtDto = new FailedToAddPointsOnPostPublishedDto(userId, forumId, postId);
             await _publisherService.PublishEvent("failed-to-add-points-on-post-published", evtDto);
         }
     }
 
     public interface IEventHandler
     {
-        Task FailedToAddPointsOnForumPublished(int forumId);
-        Task FailedToAddPointsOnPostPublished(int forumId, int postId);
+        Task FailedToAddPointsOnForumPublished(string userId, int forumId);
+        Task FailedToAddPointsOnPostPublished(string userId, int forumId, int postId);
 
     }
 }

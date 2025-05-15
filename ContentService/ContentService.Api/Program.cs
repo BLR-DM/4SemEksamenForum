@@ -167,8 +167,8 @@ events.MapPost("/content-moderated",
     .WithTopic("pubsub", "content-moderated");
 
 
-events.MapPost("/compensate-delete-forum",
-        async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
+events.MapPost("/compensate/delete-forum",
+        async (IForumCommand command, CompensateByDeletingForumDto evt) =>
         {
             await command.DeleteForumAsync(evt.UserId, evt.ForumId);
             return Results.NoContent();
@@ -177,14 +177,16 @@ events.MapPost("/compensate-delete-forum",
     .WithTopic("pubsub", "failed-to-add-points-on-forum-published");
 
 
-events.MapPost("/compensate-delete-post",
-        async (IForumCommand command, FailedToSubscribeUserToPostEventDto evt) =>
+
+events.MapPost("/compensate/delete-post",
+        async (IForumCommand command, CompensateByDeletingPostDto evt) =>
         {
             await command.DeletePostAsync(evt.UserId, evt.ForumId, evt.PostId);
             return Results.NoContent();
         })
     .WithTopic("pubsub", "failed-to-subscribe-user-on-post-published")
     .WithTopic("pubsub", "failed-to-add-points-on-post-published");
+    
 
 
 //app.MapPost("/publish", async (DaprClient daprClient) =>

@@ -30,7 +30,7 @@ namespace PointService.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
-                    await eventHandler.FailedToAddPointsOnForumPublished();
+                    await eventHandler.FailedToAddPointsOnForumPublished(forumPublishedDto.UserId, forumPublishedDto.ForumId);
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
@@ -79,7 +79,8 @@ namespace PointService.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
-                    await eventHandler.FailedToAddPointsOnPostPublished(postPublishedDto.ForumId, postPublishedDto.PostId);
+                    await eventHandler.FailedToAddPointsOnPostPublished(
+                        postPublishedDto.UserId, postPublishedDto.ForumId, postPublishedDto.PostId);
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
