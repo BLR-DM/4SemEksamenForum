@@ -1,7 +1,6 @@
 ﻿using ContentService.Application.Commands.CommandDto.PostDto;
 using ContentService.Application.Commands.Interfaces;
 using ContentService.Application.Queries;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace ContentService.Api.Endpoints

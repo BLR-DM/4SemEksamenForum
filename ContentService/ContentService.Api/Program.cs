@@ -2,6 +2,7 @@
 using ContentService.Application;
 using ContentService.Application.Commands.CommandDto.ForumDto;
 using ContentService.Application.Commands.Interfaces;
+using ContentService.Application.EventDto;
 using ContentService.Application.Services;
 using ContentService.Infrastructure;
 using ContentService.Infrastructure.Interfaces;
@@ -105,11 +106,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "contentservice-api";
         options.RequireHttpsMetadata = false;
@@ -162,24 +158,33 @@ app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
 var events = app.MapGroup("/events"); //.RequireAuthorization("Internal")
 
 events.MapPost("/content-moderated",
-    async (IModerationResultHandler handler, ContentModeratedDto dto) =>
-    {
-        Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
-        await handler.HandleModerationResultAsync(dto);
-        return Results.Ok();
-    })
-    .WithTopic("pubsub", "content-moderated")
-    .AllowAnonymous();
+        async (IModerationResultHandler handler, ContentModeratedDto dto) =>
+        {
+            Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
+            await handler.HandleModerationResultAsync(dto);
+            return Results.Ok();
+        })
+    .WithTopic("pubsub", "content-moderated");
 
-// Event
+
 events.MapPost("/compensate-delete-forum",
-    async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
-    {
-        await command.DeleteForumAsync(evt.UserId, evt.ForumId);
-        return Results.NoContent();
-    })
-    .WithTopic("pubsub", "user-subscribed-to-forum-on-creation-failed")
-    .AllowAnonymous();
+        async (IForumCommand command, FailedToSubscribeUserToForumEventDto evt) =>
+        {
+            await command.DeleteForumAsync(evt.UserId, evt.ForumId);
+            return Results.NoContent();
+        })
+    .WithTopic("pubsub", "failed-to-subscribe-user-on-forum-published")
+    .WithTopic("pubsub", "failed-to-add-points-on-forum-published");
+
+
+events.MapPost("/compensate-delete-post",
+        async (IForumCommand command, FailedToSubscribeUserToPostEventDto evt) =>
+        {
+            await command.DeletePostAsync(evt.UserId, evt.ForumId, evt.PostId);
+            return Results.NoContent();
+        })
+    .WithTopic("pubsub", "failed-to-subscribe-user-on-post-published")
+    .WithTopic("pubsub", "failed-to-add-points-on-post-published");
 
 
 //app.MapPost("/publish", async (DaprClient daprClient) =>
@@ -193,5 +198,3 @@ app.MapPostEndpoints();
 app.MapCommentEndpoints();
 
 app.Run();
-
-public record FailedToSubscribeUserToForumEventDto(string UserId, int ForumId);

@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PointService.Application.Queries;
 using PointService.Application.Repositories;
+using PointService.Application.Services;
 using PointService.Infrastructure.Queries;
 using PointService.Infrastructure.Repositories;
+using PointService.Infrastructure.Services;
 
 namespace PointService.Infrastructure
 {
@@ -17,6 +19,7 @@ namespace PointService.Infrastructure
             services.AddScoped<IPointEntryRepository, PointEntryRepository>();
             services.AddScoped<IPointEntryQuery, PointEntryQuery>();
             services.AddScoped<IPointActionQuery, PointActionQuery>();
+            services.AddScoped<IPublisherService, DaprPublisherService>();
 
             services.AddDbContext<PointContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("PointDbConnection"), 

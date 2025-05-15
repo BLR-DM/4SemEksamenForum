@@ -20,7 +20,8 @@ namespace SubscriptionService.Api.Endpoints
                 }).WithTopic("pubsub", "forum-subscribers-requested");
 
             app.MapPost("/events/post-published",
-                async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand) =>
+                async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand,
+                    IEventHandler eventHandler) =>
                 {
                     try
                     {
@@ -31,13 +32,14 @@ namespace SubscriptionService.Api.Endpoints
                     }
                     catch (Exception ex)
                     {
+                        await eventHandler.FailedToSubscribeUserOnPostPublished(evtDto.UserId, evtDto.ForumId, evtDto.PostId);
                         Console.WriteLine(ex.Message);
                         return Results.Problem(ex.Message);
                     }
                 }).WithTopic("pubsub", "post-published");
 
             app.MapPost("/events/forum-published",
-                async (ForumPublishedDto evtDto, IForumSubCommand command) =>
+                async(ForumPublishedDto evtDto, IForumSubCommand command, IEventHandler eventHandler) =>
                 {
                     try
                     {
@@ -47,6 +49,7 @@ namespace SubscriptionService.Api.Endpoints
                     }
                     catch (Exception ex)
                     {
+                        await eventHandler.FailedToSubscribeUserOnForumPublished(evtDto.UserId, evtDto.ForumId);
                         Console.WriteLine(ex.Message);
                         return Results.Problem(ex.Message);
                     }

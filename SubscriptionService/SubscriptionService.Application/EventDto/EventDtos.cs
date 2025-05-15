@@ -3,6 +3,7 @@
     public record UserSubscribedToForumEventDto(string UserId, int SubscriptionId, int ForumId);
 
     public record FailedToSubscribeUserToForumEventDto(string UserId, int ForumId);
+    public record FailedToSubscribeUserToPostEventDto(string UserId, int ForumId, int PostId);
 
     public record UserSubscribedToPostEventDto(string UserId, int SubscriptionId, int PostId);
 

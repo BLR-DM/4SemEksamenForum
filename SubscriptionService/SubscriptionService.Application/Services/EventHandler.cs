@@ -19,10 +19,16 @@ namespace SubscriptionService.Application.Services
             await _publisherService.PublishEvent("user-subscribed-to-forum", evtDto);
         }
 
-        async Task IEventHandler.FailedToSubscribeUserOnForumCreation(string userId, int forumId)
+        async Task IEventHandler.FailedToSubscribeUserOnForumPublished(string userId, int forumId)
         {
             var evtDto = new FailedToSubscribeUserToForumEventDto(userId, forumId);
-            await _publisherService.PublishEvent("user-subscribed-to-forum-on-creation-failed", evtDto);
+            await _publisherService.PublishEvent("failed-to-subscribe-user-on-forum-published", evtDto);
+        }
+
+        async Task IEventHandler.FailedToSubscribeUserOnPostPublished(string userId, int forumId, int postId)
+        {
+            var evtDto = new FailedToSubscribeUserToPostEventDto(userId, forumId, postId);
+            await _publisherService.PublishEvent("failed-to-subscribe-user-on-post-published", evtDto);
         }
 
         async Task IEventHandler.UserUnsubscribedFromForum(string userId, int subscriptionId, int forumId)
@@ -57,7 +63,8 @@ namespace SubscriptionService.Application.Services
     public interface IEventHandler
     {
         Task UserSubscribedToForum(string userId, int subscriptionId, int forumId);
-        Task FailedToSubscribeUserOnForumCreation(string userId, int forumId);
+        Task FailedToSubscribeUserOnForumPublished(string userId, int forumId);
+        Task FailedToSubscribeUserOnPostPublished(string userId, int forumId, int postId);
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
         Task UserUnsubscribedFromForum(string userId, int subscriptionId, int forumId);
         Task UserUnsubscribedFromPost(string userId, int subscriptionId, int postId);
