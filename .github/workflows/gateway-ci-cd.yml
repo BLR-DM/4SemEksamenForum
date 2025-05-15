@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/gateway-api:latest
           docker compose up -d --force-recreate gateway-api
+          docker compose up -d --force-recreate gateway-dapr
           docker image prune -f
