@@ -35,6 +35,5 @@ jobs:
         script: |
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/pointservice-api:latest
-          docker compose up -d --force-recreate pointservice-api
-          docker compose up -d --force-recreate pointservice-dapr
+          docker compose up -d --force-recreate pointservice-api pointservice-dapr
           docker image prune -f
