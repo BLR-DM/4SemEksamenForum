@@ -1,7 +1,7 @@
 name: ContentService - Build>Push>Pull>Compose
 
 on:
-  #workflow_dispatch:  # manual trigger from GitHub UI
+  workflow_dispatch:  # manual trigger from GitHub UI
   # Optional: uncomment below to auto-trigger on changes
   push:
     branches: [ master ]
@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/contentservice-api:latest
           docker compose up -d --force-recreate contentservice-api
+          docker compose up -d --force-recreate contentservice-dapr # restart the sidecar
           docker image prune -f
