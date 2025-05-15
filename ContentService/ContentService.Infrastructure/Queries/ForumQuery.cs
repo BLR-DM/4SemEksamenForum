@@ -19,7 +19,7 @@ namespace ContentService.Infrastructure.Queries
         async Task<ForumDto> IForumQuery.GetForumAsync(int forumId)
         {
             var forum = await _db.Forums.AsNoTracking()
-                .FirstAsync(f => f.Id == forumId && f.Status == Status.Published);
+                .FirstAsync(f => f.Id == forumId && f.Status != Status.Rejected);
 
             return _forumMapper.MapToDto(forum);
         }
@@ -27,7 +27,7 @@ namespace ContentService.Infrastructure.Queries
         async Task<IEnumerable<ForumDto>> IForumQuery.GetForumsAsync()
         {
             var forums = await _db.Forums.AsNoTracking()
-                .Where(f => f.Status == Status.Published)
+                .Where(f => f.Status != Status.Rejected)
                 .ToListAsync();
 
             return forums.Select(forum => _forumMapper.MapToDto(forum));
@@ -37,10 +37,10 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .Include(f => f.Posts
-                    .Where(p => p.Status == Status.Published))
+                    .Where(p => p.Status != Status.Rejected))
                 .ThenInclude(p => p.Comments
-                    .Where(c => c.Status == Status.Published))
-                .FirstOrDefaultAsync(f => f.Id == forumId && f.Status == Status.Published);
+                    .Where(c => c.Status != Status.Rejected))
+                .FirstOrDefaultAsync(f => f.Id == forumId && f.Status != Status.Rejected);
 
             return _forumMapper.MapToDtoWithAll(forum);
         }
@@ -49,10 +49,10 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .Include(f => f.Posts
-                    .Where(p => p.Status== Status.Published))
+                    .Where(p => p.Status != Status.Rejected))
                 .ThenInclude(p => p.Comments
-                    .Where(c => c.Status == Status.Published))
-                .FirstAsync(f => f.ForumName.Equals(forumName) && f.Status == Status.Published);
+                    .Where(c => c.Status != Status.Rejected))
+                .FirstAsync(f => f.ForumName.Equals(forumName) && f.Status != Status.Rejected);
 
             return _forumMapper.MapToDtoWithAll(forum);
         }
@@ -61,10 +61,10 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .Include(f => f.Posts
-                    .Where(p => p.Id == postId && p.Status == Status.Published))
+                    .Where(p => p.Id == postId && p.Status != Status.Rejected))
                 .ThenInclude(p => p.Comments
-                    .Where(c => c.Status == Status.Published))
-                .FirstOrDefaultAsync(f => f.Id == forumId && f.Status == Status.Published);
+                    .Where(c => c.Status != Status.Rejected))
+                .FirstOrDefaultAsync(f => f.Id == forumId && f.Status != Status.Rejected);
 
 
             return _forumMapper.MapToDtoWithAll(forum);
@@ -74,10 +74,10 @@ namespace ContentService.Infrastructure.Queries
         {
             var forum = await _db.Forums.AsNoTracking()
                 .Include(f => f.Posts
-                    .Where(p => p.Id == postId && p.Status == Status.Published))
+                    .Where(p => p.Id == postId && p.Status != Status.Rejected))
                 .ThenInclude(p => p.Comments
-                    .Where(c => c.Status == Status.Published))
-                .FirstAsync(f => f.ForumName.Equals(forumName) && f.Status == Status.Published);
+                    .Where(c => c.Status != Status.Rejected))
+                .FirstAsync(f => f.ForumName.Equals(forumName) && f.Status != Status.Rejected);
 
             return _forumMapper.MapToDtoWithAll(forum);
         }
