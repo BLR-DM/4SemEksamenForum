@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/notificationservice-api:latest
           docker compose up -d --force-recreate notificationservice-api
+          docker compose up -d --force-recreate notificationservice-dapr
           docker image prune -f
