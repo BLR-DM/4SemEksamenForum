@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/subscriptionservice-api:latest
           docker compose up -d --force-recreate subscriptionservice-api
+          docker compose up -d --force-recreate subscriptionservice-dapr
           docker image prune -f
