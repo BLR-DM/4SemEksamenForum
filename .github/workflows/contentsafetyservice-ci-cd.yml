@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/contentsafetyservice-api:latest
           docker compose up -d --force-recreate contentsafetyservice-api
+          docker compose up -d --force-recreate contentsafetyservice-dapr
           docker image prune -f
