@@ -35,6 +35,5 @@ jobs:
         script: |
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/contentservice-api:latest
-          docker compose up -d --force-recreate contentservice-api
-          docker compose up -d --force-recreate contentservice-dapr # restart the sidecar
+          docker compose up -d --force-recreate contentservice-api contentservice-dapr
           docker image prune -f
