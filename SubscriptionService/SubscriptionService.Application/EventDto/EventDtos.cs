@@ -17,11 +17,12 @@
 
     public record NotifyPostSubscriberEventDto(int ForumId, int PostId);
 
-    public record CommentPublishedDto(string UserId, int ForumId, int PostId, int CommentId);
+    public record CommentPublishedDto(string UserId, int ForumId, int PostId, int CommentId, string Title);
 
     public record SubscriberNotificationEventDto(string UserId, int ForumId, int PostId);
 
     public record ForumSubscribersRequestedEventDto(int NotificationId, int ForumId);
+    public record PostSubscribersRequestedEventDto(int NotificationId, int PostId);
 
     public record RequestedForumSubscribersCollectedEventDto(IEnumerable<string> UserIds, int NotificationId);
 }

@@ -17,9 +17,16 @@ namespace NotificationService.Application.Services
 
         async Task INotificationHandler.Handle(string topic, object dto)
         {
-            if (topic == EventNames.PostPublished)
+            switch (topic)
             {
-                await HandlePostPublished((PostPublishedDto)dto);
+                case EventNames.PostPublished:
+                    await HandlePostPublished((PostPublishedDto)dto);
+                    break;
+                case EventNames.CommentPublished:
+                    await HandleCommentPublished((CommentPublishedDto)dto);
+                    break;
+                default:
+                    throw new Exception($"Unknown topic: {topic}");
             }
         }
 
@@ -31,6 +38,24 @@ namespace NotificationService.Application.Services
                 var notificationId = await _command.CreateNotificationAsync(message, dto.ForumId, "Forum", dto.PostId, "Post");
 
                 await _eventHandler.ForumSubscribersRequested(notificationId, dto.ForumId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private async Task HandleCommentPublished(CommentPublishedDto dto)
+        {
+            try
+            {
+                var message = MessageBuilder.BuildForCommentPublished(dto);
+
+                var notificationId =
+                    await _command.CreateNotificationAsync(message, dto.PostId, "Post", dto.CommentId, "Comment");
+
+                await _eventHandler.PostSubscribersRequested(notificationId, dto.PostId);
             }
             catch (Exception e)
             {

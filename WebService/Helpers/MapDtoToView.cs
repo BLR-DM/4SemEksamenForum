@@ -21,6 +21,24 @@ namespace WebService.Helpers
             return forumView;
         }
 
+        public static ForumViewWithPostIds MapForumWithPostsIdsToView(ForumDto forumDto)
+        {
+            var forumView = new ForumViewWithPostIds()
+            {
+                Id = forumDto.Id,
+                ForumName = forumDto.ForumName,
+                Content = forumDto.Content,
+                CreatedDate = forumDto.CreatedDate,
+                UserId = forumDto.AppUserId,
+                Posts = forumDto.Posts.Select(p => new PostWithOnlyId
+                {
+                    Id = p.Id,
+                }).ToList()
+            };
+
+            return forumView;
+        }
+
         public static ForumView MapForumToForumView(ForumDto forumDto)
         {
             var forumViewShort = new ForumView()
@@ -53,6 +71,7 @@ namespace WebService.Helpers
             };
             return postView;
         }
+
 
         private static CommentView MapCommentToView(CommentDto commentDto)
         {

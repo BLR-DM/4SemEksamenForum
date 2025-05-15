@@ -2,6 +2,7 @@
 using SubscriptionService.Application.EventDto;
 using SubscriptionService.Application.Queries.Interfaces;
 using SubscriptionService.Application.Services;
+using EventHandler = SubscriptionService.Application.Services.EventHandler;
 
 namespace SubscriptionService.Api.Endpoints
 {
@@ -18,6 +19,15 @@ namespace SubscriptionService.Api.Endpoints
                     await eventHandler.RequestedForumSubscribersCollected(userIds, evtDto.NotificationId);
 
                 }).WithTopic("pubsub", "forum-subscribers-requested");
+
+            app.MapPost("/events/post-subscribers-requested",
+                async (PostSubscribersRequestedEventDto evtDto, IPostSubQuery query, IEventHandler eventHandler) =>
+                {
+                    var userIds = await query.GetSubscriptionsByPostIdAsync(evtDto.PostId);
+                    await eventHandler.RequestedPostSubscribersCollected(userIds, evtDto.NotificationId);
+
+                }).WithTopic("pubsub", "post-subscribers-requested");
+
 
             app.MapPost("/events/post-published",
                 async (PostPublishedDto evtDto, IForumSubCommand forumSubCommand, IPostSubCommand postSubCommand,
@@ -37,6 +47,22 @@ namespace SubscriptionService.Api.Endpoints
                         return Results.Problem(ex.Message);
                     }
                 }).WithTopic("pubsub", "post-published");
+
+            app.MapPost("/events/comment-published",
+                async (CommentPublishedDto evtDto, IPostSubCommand postSubCommand) =>
+                {
+                    try
+                    {
+                        await postSubCommand.CreateAsync(evtDto.PostId, evtDto.UserId);
+
+                        return Results.Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        return Results.Problem(ex.Message);
+                    }
+                }).WithTopic("pubsub", "comment-published");
 
             app.MapPost("/events/forum-published",
                 async(ForumPublishedDto evtDto, IForumSubCommand command, IEventHandler eventHandler) =>

@@ -52,5 +52,25 @@ namespace ContentService.Infrastructure.Helpers
 
             return forumDto;
         }
+
+        ForumDto IForumMapper.MapToDtoWithPost(Forum forum)
+        {
+            var forumDto = new ForumDto
+            {
+                Id = forum.Id,
+                ForumName = forum.ForumName,
+                Content = forum.Content,
+                CreatedDate = forum.CreatedDate.ToString(),
+                AppUserId = forum.AppUserId,
+                RowVersion = forum.RowVersion,
+                Posts = forum.Posts.Select(p => new PostDto
+                {
+                    Id = p.Id.ToString(),
+                    
+                }).ToList()
+            };
+
+            return forumDto;
+        }
     }
 }

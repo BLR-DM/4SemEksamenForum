@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using WebService.Dtos;
 using WebService.Dtos.CommandDtos;
+using WebService.Pages;
 
 namespace WebService.Proxies
 {
@@ -146,11 +147,34 @@ namespace WebService.Proxies
                 throw new Exception("Could not delete comment");
             }
         }
+
+        async Task<List<ForumDto>> IContentServiceProxy.GetForumsWithPostsAsync()
+        {
+            try
+            {
+                var forumReuqestUri = $"content/forums/posts";
+
+                var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
+
+                if (forums == null)
+                {
+                    throw new Exception("No forums Found");
+                }
+
+                return forums;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<ForumDto>();
+            }
+        }
     }
 
     public interface IContentServiceProxy
     {
         Task<List<ForumDto>> GetForumsAsync();
+        Task<List<ForumDto>> GetForumsWithPostsAsync();
         Task<ForumDto> GetForumByNameWithSinglePostAsync(string forumName, int postId);
         Task CreateForum(CreateForumDto dto);
         Task CreatePost(CreatePostDto dto, int forumId);

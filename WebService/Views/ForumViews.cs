@@ -8,7 +8,7 @@
         public string Content { get; set; }
         public string CreatedDate { get; set; }
         public string UserId { get; set; }
-        public List<PostView> Posts { get; set; }
+        public List<PostView>? Posts { get; set; } = [];
     }
 
     public record PostView
@@ -79,5 +79,19 @@
         public string SourceType { get; set; }
         public int ContextId { get; set; }
         public string ContextType { get; set; }
+    }
+
+    public record ForumViewWithPostIds
+    {
+        public int Id { get; set; }
+        public string ForumName { get; set; }
+        public string Content { get; set; }
+        public string CreatedDate { get; set; }
+        public string UserId { get; set; }
+        public List<PostWithOnlyId>? Posts { get; set; } = [];
+    }
+    public record PostWithOnlyId
+    {
+        public int Id { get; set; }
     }
 }

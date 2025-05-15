@@ -6,6 +6,7 @@ namespace ContentService.Application.Queries
     {
         Task<ForumDto> GetForumAsync(int forumId);
         Task<ForumDto> GetForumByNameWithPostsAsync(string forumName);
+        Task<List<ForumDto>> GetForumsWithPostsAsync();
         Task<IEnumerable<ForumDto>> GetForumsAsync();
         Task<ForumDto> GetForumWithPostsAsync(int forumId);
         Task<ForumDto> GetForumWithSinglePostAsync(int forumId, int postId);

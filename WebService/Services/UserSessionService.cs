@@ -32,7 +32,7 @@ namespace WebService.Services
         public List<ForumView>? SubscribedForums { get; set; } = [];
 
         public List<NotificationView>? Notifications { get; set; } = [];
-        public List<ForumView>? Forums { get; set; }
+        public List<ForumViewWithPostIds>? Forums { get; set; }
 
         public event Action? OnSubscriptionsChanged;
 
@@ -76,7 +76,7 @@ namespace WebService.Services
 
                         var pointsTask = _pointService.GetPointsByUserId(UserId);
                         var notificationsTask = _notificationService.GetNotificationsByUserId(UserId);
-                        var forumsTask = _forumService.GetForums();
+                        var forumsTask = _forumService.GetForumsWithPostsIds();
 
                         await Task.WhenAll(pointsTask, notificationsTask, forumsTask);
 

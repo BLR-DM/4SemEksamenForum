@@ -30,6 +30,13 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(result);
                 }).WithTags(tag);
 
+            app.MapGet("/forums/posts",
+                async (IForumQuery query) =>
+                {
+                    var result = await query.GetForumsWithPostsAsync();
+                    return Results.Ok(result);
+                }).WithTags(tag);
+
             //app.MapGet("/forum/{forumId}/posts",
             //    async (IForumQuery query, int forumId) =>
             //    {

@@ -70,7 +70,7 @@ namespace ContentService.Application.Commands
                 comment.MarkAsPublished();
 
                 // Event
-                await _eventHandler.CommentPublished(comment.AppUserId, forum.Id, post.Id, comment.Id);
+                await _eventHandler.CommentPublished(comment.AppUserId, forum.Id, post.Id, comment.Id, post.Title);
 
                 // Save
                 await _unitOfWork.Commit();

@@ -68,9 +68,9 @@ namespace ContentService.Application.Services
             await _publisherService.PublishEvent("comment-submitted", commentSubmittedDto);
         }
 
-        async Task IEventHandler.CommentPublished(string userId, int forumId, int postId, int commentId)
+        async Task IEventHandler.CommentPublished(string userId, int forumId, int postId, int commentId, string title)
         {
-            var commentPublishedDto = new CommentPublishedDto(userId, forumId, postId, commentId);
+            var commentPublishedDto = new CommentPublishedDto(userId, forumId, postId, commentId, title);
             await _publisherService.PublishEvent("comment-published", commentPublishedDto);
         }
 
@@ -100,7 +100,7 @@ namespace ContentService.Application.Services
         Task PostDeleted(string userId, int forumId, int postId);
 
         Task CommentSubmitted(string commentId, string content);
-        Task CommentPublished(string userId, int forumId, int postId, int commentId);
+        Task CommentPublished(string userId, int forumId, int postId, int commentId, string title);
         Task CommentRejected(string userId, int forumId, int postId, int commentId);
         Task CommentDeleted(string userId, int forumId, int postId, int commentId);
     }

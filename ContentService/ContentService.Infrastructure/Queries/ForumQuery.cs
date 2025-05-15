@@ -1,5 +1,6 @@
 ﻿using ContentService.Application.Queries;
 using ContentService.Application.Queries.QueryDto;
+using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
 using ContentService.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,18 @@ namespace ContentService.Infrastructure.Queries
             return _forumMapper.MapToDtoWithAll(forum);
         }
 
+        async Task<List<ForumDto>> IForumQuery.GetForumsWithPostsAsync()
+        {
+            var forum = await _db.Forums.AsNoTracking()
+                .Include(f => f.Posts
+                    .Where(p => p.Status != Status.Rejected))
+                .ToListAsync();
+
+            var forumDtos = forum.Select(f => _forumMapper.MapToDtoWithPost(f)).ToList();
+
+            return forumDtos;
+        }
+
         async Task<ForumDto> IForumQuery.GetForumByNameWithPostsAsync(string forumName)
         {
             var forum = await _db.Forums.AsNoTracking()
@@ -81,5 +94,6 @@ namespace ContentService.Infrastructure.Queries
 
             return _forumMapper.MapToDtoWithAll(forum);
         }
+
     }
 }
