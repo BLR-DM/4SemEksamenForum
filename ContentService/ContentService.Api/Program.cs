@@ -167,7 +167,7 @@ events.MapPost("/content-moderated",
     .WithTopic("pubsub", "content-moderated");
 
 
-events.MapPost("/compensate/delete-forum",
+events.MapPost("/compensate/delete-forum", 
         async (IForumCommand command, CompensateByDeletingForumDto evt) =>
         {
             await command.DeleteForumAsync(evt.UserId, evt.ForumId);
