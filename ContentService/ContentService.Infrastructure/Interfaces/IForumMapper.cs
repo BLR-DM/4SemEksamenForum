@@ -7,5 +7,6 @@ namespace ContentService.Infrastructure.Interfaces
     {
         ForumDto MapToDto(Forum forum);
         ForumDto MapToDtoWithAll(Forum forum);
+        ForumDto MapToDtoWithPost(Forum forum);
     }
 }

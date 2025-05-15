@@ -45,6 +45,41 @@ namespace NotificationService.Api.Endpoints
                 }
             }).WithTopic("pubsub", EventNames.RequestedForumSubscribersCollected).AllowAnonymous();
 
+
+
+            app.MapPost($"/events/{EventNames.CommentPublished}", async (CommentPublishedDto dto, INotificationHandler notificationHandler) =>
+            {
+                try
+                {
+                    await notificationHandler.Handle(EventNames.CommentPublished, dto);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", EventNames.CommentPublished).AllowAnonymous();
+
+
+            app.MapPost($"/events/{EventNames.RequestedPostSubscribersCollected}", async (RequestedPostSubscribersCollectedEventDto dto, ISentNotificationCommand command) =>
+            {
+                try
+                {
+                    foreach (var userId in dto.UserIds)
+                    {
+                        await command.CreateSentNotificationAsync(new CreateSentNotificationDto(dto.NotificationId, userId));
+                    }
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", EventNames.RequestedPostSubscribersCollected).AllowAnonymous();
         }
     }
 }

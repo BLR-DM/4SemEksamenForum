@@ -21,11 +21,16 @@
             <div>Notifications:</div>
             @foreach (var notification in Session.Notifications)
             {
-                @if (notification.SourceType == "Forum")
+                @* @if (notification.SourceType == "Forum")
                 {
                     var forum = Session.Forums?.FirstOrDefault(f => f.Id == notification.SourceId);
                     <ShortNotificationComponent Notification="notification" Forum="forum"></ShortNotificationComponent>
                 }
+                else if (notification.SourceType == "Post")
+                {
+                    <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
+                } *@
+                <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
             }
 
 

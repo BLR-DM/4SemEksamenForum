@@ -22,11 +22,18 @@ namespace NotificationService.Application.Services
         {
             throw new NotImplementedException(); 
         }
+
+        async Task IEventHandler.PostSubscribersRequested(int notificationId, int postId)
+        {
+            var evtDto = new PostSubscribersRequestedEventDto(notificationId, postId);
+            await _publisherService.PublishEvent("post-subscribers-requested", evtDto);
+        }
     }
 
     public interface IEventHandler
     {
         Task ForumSubscribersRequested(int notificationId, int forumId);
+        Task PostSubscribersRequested(int notificationId, int postId);
         Task ForumSubscribersNotified(IEnumerable<string> userIds, int forumId, int postId);
     }
 }

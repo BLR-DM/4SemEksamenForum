@@ -8,5 +8,10 @@ namespace NotificationService.Application.Helpers
         {
             return $"A new post have been created on forum: {dto.ForumName}";
         }
+
+        public static string BuildForCommentPublished(CommentPublishedDto dto)
+        {
+            return $"A new comment has been created on post: {dto.Title}";
+        }
     }
 }

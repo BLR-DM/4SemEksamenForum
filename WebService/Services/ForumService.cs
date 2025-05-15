@@ -66,6 +66,18 @@ namespace WebService.Services
                 throw;
             }
         }
+
+        async Task<List<ForumViewWithPostIds>> IForumService.GetForumsWithPostsIds()
+        {
+            var forums = await _contentServiceProxy.GetForumsWithPostsAsync();
+
+            if (forums == null)
+                return new List<ForumViewWithPostIds>();
+
+            var forumViews = forums.Select(f => MapDtoToView.MapForumWithPostsIdsToView(f)).ToList();
+
+            return forumViews;
+        }
     }
 
     public interface IForumService
@@ -74,6 +86,7 @@ namespace WebService.Services
         Task<ForumView> GetForumWithPostsShort(string forumName);
         Task<List<string>> GetForumNames();
         Task<List<ForumView>> GetForums();
+        Task<List<ForumViewWithPostIds>> GetForumsWithPostsIds();
         Task CreateForum(CreateForumDto dto);
     }
 }
