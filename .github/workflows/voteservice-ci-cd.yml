@@ -36,4 +36,5 @@ jobs:
           cd Projects/4SemForumProjekt
           docker pull bilalkinali/voteservice-api:latest
           docker compose up -d --force-recreate voteservice-api
+          docker compose up -d --force-recreate voteservice-dapr
           docker image prune -f
