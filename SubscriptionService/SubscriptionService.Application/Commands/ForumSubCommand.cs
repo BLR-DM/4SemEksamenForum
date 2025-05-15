@@ -31,9 +31,6 @@ namespace SubscriptionService.Application.Commands
             }
             catch (Exception ex)
             {
-                // Important : Only do this if failed when creation a forum, since ContentService subscribes
-                // to this topic and compensates by removing the forum !
-                await _eventHandler.FailedToSubscribeUserOnForumCreation(appUserId, forumId);
                 Console.WriteLine(ex.Message);
                 throw;
             }

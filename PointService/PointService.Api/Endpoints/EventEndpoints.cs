@@ -2,6 +2,7 @@
 using PointService.Application.Command;
 using PointService.Application.Command.CommandDto;
 using PointService.Application.EventDto;
+using PointService.Application.Services;
 
 namespace PointService.Api.Endpoints
 {
@@ -11,7 +12,8 @@ namespace PointService.Api.Endpoints
         {
             const string tag = "Events";
 
-            app.MapPost("/events/forum-published", async (ForumPublishedDto forumPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/forum-published", async (ForumPublishedDto forumPublishedDto, IPointEntryCommand command,
+            IEventHandler eventHandler) =>
             {
                 try
                 {
@@ -28,11 +30,12 @@ namespace PointService.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
+                    await eventHandler.FailedToAddPointsOnForumPublished(forumPublishedDto.UserId, forumPublishedDto.ForumId);
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
 
-            }).WithTopic("pubsub", "forum-published").AllowAnonymous();
+            }).WithTopic("pubsub", "forum-published");
 
             app.MapPost("/events/forum-deleted", async (ForumDeletedDto forumDeletedDto, IPointEntryCommand command) =>
             {
@@ -56,10 +59,13 @@ namespace PointService.Api.Endpoints
                 }
             });
 
-            app.MapPost("/events/post-published", async (PostPublishedDto postPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/post-published", async (PostPublishedDto postPublishedDto, IPointEntryCommand command,
+                IEventHandler eventHandler) =>
             {
                 try
                 {
+                    // Check if user received points for creating this post
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "post-published",
@@ -73,12 +79,14 @@ namespace PointService.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
+                    await eventHandler.FailedToAddPointsOnPostPublished(
+                        postPublishedDto.UserId, postPublishedDto.ForumId, postPublishedDto.PostId);
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
 
 
-            }).WithTopic("pubsub", "post-published").AllowAnonymous();
+            }).WithTopic("pubsub", "post-published");
 
             app.MapPost("/events/post-deleted", async (PostDeletedDto postDeletedDto, IPointEntryCommand command) =>
             {
@@ -100,7 +108,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "post-deleted").AllowAnonymous();
+            }).WithTopic("pubsub", "post-deleted");
 
             app.MapPost("/events/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command) =>
             {
@@ -124,7 +132,7 @@ namespace PointService.Api.Endpoints
                 }
 
 
-            }).WithTopic("pubsub", "comment-published").AllowAnonymous();
+            }).WithTopic("pubsub", "comment-published");
 
             app.MapPost("/events/comment-deleted", async (CommentDeletedDto commentDeletedDto, IPointEntryCommand command) =>
             {
@@ -146,7 +154,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "comment-deleted").AllowAnonymous();
+            }).WithTopic("pubsub", "comment-deleted");
 
             app.MapPost("/events/user-subscribed-to-forum", async (UserSubscribedToForumEventDto userSubscribedToForumEventDto, IPointEntryCommand command) =>
             {
@@ -168,7 +176,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "user-subscribed-to-forum").AllowAnonymous();
+            }).WithTopic("pubsub", "user-subscribed-to-forum");
 
             app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command) =>
             {
@@ -190,7 +198,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "user-unsubscribed-from-forum").AllowAnonymous();
+            }).WithTopic("pubsub", "user-unsubscribed-from-forum");
 
             app.MapPost("/events/user-subscribed-to-post", async (UserSubscribedToPostEventDto userSubscribedToPostEventDto, IPointEntryCommand command) =>
             {
@@ -212,7 +220,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "user-subscribed-to-post").AllowAnonymous();
+            }).WithTopic("pubsub", "user-subscribed-to-post");
 
             app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command) =>
             {
@@ -234,7 +242,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "user-unsubscribed-from-post").AllowAnonymous();
+            }).WithTopic("pubsub", "user-unsubscribed-from-post");
 
             app.MapPost("/events/post-upvote-created", async (PostVoteEventDto postVoteEventDto, IPointEntryCommand command) =>
             {
@@ -256,7 +264,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "post-upvote-created").AllowAnonymous();
+            }).WithTopic("pubsub", "post-upvote-created");
 
             app.MapPost("/events/post-upvote-deleted", async (PostVoteEventDto postVoteEventDto, IPointEntryCommand command) =>
             {
@@ -278,7 +286,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "post-upvote-deleted").AllowAnonymous();
+            }).WithTopic("pubsub", "post-upvote-deleted");
 
             app.MapPost("/events/comment-upvote-created", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
             {
@@ -300,7 +308,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "comment-upvote-created").AllowAnonymous();
+            }).WithTopic("pubsub", "comment-upvote-created");
 
             app.MapPost("/events/comment-upvote-deleted", async (CommentVoteEventDto commentVoteEventDto, IPointEntryCommand command) =>
             {
@@ -322,7 +330,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", "comment-upvote-deleted").AllowAnonymous();
+            }).WithTopic("pubsub", "comment-upvote-deleted");
 
         }
     }
