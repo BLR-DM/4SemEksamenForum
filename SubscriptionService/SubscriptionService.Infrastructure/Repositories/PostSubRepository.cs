@@ -34,5 +34,10 @@ namespace SubscriptionService.Infrastructure.Repositories
             return await _db.PostSubscriptions.FirstOrDefaultAsync(p => p.PostId == postId && p.AppUserId == appUserId)
                    ?? throw new Exception("Subscription not found."); ;
         }
+
+        async Task<List<PostSubscription>> IPostSubRepository.GetSubscriptionsByUserIdAsync(string appUserId)
+        {
+            return await _db.PostSubscriptions.Where(p => p.AppUserId == appUserId).ToListAsync();
+        }
     }
 }

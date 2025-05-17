@@ -16,7 +16,7 @@ namespace SubscriptionService.Infrastructure.Helpers
             var forumSubDto = new ForumSubDto
             {
                 AppUserId = forumSub.AppUserId,
-                ItemId = forumSub.ForumId,
+                ForumId = forumSub.ForumId,
                 SubscribedAt = forumSub.SubscribedAt
             };
 

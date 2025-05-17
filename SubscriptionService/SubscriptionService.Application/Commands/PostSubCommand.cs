@@ -23,20 +23,56 @@ namespace SubscriptionService.Application.Commands
         }
         async Task IPostSubCommand.CreateAsync(int postId, string userId)
         {
-            var postSub = PostSubscription.Create(postId, userId);
+            try
+            {
+                var otherSubscriptions = await _postSubRepository.GetSubscriptionsByUserIdAsync(userId);
 
-            await _postSubRepository.AddAsync(postSub);
+                var postSub = PostSubscription.Create(postId, userId, otherSubscriptions);
 
-            await _eventHandler.UserSubscribedToPost(userId, postSub.Id, postId);
+                try
+                {
+                    await _postSubRepository.AddAsync(postSub);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
+
+                await _eventHandler.UserSubscribedToPost(userId, postSub.Id, postId);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+
         }
 
         async Task IPostSubCommand.DeleteAsync(int postId, string userId)
         {
-            var postSub = await _postSubRepository.GetAsync(postId, userId);
+            try
+            {
+                var postSub = await _postSubRepository.GetAsync(postId, userId);
 
-            await _postSubRepository.DeleteAsync(postSub);
+                try
+                {
+                    await _postSubRepository.DeleteAsync(postSub);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
 
-            await _eventHandler.UserUnsubscribedFromPost(userId, postSub.Id, postId);
+                await _eventHandler.UserUnsubscribedFromPost(userId, postSub.Id, postId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
     }
 }

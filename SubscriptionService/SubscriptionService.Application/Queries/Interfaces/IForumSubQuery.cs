@@ -11,7 +11,7 @@ namespace SubscriptionService.Application.Queries.Interfaces
 {
     public interface IForumSubQuery
     {
-        Task<List<string>> GetSubscriptionsByForumIdAsync(int forumId);
-        Task<List<int>> GetSubscriptionsByUserIdAsync(string appUserId);
+        Task<List<string>> GetAppUserIdForSubscriptionsByForumIdAsync(int forumId);
+        Task<List<int>> GetForumIdForSubscriptionsByUserIdAsync(string appUserId);
     }
 }
