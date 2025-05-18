@@ -16,15 +16,24 @@ namespace SubscriptionService.Domain.Entities
         public string AppUserId { get; protected set; }
         public DateTimeOffset SubscribedAt { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
 
-        private PostSubscription(int postId, string appUserId)
+        private PostSubscription(int postId, string appUserId, List<PostSubscription> otherSubscriptions+)
         {
             PostId = postId;
             AppUserId = appUserId;
+            AssureUserDoesntAlreadySubscribe(otherSubscriptions);
         }
 
-        public static PostSubscription Create(int postId, string appUserId)
+        public static PostSubscription Create(int postId, string appUserId, List<PostSubscription> otherSubscriptions)
         {
-            return new PostSubscription(postId, appUserId);
+            return new PostSubscription(postId, appUserId, otherSubscriptions);
+        }
+
+        private void AssureUserDoesntAlreadySubscribe(List<PostSubscription> otherSubscriptions)
+        {
+            if (otherSubscriptions.Any(sub => sub.PostId == PostId && sub.AppUserId == AppUserId))
+            {
+                throw new Exception("User is already subscribed to this post.");
+            }
         }
     }
 }

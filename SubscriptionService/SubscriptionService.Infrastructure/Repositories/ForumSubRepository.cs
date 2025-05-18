@@ -34,5 +34,10 @@ namespace SubscriptionService.Infrastructure.Repositories
             return await _db.ForumSubscriptions.FirstOrDefaultAsync(f => f.ForumId == forumId && f.AppUserId == appUserId)
                 ?? throw new Exception("Subscription not found.");
         }
+
+        async Task<List<ForumSubscription>> IForumSubRepository.GetSubscriptionsByUserIdAsync(string appUserId)
+        {
+            return await _db.ForumSubscriptions.Where(f => f.AppUserId == appUserId).ToListAsync();
+        }
     }
 }

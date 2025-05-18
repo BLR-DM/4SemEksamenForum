@@ -9,7 +9,7 @@ namespace SubscriptionService.Application.Queries.QueryDto
     public class ForumSubDto
     {
         public string AppUserId { get; set; } = string.Empty;
-        public int ItemId { get; set; }
+        public int ForumId { get; set; }
         public DateTimeOffset SubscribedAt { get; set; }
     }
 }

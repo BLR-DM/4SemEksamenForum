@@ -15,7 +15,7 @@ namespace SubscriptionService.Api.Endpoints
             app.MapPost("/events/forum-subscribers-requested",
                 async (ForumSubscribersRequestedEventDto evtDto, IForumSubQuery query, IEventHandler eventHandler) =>
                 {
-                    var userIds = await query.GetSubscriptionsByForumIdAsync(evtDto.ForumId);
+                    var userIds = await query.GetAppUserIdForSubscriptionsByForumIdAsync(evtDto.ForumId);
                     await eventHandler.RequestedForumSubscribersCollected(userIds, evtDto.NotificationId);
 
                 }).WithTopic("pubsub", "forum-subscribers-requested");

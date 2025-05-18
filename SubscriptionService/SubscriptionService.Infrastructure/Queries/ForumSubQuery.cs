@@ -20,19 +20,21 @@ namespace SubscriptionService.Infrastructure.Queries
         {
             _db = db;
         }
-        async Task<List<string>> IForumSubQuery.GetSubscriptionsByForumIdAsync(int forumId)
+        async Task<List<string>> IForumSubQuery.GetAppUserIdForSubscriptionsByForumIdAsync(int forumId)
         {
             var appUserIds = await _db.ForumSubscriptions.AsNoTracking().Where(f => f.ForumId == forumId).Select(f => f.AppUserId).ToListAsync();
 
             return appUserIds;
         }
 
-        async Task<List<int>> IForumSubQuery.GetSubscriptionsByUserIdAsync(string appUserId)
+        async Task<List<int>> IForumSubQuery.GetForumIdForSubscriptionsByUserIdAsync(string appUserId)
         {
             var forumIds = await _db.ForumSubscriptions.AsNoTracking().Where(f => f.AppUserId == appUserId).Select(f => f.ForumId).ToListAsync();
 
             return forumIds;
         }
+
+
 
         private List<ForumSubDto> MapToForumSubDto(List<ForumSubscription> forumSubs)
         {

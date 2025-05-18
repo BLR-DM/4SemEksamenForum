@@ -222,7 +222,7 @@ app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery 
 {
     try
     {
-        var appUserIds = await query.GetSubscriptionsByForumIdAsync(forumId);
+        var appUserIds = await query.GetAppUserIdForSubscriptionsByForumIdAsync(forumId);
 
         return Results.Ok(appUserIds);
     }
@@ -237,7 +237,7 @@ app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, I
 {
     try
     {
-        var forumIds = await query.GetSubscriptionsByUserIdAsync(appUserId);
+        var forumIds = await query.GetForumIdForSubscriptionsByUserIdAsync(appUserId);
 
         return Results.Ok(forumIds);
     }
