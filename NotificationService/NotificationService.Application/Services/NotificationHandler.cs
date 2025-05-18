@@ -25,6 +25,9 @@ namespace NotificationService.Application.Services
                 case EventNames.CommentPublished:
                     await HandleCommentPublished((CommentPublishedDto)dto);
                     break;
+                case EventNames.PostVoteCreated:
+                    await HandlePostVoteCreated((PostVoteEventDto)dto);
+                    break;
                 default:
                     throw new Exception($"Unknown topic: {topic}");
             }
@@ -63,6 +66,26 @@ namespace NotificationService.Application.Services
                 throw;
             }
         }
+
+        private async Task HandlePostVoteCreated(PostVoteEventDto dto)
+        {
+            try
+            {
+                var message = MessageBuilder.BuildPostVoteCreated();
+
+                var notificationId =
+                    await _command.CreateNotificationAsync(message, dto.PostId, "Post", 0, "Upvote");
+
+                await _eventHandler.PostSubscribersRequested(notificationId, dto.PostId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+
     }
 
     public interface INotificationHandler

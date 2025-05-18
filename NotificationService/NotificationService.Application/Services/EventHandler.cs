@@ -28,6 +28,7 @@ namespace NotificationService.Application.Services
             var evtDto = new PostSubscribersRequestedEventDto(notificationId, postId);
             await _publisherService.PublishEvent("post-subscribers-requested", evtDto);
         }
+
     }
 
     public interface IEventHandler

@@ -25,9 +25,13 @@
             ResetValueOnEmptyText="true"
             Style="width: 300px;"
             ValueChanged="OnForumSelected"/>
-        <MudIconButton>
-            <i class="bi bi-bell" @onclick="NavigateToNotifications"></i>
-        </MudIconButton>
+        <div class="notification-icon-wrapper" @onclick="NavigateToNotifications">
+            <i class="bi bi-bell"></i>
+            @if (Session.Notifications?.Count > 0)
+            {
+                <span class="notification-badge">@Session.Notifications?.Where(n => n.IsRead == false).Count()</span>
+            }
+        </div>
 
         <MudSpacer />
         <AuthenticationComponent />
@@ -48,7 +52,6 @@
     bool _drawerOpen = true;
 
     public string SearchText { get; set; } = string.Empty;
-
 
     public List<string> ForumNames { get; set; } = [];
     public List<ForumView> Forums { get; set; }
@@ -94,4 +97,35 @@
         Navigation.NavigateTo("/notifications");
     }
 
+
 }
+
+<style>
+    .notification-icon-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .notification-icon-wrapper .bi-bell {
+        font-size: 1.5rem;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 0.75rem;
+        line-height: 1;
+        min-width: 18px;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
