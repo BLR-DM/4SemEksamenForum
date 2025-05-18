@@ -2,7 +2,9 @@
 using PointService.Application.Command;
 using PointService.Application.Command.CommandDto;
 using PointService.Application.EventDto;
+using PointService.Application.Queries;
 using PointService.Application.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PointService.Api.Endpoints
 {
@@ -37,10 +39,18 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "forum-published");
 
-            app.MapPost("/events/forum-deleted", async (ForumDeletedDto forumDeletedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/forum-deleted", async (ForumDeletedDto forumDeletedDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(forumDeletedDto.UserId,
+                        "forum-published", forumDeletedDto.ForumId, "Forum");
+
+                    if(!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "forum-deleted",
@@ -88,10 +98,18 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "post-published");
 
-            app.MapPost("/events/post-deleted", async (PostDeletedDto postDeletedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/post-deleted", async (PostDeletedDto postDeletedDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(postDeletedDto.UserId,
+                        "post-published", postDeletedDto.PostId, "Post");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "post-deleted",
@@ -134,10 +152,18 @@ namespace PointService.Api.Endpoints
 
             }).WithTopic("pubsub", "comment-published");
 
-            app.MapPost("/events/comment-deleted", async (CommentDeletedDto commentDeletedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/comment-deleted", async (CommentDeletedDto commentDeletedDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(commentDeletedDto.UserId,
+                        "comment-published", commentDeletedDto.CommentId, "Comment");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "comment-deleted",
@@ -178,10 +204,19 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "user-subscribed-to-forum");
 
-            app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command) =>
+            app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(userUnSubscribedFromForumEventDto.UserId,
+                        "user-subscribed-to-forum", userUnSubscribedFromForumEventDto.SubscriptionId, "Subscription");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "user-unsubscribed-from-forum",
@@ -222,10 +257,19 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "user-subscribed-to-post");
 
-            app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command) =>
+            app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(userUnSubscribedFromPostEventDto.UserId,
+                        "user-subscribed-to-post", userUnSubscribedFromPostEventDto.SubscriptionId, "Subscription");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "user-unsubscribed-from-post",

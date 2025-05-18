@@ -1,4 +1,5 @@
-﻿using PointService.Application.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using PointService.Application.Repositories;
 using PointService.Domain.Entities;
 
 namespace PointService.Infrastructure.Repositories
