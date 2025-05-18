@@ -80,6 +80,22 @@ namespace NotificationService.Api.Endpoints
                     return Results.Problem();
                 }
             }).WithTopic("pubsub", EventNames.RequestedPostSubscribersCollected).AllowAnonymous();
+
+
+            app.MapPost($"/events/{EventNames.PostVoteCreated}", async (PostVoteEventDto dto, INotificationHandler notificationHandler) =>
+            {
+                try
+                {
+                    await notificationHandler.Handle(EventNames.PostVoteCreated, dto);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Results.Problem();
+                }
+            }).WithTopic("pubsub", EventNames.PostUpVoteCreated).WithTopic("pubsub", EventNames.PostDownVoteCreated).AllowAnonymous();
         }
     }
 }

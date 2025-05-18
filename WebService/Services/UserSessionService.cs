@@ -20,6 +20,7 @@ namespace WebService.Services
         private TaskCompletionSource _readyTcs = new();
 
         public bool IsLoggedIn { get; private set; }
+        public bool IsInitialized { get; set; }
         public string? UserId { get; private set; }
         public string? Username { get; private set; }
         public string? Email { get; private set; }
@@ -83,6 +84,7 @@ namespace WebService.Services
                         Points = pointsTask.Result;
                         Notifications = notificationsTask.Result;
                         Forums = forumsTask.Result;
+                        IsInitialized = true;
                     }
                     catch (Exception ex)
                     {

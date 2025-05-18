@@ -13,5 +13,10 @@ namespace NotificationService.Application.Helpers
         {
             return $"A new comment has been created on post: {dto.Title}";
         }
+
+        public static string BuildPostVoteCreated()
+        {
+            return $"A user has interacted with a post you're following";
+        }
     }
 }

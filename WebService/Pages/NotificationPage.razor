@@ -45,8 +45,18 @@
         </div>
     </div>
 }
+else
+{
+    <div>No notifications</div>
+}
 
 
 @code {
-
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsInitialized)
+        {
+            await Session.InitializeAsync();
+        }
+    }
 }
