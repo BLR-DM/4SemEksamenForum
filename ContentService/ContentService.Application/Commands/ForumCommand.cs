@@ -237,8 +237,8 @@ namespace ContentService.Application.Commands
                 var deletedPosts = forum.DeleteAllPosts(appUserId);
                 var deletedComments = deletedPosts.SelectMany(p => p.DeleteAllComments(appUserId)).ToList();
 
-                foreach (var post in deletedPosts)
-                    await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
+                //foreach (var post in deletedPosts)
+                //    await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
 
                 _forumRepository.DeleteComments(deletedComments);
                 _forumRepository.DeletePosts(deletedPosts);
