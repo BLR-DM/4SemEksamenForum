@@ -15,16 +15,16 @@
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
         <MudAutocomplete T="string"
-        Value="SearchText" 
-        SearchFunc="SearchForums" 
-        ToStringFunc="x => x"
-        Placeholder="Search..." 
-        Adornment="Adornment.Start" 
-        AdornmentIcon="@Icons.Material.Filled.Search" 
-        Clearable="true"
-        ResetValueOnEmptyText="true"
-        Style="width: 300px;"
-        ValueChanged="OnForumSelected"/>
+            Value="SearchText" 
+            SearchFunc="SearchForums" 
+            ToStringFunc="x => x"
+            Placeholder="Search..." 
+            Adornment="Adornment.Start" 
+            AdornmentIcon="@Icons.Material.Filled.Search" 
+            Clearable="true"
+            ResetValueOnEmptyText="true"
+            Style="width: 300px;"
+            ValueChanged="OnForumSelected"/>
         <MudIconButton>
             <i class="bi bi-bell" @onclick="NavigateToNotifications"></i>
         </MudIconButton>
@@ -81,8 +81,11 @@
             .AsEnumerable());
     }
 
-    private void OnForumSelected(string selectedForumName)
+    private void OnForumSelected(string? selectedForumName)
     {
+        if (string.IsNullOrWhiteSpace(selectedForumName))
+            return;
+
         Navigation.NavigateTo($"/forum/{selectedForumName}");
     }
 
