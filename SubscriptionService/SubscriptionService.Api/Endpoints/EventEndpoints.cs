@@ -49,7 +49,7 @@ namespace SubscriptionService.Api.Endpoints
                 }).WithTopic("pubsub", "post-published");
 
             app.MapPost("/events/comment-published",
-                async (CommentPublishedDto evtDto, IPostSubCommand postSubCommand) =>
+                async (CommentPublishedDto evtDto, IPostSubCommand postSubCommand, IEventHandler eventHandler) =>
                 {
                     try
                     {
@@ -59,6 +59,7 @@ namespace SubscriptionService.Api.Endpoints
                     }
                     catch (Exception ex)
                     {
+                        await eventHandler.FailedToSubscribeUserOnCommentPublished(evtDto.UserId, evtDto.ForumId, evtDto.PostId, evtDto.CommentId);
                         Console.WriteLine(ex.Message);
                         return Results.Problem(ex.Message);
                     }

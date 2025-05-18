@@ -61,7 +61,6 @@ namespace ContentService.Infrastructure.Repositories
         async Task<Forum> IForumRepository.GetForumOnlyAsync(int forumId)
         {
             return await _db.Forums.FirstAsync(forum => forum.Id == forumId);
-
         }
 
         async Task<Forum> IForumRepository.GetForumWithPostsAsync(int forumId)

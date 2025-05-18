@@ -22,12 +22,19 @@ namespace PointService.Application.Services
             var evtDto = new FailedToAddPointsOnPostPublishedDto(userId, forumId, postId);
             await _publisherService.PublishEvent("failed-to-add-points-on-post-published", evtDto);
         }
+
+        async Task IEventHandler.FailedToAddPointsOnCommentPublished(string userId, int forumId, int postId, int commentId)
+        {
+            var evtDto = new FailedToAddPointsOnCommentPublishedDto(userId, forumId, postId, commentId);
+            await _publisherService.PublishEvent("failed-to-add-points-on-comment-published", evtDto);
+        }
     }
 
     public interface IEventHandler
     {
         Task FailedToAddPointsOnForumPublished(string userId, int forumId);
         Task FailedToAddPointsOnPostPublished(string userId, int forumId, int postId);
+        Task FailedToAddPointsOnCommentPublished(string userId, int forumId, int postId, int commentId);
 
     }
 }

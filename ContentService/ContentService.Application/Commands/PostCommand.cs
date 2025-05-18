@@ -138,8 +138,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        async Task IPostCommand.DeleteCommentAsync(string appUserId, int forumId,
-            int postId, int commentId)
+        async Task IPostCommand.DeleteCommentAsync(string appUserId, int forumId, int postId, int commentId)
         {
             try
             {
@@ -151,6 +150,12 @@ namespace ContentService.Application.Commands
 
                 // Do
                 var comment = post.DeleteComment(commentId, appUserId);
+                if (comment == null)
+                {
+                    Console.WriteLine("Comment already deleted or not found.");
+                    return;
+                }
+
                 _forumRepository.DeleteComment(comment);
 
                 // Save

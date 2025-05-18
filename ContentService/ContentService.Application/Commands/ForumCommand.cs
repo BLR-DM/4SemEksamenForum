@@ -235,16 +235,10 @@ namespace ContentService.Application.Commands
                 var forum = await _forumRepository.GetForumWithAllAsync(forumId);
 
                 var deletedPosts = forum.DeleteAllPosts(appUserId);
-
-                var deletedComments = new List<Comment>();
+                var deletedComments = deletedPosts.SelectMany(p => p.DeleteAllComments(appUserId)).ToList();
 
                 foreach (var post in deletedPosts)
-                {
-                    var comments = post.DeleteAllComments(appUserId);
-                    deletedComments.AddRange(comments);
-
                     await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
-                }
 
                 _forumRepository.DeleteComments(deletedComments);
                 _forumRepository.DeletePosts(deletedPosts);
@@ -325,6 +319,12 @@ namespace ContentService.Application.Commands
 
                 // Do
                 var post = forum.DeletePost(postId, appUserId, out var deletedComments);
+                if (post == null)
+                {
+                    Console.WriteLine("Post already deleted or not found.");
+                    return;
+                }
+
                 _forumRepository.DeletePost(post);
                 _forumRepository.DeleteComments(deletedComments);
 
