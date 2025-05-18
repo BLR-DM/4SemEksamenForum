@@ -204,10 +204,19 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "user-subscribed-to-forum");
 
-            app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command) =>
+            app.MapPost("/events/user-unsubscribed-from-forum", async (UserUnSubscribedFromForumEventDto userUnSubscribedFromForumEventDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(userUnSubscribedFromForumEventDto.UserId,
+                        "user-subscribed-to-forum", userUnSubscribedFromForumEventDto.SubscriptionId, "Subscription");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "user-unsubscribed-from-forum",
@@ -248,10 +257,19 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "user-subscribed-to-post");
 
-            app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command) =>
+            app.MapPost("/events/user-unsubscribed-from-post", async (UserUnSubscribedFromPostEventDto userUnSubscribedFromPostEventDto, IPointEntryCommand command, IPointEntryQuery query) =>
             {
                 try
                 {
+                    var hasUserRecievedPointsUponCreation = await query.ExistsAsync(userUnSubscribedFromPostEventDto.UserId,
+                        "user-subscribed-to-post", userUnSubscribedFromPostEventDto.SubscriptionId, "Subscription");
+
+                    if (!hasUserRecievedPointsUponCreation)
+                    {
+                        return Results.Ok();
+                    }
+
+
                     await command.CreatePointEntryAsync(new CreatePointEntryDto
                     {
                         PointActionId = "user-unsubscribed-from-post",
