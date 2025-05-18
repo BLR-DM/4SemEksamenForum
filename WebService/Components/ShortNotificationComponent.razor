@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IForumService ForumService
 @inject UserSessionService Session
+@inject ISnackbar Snackbar
 
 <AuthorizeView>
     @if (Notification is not null)
@@ -15,6 +16,10 @@
                 {
                     <div class="notification-indicator"></div>
                 }
+                @if (!string.IsNullOrEmpty(NotificationMessage))
+                {
+                    <MudAlert Severity="Severity.Warning" Elevation="0">@NotificationMessage</MudAlert>
+                }
             </div>
         </div>
     }
@@ -23,6 +28,8 @@
 @code {
     [Parameter]
     public NotificationView? Notification { get; set; }
+    private string? NotificationMessage { get; set; }
+
 
     private async Task OnNotificationClicked(int notificationId)
     {
@@ -36,12 +43,25 @@
         if (Notification.SourceType == "Forum")
         {
             var forum = Session.Forums?.FirstOrDefault(f => f.Id == Notification.SourceId);
-            Navigation.NavigateTo($"/forum/{forum.ForumName}");
+            if (forum is not null)
+                Navigation.NavigateTo($"/forum/{forum.ForumName}");
+            else
+            {
+                Console.WriteLine("The referenced forum was not found.");
+                NotificationMessage = "The forum you're trying to access has been deleted or is no longer available.";
+            }
         }
         else if (Notification.SourceType == "Post")
         {
             var forum = Session.Forums?.Where(f => f.Posts.Any(p => p.Id == Notification.SourceId)).FirstOrDefault(); 
-            Navigation.NavigateTo($"/forum/{forum.ForumName}/post/{Notification.SourceId}/comments");
+            if (forum is not null)
+                Navigation.NavigateTo($"/forum/{forum.ForumName}/post/{Notification.SourceId}/comments");
+            else
+            {
+                Console.WriteLine("The referenced post was not found.");
+                NotificationMessage = "The post you're trying to access has been deleted or is no longer available.";
+            }
+
         }
     }
 }
@@ -63,10 +83,10 @@
         top: 50%;
         right: 20px;
         transform: translateY(-50%);
-        width: 5px;
-        height: 25px;
+        width: 15px;
+        height: 15px;
         background-color: #007fff;
-        border-radius: 0%;
+        border-radius: 50%;
     }
 
     .notification-read {
