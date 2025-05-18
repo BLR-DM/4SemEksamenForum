@@ -16,7 +16,7 @@ namespace SubscriptionService.Domain.Entities
         public string AppUserId { get; protected set; }
         public DateTimeOffset SubscribedAt { get; protected set; } = DateTimeOffset.UtcNow.AddHours(2);
 
-        private PostSubscription(int postId, string appUserId, List<PostSubscription> otherSubscriptions+)
+        private PostSubscription(int postId, string appUserId, List<PostSubscription> otherSubscriptions)
         {
             PostId = postId;
             AppUserId = appUserId;
