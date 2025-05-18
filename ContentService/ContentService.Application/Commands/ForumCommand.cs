@@ -116,7 +116,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(postDto.ForumId);
+                var forum = await _forumRepository.GetForumWithPostsAsync(postDto.ForumId);
 
                 var post = forum.GetPostById(postDto.PostId);
 
@@ -148,7 +148,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(postDto.ForumId);
+                var forum = await _forumRepository.GetForumWithPostsAsync(postDto.ForumId);
 
                 var post = forum.GetPostById(postDto.PostId);
 
@@ -180,7 +180,7 @@ namespace ContentService.Application.Commands
         //        await _unitOfWork.BeginTransaction();
 
         //        // Load
-        //        var forum = await _forumRepository.GetForumAsync(forumDto.Id);
+        //        var forum = await _forumRepository.GetForumWithPostsAsync(forumDto.Id);
 
         //        // Idempotency check
         //        if (forum.Status == Status.Published)
@@ -232,13 +232,24 @@ namespace ContentService.Application.Commands
             {
                 await _unitOfWork.BeginTransaction();
 
-                // Load
-                var forum = await _forumRepository.GetForumOnlyAsync(forumId);
+                var forum = await _forumRepository.GetForumWithAllAsync(forumId);
 
-                // Do
+                var deletedPosts = forum.DeleteAllPosts(appUserId);
+
+                var deletedComments = new List<Comment>();
+
+                foreach (var post in deletedPosts)
+                {
+                    var comments = post.DeleteAllComments(appUserId);
+                    deletedComments.AddRange(comments);
+
+                    await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
+                }
+
+                _forumRepository.DeleteComments(deletedComments);
+                _forumRepository.DeletePosts(deletedPosts);
                 _forumRepository.DeleteForum(forum);
 
-                // Save
                 await _unitOfWork.Commit();
 
                 // Event
@@ -286,7 +297,7 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumId);
+                var forum = await _forumRepository.GetForumWithPostsAsync(forumId);
 
                 // Do
                 var post = forum.UpdatePost(postId, postDto.Title, postDto.Content, appUserId);
@@ -310,11 +321,12 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.BeginTransaction();
 
                 // Load
-                var forum = await _forumRepository.GetForumAsync(forumId);
+                var forum = await _forumRepository.GetForumWithSinglePostAsync(forumId, postId);
 
                 // Do
-                var post = forum.DeletePost(postId, appUserId);
+                var post = forum.DeletePost(postId, appUserId, out var deletedComments);
                 _forumRepository.DeletePost(post);
+                _forumRepository.DeleteComments(deletedComments);
 
                 //Save
                 await _unitOfWork.Commit();

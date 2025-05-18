@@ -38,6 +38,11 @@ namespace ContentService.Infrastructure.Repositories
             _db.Posts.Remove(post);
         }
 
+        void IForumRepository.DeletePosts(IEnumerable<Post> posts)
+        {
+            _db.Posts.RemoveRange(posts);
+        }
+
         void IForumRepository.UpdateComment(Comment comment, uint rowVersion)
         {
             _db.Entry(comment).Property(nameof(comment.RowVersion)).OriginalValue = rowVersion;
@@ -48,17 +53,30 @@ namespace ContentService.Infrastructure.Repositories
             _db.Comments.Remove(comment);
         }
 
+        void IForumRepository.DeleteComments(IEnumerable<Comment> comments)
+        {
+            _db.Comments.RemoveRange(comments);
+        }
+
         async Task<Forum> IForumRepository.GetForumOnlyAsync(int forumId)
         {
             return await _db.Forums.FirstAsync(forum => forum.Id == forumId);
 
         }
 
-        async Task<Forum> IForumRepository.GetForumAsync(int forumId)
+        async Task<Forum> IForumRepository.GetForumWithPostsAsync(int forumId)
         {
             return await _db.Forums
                 .Include(f => f.Posts)
                 .FirstAsync(forum => forum.Id == forumId);
+        }
+
+        async Task<Forum> IForumRepository.GetForumWithAllAsync(int forumId)
+        {
+            return await _db.Forums
+                .Include(f => f.Posts)
+                    .ThenInclude(p => p.Comments)
+                .FirstAsync(f => f.Id == forumId);
         }
 
         async Task<IEnumerable<Forum>> IForumRepository.GetForumsAsync()

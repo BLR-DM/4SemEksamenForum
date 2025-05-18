@@ -1,5 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using ContentService.Domain.Enums;
+﻿using ContentService.Domain.Enums;
+using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 
 namespace ContentService.Domain.Entities
 {
@@ -60,6 +61,17 @@ namespace ContentService.Domain.Entities
             Content = content;
         }
 
+        public IReadOnlyCollection<Post> DeleteAllPosts(string appUserId)
+        {
+            AssureUserIsCreator(appUserId);
+
+            var deletedPosts = _posts.ToList();
+            _posts.Clear();
+
+            return deletedPosts;
+        }
+
+
         private void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
@@ -81,10 +93,10 @@ namespace ContentService.Domain.Entities
             return post;
         }
 
-        public Post DeletePost(int postId, string appUserId)
+        public Post DeletePost(int postId, string appUserId, out IReadOnlyCollection<Comment> deletedComments)
         {
             var post = GetPostById(postId);
-            post.Delete(appUserId);
+            deletedComments = post.DeleteAllComments(appUserId);
             _posts.Remove(post);
             return post;
         }
