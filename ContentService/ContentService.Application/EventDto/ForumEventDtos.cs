@@ -6,4 +6,5 @@
     public record ForumSubmittedDto(string ContentId, string Content);
     public record CompensateByDeletingForumDto(string UserId, int ForumId);
     public record CompensateByDeletingPostDto(string UserId, int ForumId, int PostId);
+    public record CompensateByDeletingCommentDto(string UserId, int ForumId, int PostId, int CommentId);
 }

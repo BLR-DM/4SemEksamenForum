@@ -93,9 +93,15 @@ namespace ContentService.Domain.Entities
             return post;
         }
 
-        public Post DeletePost(int postId, string appUserId, out IReadOnlyCollection<Comment> deletedComments)
+        public Post? DeletePost(int postId, string appUserId, out IReadOnlyCollection<Comment> deletedComments)
         {
-            var post = GetPostById(postId);
+            var post = Posts.FirstOrDefault(p => p.Id == postId);
+            if (post == null)
+            {
+                deletedComments = new List<Comment>();
+                return null;
+            }
+
             deletedComments = post.DeleteAllComments(appUserId);
             _posts.Remove(post);
             return post;
@@ -103,7 +109,7 @@ namespace ContentService.Domain.Entities
 
         public Post GetPostById(int postId)
         {
-            var post = Posts.SingleOrDefault(p => p.Id == postId);
+            var post = Posts.FirstOrDefault(p => p.Id == postId);
             if (post is null) throw new ArgumentException("Post not found");
             return post;
         }

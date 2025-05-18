@@ -89,9 +89,11 @@ namespace ContentService.Domain.Entities
             return comment;
         }
 
-        public Comment DeleteComment(int commentId, string appUserId)
+        public Comment? DeleteComment(int commentId, string appUserId)
         {
-            var comment = GetCommentById(commentId);
+            var comment = Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null) return null;
+
             comment.Delete(appUserId);
             _comments.Remove(comment);
             return comment;

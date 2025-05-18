@@ -128,7 +128,8 @@ namespace PointService.Api.Endpoints
                 }
             }).WithTopic("pubsub", "post-deleted");
 
-            app.MapPost("/events/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command) =>
+            app.MapPost("/events/comment-published", async (CommentPublishedDto commentPublishedDto, IPointEntryCommand command,
+                IEventHandler eventHandler) =>
             {
                 try
                 {
@@ -145,6 +146,8 @@ namespace PointService.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
+                    await eventHandler.FailedToAddPointsOnCommentPublished(
+                        commentPublishedDto.UserId, commentPublishedDto.ForumId, commentPublishedDto.PostId, commentPublishedDto.CommentId);
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }

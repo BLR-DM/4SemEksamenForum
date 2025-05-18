@@ -24,13 +24,7 @@ namespace SubscriptionService.Application.Services
             var evtDto = new FailedToSubscribeUserToForumEventDto(userId, forumId);
             await _publisherService.PublishEvent("failed-to-subscribe-user-on-forum-published", evtDto);
         }
-
-        async Task IEventHandler.FailedToSubscribeUserOnPostPublished(string userId, int forumId, int postId)
-        {
-            var evtDto = new FailedToSubscribeUserToPostEventDto(userId, forumId, postId);
-            await _publisherService.PublishEvent("failed-to-subscribe-user-on-post-published", evtDto);
-        }
-
+        
         async Task IEventHandler.UserUnsubscribedFromForum(string userId, int subscriptionId, int forumId)
         {
             var evtDto = new UserUnSubscribedFromForumEventDto(userId, subscriptionId, forumId);
@@ -50,6 +44,19 @@ namespace SubscriptionService.Application.Services
             await _publisherService.PublishEvent("user-unsubscribed-from-post", evtDto);
         }
 
+        async Task IEventHandler.FailedToSubscribeUserOnPostPublished(string userId, int forumId, int postId)
+        {
+            var evtDto = new FailedToSubscribeUserToPostEventDto(userId, forumId, postId);
+            await _publisherService.PublishEvent("failed-to-subscribe-user-on-post-published", evtDto);
+        }
+
+        // Comment
+        async Task IEventHandler.FailedToSubscribeUserOnCommentPublished(string userId, int forumId, int postId, int commentId)
+        {
+            var evtDto = new FailedToSubscribeUserToPostOnCommentEventDto(userId, forumId, postId, commentId);
+            await _publisherService.PublishEvent("failed-to-subscribe-user-on-comment-published", evtDto);
+        }
+
 
         // Event
         async Task IEventHandler.RequestedForumSubscribersCollected(IEnumerable<string> userIds, int notificationId)
@@ -63,6 +70,7 @@ namespace SubscriptionService.Application.Services
             var evtDto = new RequestedForumSubscribersCollectedEventDto(userIds, notificationId);
             await _publisherService.PublishEvent("requested-post-subscribers-collected", evtDto); // <- NotificationService listens
         }
+
     }
 
     public interface IEventHandler
@@ -70,6 +78,7 @@ namespace SubscriptionService.Application.Services
         Task UserSubscribedToForum(string userId, int subscriptionId, int forumId);
         Task FailedToSubscribeUserOnForumPublished(string userId, int forumId);
         Task FailedToSubscribeUserOnPostPublished(string userId, int forumId, int postId);
+        Task FailedToSubscribeUserOnCommentPublished(string userId, int forumId, int postId, int commentId);
         Task UserSubscribedToPost(string userId, int subscriptionId, int postId);
         Task UserUnsubscribedFromForum(string userId, int subscriptionId, int forumId);
         Task UserUnsubscribedFromPost(string userId, int subscriptionId, int postId);
