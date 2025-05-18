@@ -26,7 +26,6 @@ namespace ContentService.Domain.Entities
         public string AppUserId { get; protected set; }
         public Status Status { get; protected set; } = Status.Submitted;
         public DateTimeOffset CreatedDate { get; private set; } = DateTimeOffset.UtcNow.AddHours(2);
-        //public ICollection<PostHistory> History => _history;
         public IReadOnlyCollection<Comment> Comments => _comments;
 
         public static Post Create(string title,string content, string username, string appUserId)
@@ -50,6 +49,16 @@ namespace ContentService.Domain.Entities
         //{
         //    _history.Add(new PostHistory(orgDescription, orgSolution));
         //}
+
+        public IReadOnlyCollection<Comment> DeleteAllComments(string userId)
+        {
+            AssureUserIsCreator(userId);
+
+            var deletedComments = _comments.ToList();
+            _comments.Clear();
+
+            return deletedComments;
+        }
 
         public void Delete(string userId)
         {
