@@ -74,7 +74,7 @@ namespace NotificationService.Application.Services
                 var message = MessageBuilder.BuildPostVoteCreated();
 
                 var notificationId =
-                    await _command.CreateNotificationAsync(message, dto.PostId, "Post", 0, "Upvote");
+                    await _command.CreateNotificationAsync(message, dto.PostId, "Post", 0, "NoVoteId");
 
                 await _eventHandler.PostSubscribersRequested(notificationId, dto.PostId);
             }

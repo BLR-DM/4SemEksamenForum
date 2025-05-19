@@ -25,7 +25,7 @@ namespace NotificationService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", EventNames.PostPublished).AllowAnonymous();
+            }).WithTopic("pubsub", EventNames.PostPublished);
 
             app.MapPost($"/events/{EventNames.RequestedForumSubscribersCollected}", async (RequestedForumSubscribersCollectedEventDto dto, ISentNotificationCommand command) =>
             {
@@ -43,7 +43,7 @@ namespace NotificationService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", EventNames.RequestedForumSubscribersCollected).AllowAnonymous();
+            }).WithTopic("pubsub", EventNames.RequestedForumSubscribersCollected);
 
 
 
@@ -60,7 +60,7 @@ namespace NotificationService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", EventNames.CommentPublished).AllowAnonymous();
+            }).WithTopic("pubsub", EventNames.CommentPublished);
 
 
             app.MapPost($"/events/{EventNames.RequestedPostSubscribersCollected}", async (RequestedPostSubscribersCollectedEventDto dto, ISentNotificationCommand command) =>
@@ -79,7 +79,7 @@ namespace NotificationService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", EventNames.RequestedPostSubscribersCollected).AllowAnonymous();
+            }).WithTopic("pubsub", EventNames.RequestedPostSubscribersCollected);
 
 
             app.MapPost($"/events/{EventNames.PostVoteCreated}", async (PostVoteEventDto dto, INotificationHandler notificationHandler) =>
@@ -95,7 +95,7 @@ namespace NotificationService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            }).WithTopic("pubsub", EventNames.PostUpVoteCreated).WithTopic("pubsub", EventNames.PostDownVoteCreated).AllowAnonymous();
+            }).WithTopic("pubsub", EventNames.PostUpVoteCreated).WithTopic("pubsub", EventNames.PostDownVoteCreated);
         }
     }
 }
