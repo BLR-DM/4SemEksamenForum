@@ -1,17 +1,24 @@
-name: Gateway - Build>Push>Pull>Compose
+name: Gateway - Test & Deploy
 
 on:
-  workflow_dispatch:  # manual trigger from GitHub UI
-  # Optional: uncomment below to auto-trigger on changes
+  workflow_dispatch:  
+  
   push:
     branches: [ master ]
     paths:
       - 'Gateway/**'
 
 jobs:
-  build-and-push:
+  build-gateway:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run build
+      run: dotnet build Gateway/Gateway.Api
+      
+  deploy:
+    needs: build-gateway
     runs-on: self-hosted
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
