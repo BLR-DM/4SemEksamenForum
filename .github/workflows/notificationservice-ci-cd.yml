@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '9.0'
     
     - name: Run build
-      run: dotnet build NotificationService/NotificaionService.Api
+      run: dotnet build NotificationService/NotificationService.Api
 
   deploy:
     needs: build-notificationservice
