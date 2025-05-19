@@ -50,10 +50,8 @@ namespace ContentService.Domain.Entities
         //    _history.Add(new PostHistory(orgDescription, orgSolution));
         //}
 
-        public IReadOnlyCollection<Comment> DeleteAllComments(string userId)
+        public IReadOnlyCollection<Comment> DeleteAllComments()
         {
-            AssureUserIsCreator(userId);
-
             var deletedComments = _comments.ToList();
             _comments.Clear();
 

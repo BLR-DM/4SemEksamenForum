@@ -101,8 +101,9 @@ namespace ContentService.Domain.Entities
                 deletedComments = new List<Comment>();
                 return null;
             }
-
-            deletedComments = post.DeleteAllComments(appUserId);
+            
+            deletedComments = post.DeleteAllComments();
+            post.Delete(appUserId);
             _posts.Remove(post);
             return post;
         }
