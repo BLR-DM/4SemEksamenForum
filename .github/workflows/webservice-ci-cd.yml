@@ -1,20 +1,33 @@
-name: Webservice - Build>Push>Pull>Compose
+name: Webservice - Test & Deploy
 
 on:
   workflow_dispatch:
-  push:
+  
+  pull_request:
     branches: [ master ]
     paths:
       - 'WebService/**'
 
 jobs:
-  build-and-push:
-    runs-on: self-hosted
+  build-webservice:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
+    - name: Install .NET 9.0 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0'
+    
+    - name: Run build
+      run: dotnet build WebService
+
+  deploy:
+    needs: build-webservice
+    runs-on: self-hosted
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 

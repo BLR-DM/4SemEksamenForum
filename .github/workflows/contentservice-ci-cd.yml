@@ -1,24 +1,43 @@
-name: ContentService - Build>Push>Pull>Compose
+name: ContentService - Test & Deploy
 
-on:
-  workflow_dispatch:  # manual trigger from GitHub UI
-  # Optional: uncomment below to auto-trigger on changes
-  push:
+on:  
+  workflow_dispatch:
+
+  pull_request:
     branches: [ master ]
     paths:
       - 'ContentService/**'
 
 jobs:
-  build-and-push:
-    runs-on: self-hosted
+  build-contentservice:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
+    - name: Install .NET 9.0 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0'
+    
+    - name: Run build
+      run: dotnet build ContentService/ContentService.Api
+      
+  test-contentservice:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run tests
+      run: dotnet test ContentService/ContentService.Domain.Test --no-build
+
+  deploy:
+    needs: [build-contentservice, test-contentservice]
+    runs-on: self-hosted
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
+    
     - name: Build and Push Docker image (ARM64)
       run: |
         docker build -t bilalkinali/contentservice-api:latest \
