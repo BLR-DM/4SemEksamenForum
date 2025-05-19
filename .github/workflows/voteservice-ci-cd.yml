@@ -1,21 +1,27 @@
-name: VoteService - Build>Push>Pull>Compose
+name: VoteService - Test & Deploy
 
 on:
-  workflow_dispatch:  # manual trigger from GitHub UI
-  # Optional: uncomment below to auto-trigger on changes
-  push:
+  workflow_dispatch: 
+  
+  pull_request:
     branches: [ master ]
     paths:
       - 'VoteService/**'
 
 jobs:
-  build-and-push:
-    runs-on: self-hosted
+  build-voteservice:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run build
+      run: dotnet build VoteService/VoteService.Api
 
+  deploy:
+    needs: build-voteservice
+    runs-on: self-hosted
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
