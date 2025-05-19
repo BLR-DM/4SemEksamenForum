@@ -3,7 +3,7 @@ name: Gateway - Test & Deploy
 on:
   workflow_dispatch:  
   
-  push:
+  pull_request:
     branches: [ master ]
     paths:
       - 'Gateway/**'
