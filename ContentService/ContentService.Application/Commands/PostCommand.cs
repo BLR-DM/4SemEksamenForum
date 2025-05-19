@@ -153,6 +153,7 @@ namespace ContentService.Application.Commands
                 if (comment == null)
                 {
                     Console.WriteLine("Comment already deleted or not found.");
+                    await _unitOfWork.Commit();
                     return;
                 }
 

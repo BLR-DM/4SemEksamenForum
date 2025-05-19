@@ -16,9 +16,9 @@
                 {
                     <div class="notification-indicator"></div>
                 }
-                @if (!string.IsNullOrEmpty(NotificationMessage))
+                @if (!string.IsNullOrEmpty(ErrorMessage))
                 {
-                    <MudAlert Severity="Severity.Warning" Elevation="0">@NotificationMessage</MudAlert>
+                    <div class="alert alert-warning">@ErrorMessage</div>
                 }
             </div>
         </div>
@@ -28,7 +28,7 @@
 @code {
     [Parameter]
     public NotificationView? Notification { get; set; }
-    private string? NotificationMessage { get; set; }
+    private string? ErrorMessage { get; set; }
 
 
     private async Task OnNotificationClicked(int notificationId)
@@ -48,7 +48,7 @@
             else
             {
                 Console.WriteLine("The referenced forum was not found.");
-                NotificationMessage = "The forum you're trying to access has been deleted or is no longer available.";
+                ErrorMessage = "The forum you're trying to access has been deleted or is no longer available.";
             }
         }
         else if (Notification.SourceType == "Post")
@@ -59,7 +59,7 @@
             else
             {
                 Console.WriteLine("The referenced post was not found.");
-                NotificationMessage = "The post you're trying to access has been deleted or is no longer available.";
+                ErrorMessage = "The post you're trying to access has been deleted or is no longer available.";
             }
 
         }

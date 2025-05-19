@@ -61,10 +61,8 @@ namespace ContentService.Domain.Entities
             Content = content;
         }
 
-        public IReadOnlyCollection<Post> DeleteAllPosts(string appUserId)
+        public IReadOnlyCollection<Post> DeleteAllPosts()
         {
-            AssureUserIsCreator(appUserId);
-
             var deletedPosts = _posts.ToList();
             _posts.Clear();
 
@@ -72,7 +70,7 @@ namespace ContentService.Domain.Entities
         }
 
 
-        private void AssureUserIsCreator(string userId)
+        public void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
                 throw new ArgumentException("Only the creater of the forum can perform this action");
