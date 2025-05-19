@@ -5,6 +5,7 @@ using ContentService.Application.Helpers;
 using ContentService.Application.Services;
 using ContentService.Domain.Entities;
 using ContentService.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace ContentService.Application.Commands
 {
@@ -234,11 +235,10 @@ namespace ContentService.Application.Commands
 
                 var forum = await _forumRepository.GetForumWithAllAsync(forumId);
 
-                var deletedPosts = forum.DeleteAllPosts(appUserId);
-                var deletedComments = deletedPosts.SelectMany(p => p.DeleteAllComments()).ToList();
+                forum.AssureUserIsCreator(appUserId);
 
-                //foreach (var post in deletedPosts)
-                //    await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
+                var deletedPosts = forum.DeleteAllPosts();
+                var deletedComments = deletedPosts.SelectMany(p => p.DeleteAllComments()).ToList();
 
                 _forumRepository.DeleteComments(deletedComments);
                 _forumRepository.DeletePosts(deletedPosts);
@@ -322,6 +322,7 @@ namespace ContentService.Application.Commands
                 if (post == null)
                 {
                     Console.WriteLine("Post already deleted or not found.");
+                    await _unitOfWork.Commit();
                     return;
                 }
 
