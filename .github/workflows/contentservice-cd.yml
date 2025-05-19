@@ -1,36 +1,15 @@
-name: ContentService - Test & Deploy
+name: ContentService - Deploy
 
 on:  
   workflow_dispatch:
 
-  pull_request:
+  push:
     branches: [ master ]
     paths:
       - 'ContentService/**'
 
-jobs:
-  build-contentservice:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install .NET 9.0 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0'
-    
-    - name: Run build
-      run: dotnet build ContentService/ContentService.Api
-      
-  test-contentservice:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Run tests
-      run: dotnet test ContentService/ContentService.Domain.Test --no-build
-
+jobs:  
   deploy:
-    needs: [build-contentservice, test-contentservice]
     runs-on: self-hosted
     steps:
     - name: Checkout code

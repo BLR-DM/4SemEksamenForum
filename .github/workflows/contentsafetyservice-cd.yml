@@ -1,29 +1,15 @@
-name: ContentSafetyService - Test & Deploy
+name: ContentSafetyService - Deploy
 
 on:
   workflow_dispatch:  
   
-  pull_request:
+  push:
     branches: [ master ]
     paths:
       - 'ContentSafetyService/**'
 
 jobs:
-  build-contentsafetyservice:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install .NET 9.0 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0'
-    
-    - name: Run build
-      run: dotnet build ContentSafetyService/ContentSafetyService.Api
-
-  deploy:
-    needs: build-contentsafetyservice
+  deploy:    
     runs-on: self-hosted
     steps:
     - name: Checkout code

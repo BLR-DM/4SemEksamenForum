@@ -1,29 +1,15 @@
-name: Webservice - Test & Deploy
+name: Webservice - Deploy
 
 on:
   workflow_dispatch:
   
-  pull_request:
+  push:
     branches: [ master ]
     paths:
       - 'WebService/**'
 
 jobs:
-  build-webservice:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install .NET 9.0 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0'
-    
-    - name: Run build
-      run: dotnet build WebService
-
   deploy:
-    needs: build-webservice
     runs-on: self-hosted
     steps:
     - name: Checkout code
