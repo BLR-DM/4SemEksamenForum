@@ -9,6 +9,13 @@ on:
       - 'ContentService/**'
 
 jobs:
+  build-contentservice:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run build
+      run: dotnet build ContentService/ContentService.Api
+      
   test-contentservice:
     runs-on: ubuntu-latest
     steps:
@@ -16,8 +23,8 @@ jobs:
     - name: Run tests
       run: dotnet test ContentService/ContentService.Domain.Test --no-build
 
-  build-and-push:
-    needs: test-contentservice
+  deploy:
+    needs: [build-contentservice, test-contentservice]
     runs-on: self-hosted
     steps:
     - name: Checkout code
