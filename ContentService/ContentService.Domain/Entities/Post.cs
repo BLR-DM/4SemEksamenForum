@@ -50,10 +50,8 @@ namespace ContentService.Domain.Entities
         //    _history.Add(new PostHistory(orgDescription, orgSolution));
         //}
 
-        public IReadOnlyCollection<Comment> DeleteAllComments(string userId)
+        public IReadOnlyCollection<Comment> DeleteAllComments()
         {
-            AssureUserIsCreator(userId);
-
             var deletedComments = _comments.ToList();
             _comments.Clear();
 
@@ -65,7 +63,7 @@ namespace ContentService.Domain.Entities
             AssureUserIsCreator(userId);
         }
 
-        private void AssureUserIsCreator(string userId)
+        public void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
                 throw new ArgumentException("Only the creater of the post can perform this action");

@@ -1,6 +1,4 @@
 ﻿using ContentService.Domain.Enums;
-using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 
 namespace ContentService.Domain.Entities
 {
@@ -61,10 +59,8 @@ namespace ContentService.Domain.Entities
             Content = content;
         }
 
-        public IReadOnlyCollection<Post> DeleteAllPosts(string appUserId)
+        public IReadOnlyCollection<Post> DeleteAllPosts()
         {
-            AssureUserIsCreator(appUserId);
-
             var deletedPosts = _posts.ToList();
             _posts.Clear();
 
@@ -72,7 +68,7 @@ namespace ContentService.Domain.Entities
         }
 
 
-        private void AssureUserIsCreator(string userId)
+        public void AssureUserIsCreator(string userId)
         {
             if (!AppUserId.Equals(userId))
                 throw new ArgumentException("Only the creater of the forum can perform this action");
@@ -93,7 +89,7 @@ namespace ContentService.Domain.Entities
             return post;
         }
 
-        public Post? DeletePost(int postId, string appUserId, out IReadOnlyCollection<Comment> deletedComments)
+        public Post? DeletePost(int postId, out IReadOnlyCollection<Comment> deletedComments)
         {
             var post = Posts.FirstOrDefault(p => p.Id == postId);
             if (post == null)
@@ -102,7 +98,7 @@ namespace ContentService.Domain.Entities
                 return null;
             }
 
-            deletedComments = post.DeleteAllComments(appUserId);
+            deletedComments = post.DeleteAllComments();
             _posts.Remove(post);
             return post;
         }
