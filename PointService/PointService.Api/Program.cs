@@ -22,7 +22,7 @@ builder.Services.AddDaprClient();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-//KEYCLOAK OPSÆTNING 
+//KEYCLOAK OPSÆTNING  
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
