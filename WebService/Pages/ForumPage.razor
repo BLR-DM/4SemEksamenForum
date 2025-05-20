@@ -81,15 +81,33 @@
 
     private async Task SubscribeToForum()
     {
-        Session.AddForumSubscription(Forum.Id);
-        var createSubDto = new CreateSubDto(Forum.Id);
-        await SubscriptionService.CreateSubscription(createSubDto);
+        try
+        {
+            Session.AddForumSubscription(Forum.Id);
+            var createSubDto = new CreateSubDto(Forum.Id);
+            await SubscriptionService.CreateSubscription(createSubDto);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            ErrorMessage = ex.Message;
+            Session.RemoveForumSubscription(Forum.Id);
+        }
     }
 
     private async Task UnSubscribeFromForum()
     {
-        Session.RemoveForumSubscription(Forum.Id);
-        await SubscriptionService.DeleteSubscription(Forum.Id);
+        try
+        {
+            Session.RemoveForumSubscription(Forum.Id);
+            await SubscriptionService.DeleteSubscription(Forum.Id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            ErrorMessage = ex.Message;
+            Session.AddForumSubscription(Forum.Id);
+        }
     }
 
     private void HandlePostDeleted(int postId)
