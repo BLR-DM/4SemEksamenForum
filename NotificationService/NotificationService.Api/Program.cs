@@ -69,10 +69,10 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
+app.MapGet("/api/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
-app.MapGet("/{userId}/notifications",
+app.MapGet("/api/{userId}/notifications",
     async (string userId, INotificationQuery query) =>
     {
         try
@@ -88,7 +88,7 @@ app.MapGet("/{userId}/notifications",
     }).RequireAuthorization("StandardUser");
 
 
-app.MapPatch("/notifications/{id}/read",
+app.MapPatch("/api/notifications/{id}/read",
     async (int id, ClaimsPrincipal user, ISentNotificationCommand command) =>
     {
         try

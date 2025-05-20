@@ -99,10 +99,10 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
+app.MapGet("/api/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
-app.MapPost("/Forums/{forumId}/Subscriptions",
+app.MapPost("/api/Forums/{forumId}/Subscriptions",
     async (int forumId, CreateSubDto dto, IForumSubCommand command, ClaimsPrincipal user) =>
     {
         try
@@ -121,7 +121,7 @@ app.MapPost("/Forums/{forumId}/Subscriptions",
     }).RequireAuthorization("StandardUser");
 
 
-app.MapDelete("/Forums/{forumId}/Subscriptions",
+app.MapDelete("/api/Forums/{forumId}/Subscriptions",
     async (int forumId, IForumSubCommand command, ClaimsPrincipal user) =>
     {
         try
@@ -139,7 +139,7 @@ app.MapDelete("/Forums/{forumId}/Subscriptions",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery query) =>
+app.MapGet("/api/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery query) =>
 {
     try
     {
@@ -154,7 +154,7 @@ app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery 
     }
 }).RequireAuthorization("StandardUser");
 
-app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, IForumSubQuery query) =>
+app.MapGet("/api/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, IForumSubQuery query) =>
 {
     try
     {
@@ -169,7 +169,7 @@ app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, I
     }
 }).RequireAuthorization("StandardUser");
 
-app.MapGet("/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery query) =>
+app.MapGet("/api/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery query) =>
 {
     try
     {
@@ -183,7 +183,7 @@ app.MapGet("/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery quer
     }
 }).RequireAuthorization("StandardUser");
 
-app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IPostSubQuery query) =>
+app.MapGet("/api/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IPostSubQuery query) =>
 {
     try
     {

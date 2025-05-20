@@ -10,7 +10,7 @@ namespace ContentService.Api.Endpoints
         {
             const string tag = "Comment";
 
-            app.MapPost("/forum/{forumId}/post/{postId}/comment", 
+            app.MapPost("/api/forum/{forumId}/post/{postId}/comment", 
                 async (IPostCommand command, CreateCommentDto commentDto, int forumId, int postId, ClaimsPrincipal user) =>
                 {
                     var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -20,7 +20,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Created();
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapPut("/forum/{forumId}/post/{postId}/comment/{commentId}",
+            app.MapPut("/api/forum/{forumId}/post/{postId}/comment/{commentId}",
                 async (IPostCommand command, UpdateCommentDto commentDto, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
                 {
                     var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -29,7 +29,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(commentDto);
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapDelete("/forum/{forumId}/post/{postId}/comment/{commentId}",
+            app.MapDelete("/api/forum/{forumId}/post/{postId}/comment/{commentId}",
                 async (IPostCommand command, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
