@@ -42,15 +42,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
-
-builder.Services.AddCors(options =>
+builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AllowGateway", builder =>
+    options.AddPolicy("Moderator", policy =>
     {
-        builder.WithOrigins("http://localhost:5000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
     });
 });
 
@@ -69,8 +69,7 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.UseCors("AllowGateway");
-app.MapGet("/hello", () => "Hello World!").AllowAnonymous();
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.MapGet("/{userId}/notifications",
@@ -86,7 +85,7 @@ app.MapGet("/{userId}/notifications",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 
 app.MapPatch("/notifications/{id}/read",
@@ -103,72 +102,7 @@ app.MapPatch("/notifications/{id}/read",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    });
-
-//app.MapPost("/events/post-published",
-//    async (PostPublishedEventDto dto, IEventHandler eventHandler) =>
-//    {
-//        try
-//        {
-//            await eventHandler.ForumSubscribersRequested(dto.ForumId, dto.PostId);
-
-//            return Results.Accepted();
-//        }
-//        catch (Exception ex)
-//        {
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "post-published");
-
-//app.MapPost("/events/post-published", // Only for testing
-//    async (PostPublishedEventDtoTest postDto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
-//    {
-//        try
-//        {
-//            var topic = "post-published";
-
-//            var eventDto = new EventDto(postDto.UserId, postDto.ForumId, postDto.PostId, 0);
-
-//            var message = await messageFactory.BuildMessageAsync(topic, eventDto);
-
-//            await command.CreateNotificationAsync(eventDto.UserId, message);
-
-//            return Results.Created();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            throw;
-//        }
-
-//    }).WithTopic("pubsub", "post-published");
-
-//app.MapPost("/events/requested-forum-subscribers-collected",
-//    async (RequestedForumSubscribersCollectedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
-//    {
-//        var message = messageFactory.BuildForPostPublished(dto);
-
-//        var tasks = dto.UserIds.Select(userId => command.CreateNotificationAsync(userId, message));
-//        await Task.WhenAll(tasks);
-
-//    }).WithTopic("pubsub", "requested-forum-subscribers-collected");
-
-//app.MapPost("events/comment-published",
-//    async (CommentPublishedEventDto dto, INotificationMessageFactory messageFactory, INotificationCommand command) =>
-//    {
-//        try
-//        {
-//            var message = messageFactory.Build(dto);
-
-//            await command.CreateNotificationAsync(dto.UserId, message);
-
-//            return Results.Created();
-//        }
-//        catch (Exception ex)
-//        {
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "comment-published");
+    }).RequireAuthorization("StandardUser");
 
 app.MapEventEndpoints();
 

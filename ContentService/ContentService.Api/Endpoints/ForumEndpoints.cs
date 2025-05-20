@@ -21,35 +21,28 @@ namespace ContentService.Api.Endpoints
                 {
                     var result = await query.GetForumsAsync();
                     return Results.Ok(result);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapGet("/forum/{forumId}",
                 async (IForumQuery query, int forumId) =>
                 {
                     var result = await query.GetForumAsync(forumId);
                     return Results.Ok(result);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapGet("/forums/posts",
                 async (IForumQuery query) =>
                 {
                     var result = await query.GetForumsWithPostsAsync();
                     return Results.Ok(result);
-                }).WithTags(tag);
-
-            //app.MapGet("/forum/{forumId}/posts",
-            //    async (IForumQuery query, int forumId) =>
-            //    {
-            //        var result = await query.GetForumWithPostsAsync(forumId);
-            //        return Results.Ok(result);
-            //    }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapGet("/forum/{forumName}/posts",
                 async (IForumQuery query, string forumName) =>
                 {
                     var result = await query.GetForumByNameWithPostsAsync(forumName);
                     return Results.Ok(result);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             // Write
             app.MapPost("/forum",
@@ -59,7 +52,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.CreateForumAsync(forumDto, userId);
                     return Results.Created();
-                }).WithTags(tag).RequireAuthorization();
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapPut("/forum/{forumId}",
                 async (IForumCommand command, UpdateForumDto forumDto, ClaimsPrincipal user, int forumId) =>
@@ -67,7 +60,7 @@ namespace ContentService.Api.Endpoints
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                     await command.UpdateForumAsync(forumDto, userId, forumId);
                     return Results.Ok(forumDto);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapDelete("/forum/{forumId}", // check appUserId / moderator
                 async (IForumCommand command, ClaimsPrincipal user, int forumId) =>
@@ -75,21 +68,7 @@ namespace ContentService.Api.Endpoints
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                     await command.DeleteForumAsync(userId, forumId);
                     return Results.NoContent();
-                }).WithTags(tag);
-
-            //app.MapPost("/forum/approved",
-            //    async (IForumCommand command, PublishForumDto forumDto) =>
-            //    {
-            //        await command.HandleForumApprovalAsync(forumDto);
-            //        return Results.Ok();
-            //    }).WithTopic("pubsub", "forumApproved");
-
-            //app.MapPost("/forum/publish",
-            //    async (IForumCommand command, PublishForumDto forumDto) =>
-            //    {
-            //        await command.HandlePublishAsync(forumDto);
-            //        return Results.Ok();
-            //    }).WithTopic("pubsub", "forumToPublish");
+                }).WithTags(tag).RequireAuthorization("StandardUser");
         }
     }
 }
