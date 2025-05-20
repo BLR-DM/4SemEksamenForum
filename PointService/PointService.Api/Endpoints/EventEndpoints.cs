@@ -13,6 +13,7 @@ namespace PointService.Api.Endpoints
         public static void MapEventEndpoints(this WebApplication app)
         {
             const string tag = "Events";
+            app.MapPost("/events/hello", () => "Hello Events");
 
             app.MapPost("/events/forum-published", async (ForumPublishedDto forumPublishedDto, IPointEntryCommand command,
             IEventHandler eventHandler) =>
