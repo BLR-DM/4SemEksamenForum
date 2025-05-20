@@ -17,14 +17,14 @@ namespace ContentService.Api.Endpoints
                 {
                     var result = await query.GetForumWithSinglePostAsync(forumId, postId);
                     return Results.Ok(result);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapGet("/forums/{forumName}/post/{postId}",
                 async (IForumQuery query, string forumName, int postId) =>
                 {
                     var result = await query.GetForumByNameWithSinglePostAsync(forumName, postId);
                     return Results.Ok(result);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             // Write
             app.MapPost("/forum/{forumId}/post",
@@ -35,7 +35,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.CreatePostAsync(postDto, username, userId, forumId);
                     return Results.Created();
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapPut("/forum/{forumId}/post/{postId}",
                 async (IForumCommand command, UpdatePostDto postDto, ClaimsPrincipal user, int forumId, int postId) =>
@@ -44,7 +44,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.UpdatePostAsync(postDto, userId, forumId, postId);
                     return Results.Ok(postDto);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapDelete("/forum/{forumId}/post/{postId}",
                 async (IForumCommand command, int forumId, int postId, ClaimsPrincipal user) =>
@@ -53,7 +53,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.DeletePostAsync(userId, forumId, postId);
                     return Results.Ok("Post deleted");
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
         }
     }
 }

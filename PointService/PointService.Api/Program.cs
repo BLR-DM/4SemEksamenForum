@@ -54,15 +54,6 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowGateway", builder =>
-    {
-        builder.WithOrigins("http://localhost:5000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
 
 var app = builder.Build();
 
@@ -77,8 +68,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
-app.UseCors("AllowGateway");
-app.MapGet("/hello", () => "Hello World!");
+
+
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 app.MapPost("/User/{userId}/Points",
     async (string userId, CreatePointEntryDto dto, IPointEntryCommand command) =>
@@ -93,7 +85,7 @@ app.MapPost("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapPost("/PointAction",
     async (CreatePointActionDto dto, IPointActionCommand command) =>
@@ -108,7 +100,7 @@ app.MapPost("/PointAction",
         {
             return Results.Problem();
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapGet("/pointactions",
     async (IPointActionQuery query) =>
@@ -122,7 +114,7 @@ app.MapGet("/pointactions",
         {
             return Results.Problem();
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapGet("/User/{userId}/Points",
     async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>
@@ -143,7 +135,7 @@ app.MapGet("/User/{userId}/Points",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization();
+    }).RequireAuthorization("StandardUser");
 
 app.MapEventEndpoints();
 
@@ -159,7 +151,7 @@ app.MapPut("/PointAction",
         {
             return Results.Problem();
         }
-    });
+    }).RequireAuthorization("Moderator");
 
 
 app.Run();

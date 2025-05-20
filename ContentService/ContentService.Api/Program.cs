@@ -20,86 +20,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDaprClient();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-//    {
-//        In = ParameterLocation.Header,
-//        Description = "Please enter your token as 'Bearer {your_token}'",
-//        Name = "Authorization",
-//        Type = SecuritySchemeType.ApiKey
-//    });
 
-//    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    {
-//        {
-//            new OpenApiSecurityScheme
-//            {
-//                Reference = new OpenApiReference
-//                {
-//                    Type = ReferenceType.SecurityScheme,
-//                    Id = "Bearer"
-//                }
-//            },
-//            new string[] { }
-//        }
-//    });
-//});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-//        .RequireAuthenticatedUser()
-//        .Build();
-//});
-
-//builder.Services.AddAuthorization();
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-//    opt =>
-//    {
-//        opt.BackchannelHttpHandler = new HttpClientHandler
-//        {
-//            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-//        };
-//        opt.RequireHttpsMetadata = false;
-//        opt.MetadataAddress = builder.Configuration["Keycloak:MetadataAddress"]!;
-//        opt.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidAudience = builder.Configuration["Keycloak:Audience"],
-//            ValidIssuer = builder.Configuration["Keycloak:ValidIssuer"],
-//            ValidateIssuer = true,
-//            ValidateAudience = true
-//        };
-//        opt.Events = new JwtBearerEvents
-//        {
-//            OnAuthenticationFailed = ctx =>
-//            {
-//                Console.WriteLine($"JWT Auth failed: {ctx.Exception}");
-//                return Task.CompletedTask;
-//            },
-//            OnTokenValidated = ctx =>
-//            {
-//                Console.WriteLine("JWT Auth success!");
-//                return Task.CompletedTask;
-//            }
-//        };
-//    });
-
-
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowGateway", builder =>
-    {
-        builder.WithOrigins("https://www.blrforum.dk", "https://blrforum.dk")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
 
 
 //KEYCLOAK OPSÆTNING
@@ -118,11 +42,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
 
 var app = builder.Build();
-
-app.UseCors("AllowGateway");
 
 
 // Enable DI validation at startup
@@ -144,7 +77,7 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.MapForumEndpoints();
