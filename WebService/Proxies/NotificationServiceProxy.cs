@@ -16,7 +16,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var requestUri = $"notification/{userId}/notifications";
+                var requestUri = $"notification/api/{userId}/notifications";
 
                 var notifications = await _httpClient.GetFromJsonAsync<List<NotificationDto>>(requestUri);
 
@@ -33,7 +33,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var requestUri = $"notification/notifications/{notificationId}/read";
+                var requestUri = $"notification/api/notifications/{notificationId}/read";
 
                 var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
                 var response = await _httpClient.SendAsync(request);

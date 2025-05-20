@@ -87,7 +87,6 @@ app.UseCors("AllowWebService");
 
 app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient httpClient, HttpContext context) =>
 {
-    //var rawToken = context.Request.Headers["Authorization"].ToString();
 
     if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
     {
@@ -102,7 +101,7 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
 
 
         // Get Forum with Posts and Comments
-        var forumRequestUri = $"http://contentservice-api:8080/forum/{forumName}/posts";
+        var forumRequestUri = $"http://contentservice-api:8080/api/forum/{forumName}/posts";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
     if (forum == null) return Results.NotFound("Forum not found");
@@ -110,7 +109,7 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
     // Get PostVotes for each post in forum
     //var postVoteList = new List<PostVoteListDto>();
 
-    var postVotesRequestUri = $"http://voteservice-api:8080/post/votes";
+    var postVotesRequestUri = $"http://voteservice-api:8080/api/post/votes";
     var postIds = forum.Posts?.Select(p => p.Id).ToList();
 
     if (postIds == null || postIds.Count == 0)
@@ -153,13 +152,13 @@ app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, in
     }
 
     // Get Forum with single Post and Comments
-    var forumRequestUri = $"http://contentservice-api:8080/forums/{forumName}/post/{postId}";
+    var forumRequestUri = $"http://contentservice-api:8080/api/forums/{forumName}/post/{postId}";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
     if (forum == null) return Results.NotFound("Forum not found");
 
     // Get Votes for post
-    var postVotesRequestUri = $"http://voteservice-api:8080/Post/{postId}/Votes";
+    var postVotesRequestUri = $"http://voteservice-api:8080/api/Post/{postId}/Votes";
     var postVotes = await httpClient.GetFromJsonAsync<PostVoteListDto>(postVotesRequestUri);
 
     if (postVotes == null)
@@ -172,7 +171,7 @@ app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, in
     post.Votes = postVotes.PostVotes;
 
     // Get votes for comments
-    var commentVotesRequestUri = $"http://voteservice-api:8080/Comment/Votes";
+    var commentVotesRequestUri = $"http://voteservice-api:8080/api/Comment/Votes";
     var commentIds = post.Comments?.Select(c => c.Id).ToList();
 
     if (commentIds == null || commentIds.Count == 0)

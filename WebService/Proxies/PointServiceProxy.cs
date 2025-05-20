@@ -16,7 +16,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"point/User/{userId}/Points";
+                var uri = $"point/api/User/{userId}/Points";
 
                 var userPointsDto = await _httpClient.GetFromJsonAsync<UserPointsDto>(uri);
 

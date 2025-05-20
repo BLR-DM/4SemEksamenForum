@@ -16,7 +16,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"subscription/Forums/{dto.ForumId}/Subscriptions/";
+                var uri = $"subscription/api/Forums/{dto.ForumId}/Subscriptions/";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -35,7 +35,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"subscription/Forums/{forumId}/Subscriptions";
+                var uri = $"subscription/api/Forums/{forumId}/Subscriptions";
 
                 var response = await _httpClient.DeleteAsync(uri);
 
@@ -51,7 +51,7 @@ namespace WebService.Proxies
 
         async Task<List<int>> ISubscriptionServiceProxy.GetSubscribedForumIds(string userId)
         {
-            var subscriptionRequestUri = $"subscription/Users/{userId}/Forums/Subscriptions/";
+            var subscriptionRequestUri = $"subscription/api/Users/{userId}/Forums/Subscriptions/";
 
             var forumIds = await _httpClient.GetFromJsonAsync<List<int>>(subscriptionRequestUri);
 

@@ -18,7 +18,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = "content/forum";
+                var uri = "content/api/forum";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -36,7 +36,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"content/forum/{forumId}/post";
+                var uri = $"content/api/forum/{forumId}/post";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -54,7 +54,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"content/forum/{forumId}/post/{postId}/comment";
+                var uri = $"content/api/forum/{forumId}/post/{postId}/comment";
 
                 var response = await _httpClient.PostAsJsonAsync(uri, dto);
 
@@ -72,7 +72,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = "content/forum";
+                var forumReuqestUri = "content/api/forum";
 
                 var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
 
@@ -94,7 +94,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = $"content/forum/{forumName}/post/{postId}";
+                var forumReuqestUri = $"content/api/forum/{forumName}/post/{postId}";
 
                 var forum = await _httpClient.GetFromJsonAsync<ForumDto>(forumReuqestUri);
 
@@ -116,7 +116,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"content/forum/{forumId}/post/{postId}";
+                var uri = $"content/api/forum/{forumId}/post/{postId}";
 
                 var response = await _httpClient.DeleteAsync(uri);
 
@@ -134,7 +134,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var uri = $"content/forum/{forumId}/post/{postId}/comment/{commentId}";
+                var uri = $"content/api/forum/{forumId}/post/{postId}/comment/{commentId}";
 
                 var response = await _httpClient.DeleteAsync(uri);
 
@@ -152,7 +152,7 @@ namespace WebService.Proxies
         {
             try
             {
-                var forumReuqestUri = $"content/forums/posts";
+                var forumReuqestUri = $"content/api/forums/posts";
 
                 var forums = await _httpClient.GetFromJsonAsync<List<ForumDto>>(forumReuqestUri);
 

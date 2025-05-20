@@ -77,7 +77,7 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
+app.MapGet("/api/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.MapForumEndpoints();

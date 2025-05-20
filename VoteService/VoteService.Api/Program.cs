@@ -96,7 +96,7 @@ app.UseAuthorization();
 app.UseCloudEvents();
 
 
-app.MapPost("Post/{postId}/Vote",
+app.MapPost("/api/Post/{postId}/Vote",
     async (int postId, PostVoteDto dto, IPostVoteCommand command, ClaimsPrincipal user) =>
     {
         try
@@ -111,7 +111,7 @@ app.MapPost("Post/{postId}/Vote",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapPost("Comment/{commentId}/Vote",
+app.MapPost("/api/Comment/{commentId}/Vote",
     async (int commentId, CommentVoteDto dto, ICommentVoteCommand command, ClaimsPrincipal user) =>
     {
         try
@@ -126,7 +126,7 @@ app.MapPost("Comment/{commentId}/Vote",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapGet("Post/{postId}/Votes",
+app.MapGet("/api/Post/{postId}/Votes",
     async (int postId, IPostVoteQuery query) =>
     {
         try
@@ -141,7 +141,7 @@ app.MapGet("Post/{postId}/Votes",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapPost("Post/Votes",
+app.MapPost("/api/Post/Votes",
     async ([FromBody] List<int> postIds, IPostVoteQuery query) =>
     {
         try
@@ -156,7 +156,7 @@ app.MapPost("Post/Votes",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapGet("Comment/{commentId}/Votes",
+app.MapGet("/api/Comment/{commentId}/Votes",
     async (int commentId, ICommentVoteQuery query) =>
     {
         try
@@ -171,7 +171,7 @@ app.MapGet("Comment/{commentId}/Votes",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapPost("Comment/Votes",
+app.MapPost("/api/Comment/Votes",
     async ([FromBody] List<int> commentIds, ICommentVoteQuery query) =>
     {
         try
@@ -186,7 +186,7 @@ app.MapPost("Comment/Votes",
         }
     }).RequireAuthorization("StandardUser");
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
+app.MapGet("/api/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.Run();

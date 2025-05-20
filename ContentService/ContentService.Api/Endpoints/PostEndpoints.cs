@@ -12,14 +12,14 @@ namespace ContentService.Api.Endpoints
             const string tag = "Post";
 
             // Query
-            app.MapGet("/forum/{forumId}/post/{postId}",
+            app.MapGet("/api/forum/{forumId}/post/{postId}",
                 async (IForumQuery query, int forumId, int postId) =>
                 {
                     var result = await query.GetForumWithSinglePostAsync(forumId, postId);
                     return Results.Ok(result);
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapGet("/forums/{forumName}/post/{postId}",
+            app.MapGet("/api/forums/{forumName}/post/{postId}",
                 async (IForumQuery query, string forumName, int postId) =>
                 {
                     var result = await query.GetForumByNameWithSinglePostAsync(forumName, postId);
@@ -27,7 +27,7 @@ namespace ContentService.Api.Endpoints
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
             // Write
-            app.MapPost("/forum/{forumId}/post",
+            app.MapPost("/api/forum/{forumId}/post",
                 async (IForumCommand command, CreatePostDto postDto, int forumId, ClaimsPrincipal user) =>
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -37,7 +37,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Created();
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapPut("/forum/{forumId}/post/{postId}",
+            app.MapPut("/api/forum/{forumId}/post/{postId}",
                 async (IForumCommand command, UpdatePostDto postDto, ClaimsPrincipal user, int forumId, int postId) =>
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -46,7 +46,7 @@ namespace ContentService.Api.Endpoints
                     return Results.Ok(postDto);
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapDelete("/forum/{forumId}/post/{postId}",
+            app.MapDelete("/api/forum/{forumId}/post/{postId}",
                 async (IForumCommand command, int forumId, int postId, ClaimsPrincipal user) =>
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
