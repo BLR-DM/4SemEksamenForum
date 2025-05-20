@@ -70,7 +70,7 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 
-app.MapGet("/hello", () => "Hello Api!");
+app.MapGet("/api/hello", () => "Hello Api!");
 
 app.MapPost("/api/User/{userId}/Points",
     async (string userId, CreatePointEntryDto dto, IPointEntryCommand command) =>
