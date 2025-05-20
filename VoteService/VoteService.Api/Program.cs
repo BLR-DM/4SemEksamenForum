@@ -50,11 +50,6 @@ builder.Services.AddApplication();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
         options.Authority = "https://keycloak.blrforum.dk/realms/4SemForumProjekt";
         options.Audience = "voteservice-api";
         options.RequireHttpsMetadata = false;
@@ -67,15 +62,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
-
-builder.Services.AddCors(options =>
+builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AllowGateway", builder =>
+    options.AddPolicy("Moderator", policy =>
     {
-        builder.WithOrigins("http://localhost:5000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
     });
 });
 
@@ -99,7 +94,6 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
-app.UseCors("AllowGateway");
 
 
 app.MapPost("Post/{postId}/Vote",
@@ -115,7 +109,7 @@ app.MapPost("Post/{postId}/Vote",
         {
             return Results.Problem(e.Message);
         }
-    }).RequireAuthorization();
+    }).RequireAuthorization("StandardUser");
 
 app.MapPost("Comment/{commentId}/Vote",
     async (int commentId, CommentVoteDto dto, ICommentVoteCommand command, ClaimsPrincipal user) =>
@@ -130,7 +124,7 @@ app.MapPost("Comment/{commentId}/Vote",
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapGet("Post/{postId}/Votes",
     async (int postId, IPostVoteQuery query) =>
@@ -145,7 +139,7 @@ app.MapGet("Post/{postId}/Votes",
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapPost("Post/Votes",
     async ([FromBody] List<int> postIds, IPostVoteQuery query) =>
@@ -160,7 +154,7 @@ app.MapPost("Post/Votes",
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapGet("Comment/{commentId}/Votes",
     async (int commentId, ICommentVoteQuery query) =>
@@ -175,7 +169,7 @@ app.MapGet("Comment/{commentId}/Votes",
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapPost("Comment/Votes",
     async ([FromBody] List<int> commentIds, ICommentVoteQuery query) =>
@@ -190,9 +184,9 @@ app.MapPost("Comment/Votes",
         {
             return Results.Problem(e.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.Run();

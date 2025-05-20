@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +41,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
+
 
 builder.Services.AddCors(options =>
 {
@@ -72,10 +85,24 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowWebService");
 
 
-app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient httpClient) =>
+app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient httpClient, HttpContext context) =>
 {
-    // Get Forum with Posts and Comments
-    var forumRequestUri = $"http://contentservice-api:8080/forum/{forumName}/posts";
+    //var rawToken = context.Request.Headers["Authorization"].ToString();
+
+    if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
+        var authHeaderValue = authHeader.ToString();
+        var token = authHeaderValue.Substring("Bearer ".Length);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+    }
+    else
+    {
+        return Results.Unauthorized();
+    }
+
+
+        // Get Forum with Posts and Comments
+        var forumRequestUri = $"http://contentservice-api:8080/forum/{forumName}/posts";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
 
     if (forum == null) return Results.NotFound("Forum not found");
@@ -110,10 +137,21 @@ app.MapGet("/api/Forums/{forumName}/posts", async (string forumName, HttpClient 
 
     return Results.Ok(forum);
 
-});
+}).RequireAuthorization("StandardUser");
 
-app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, int postId, HttpClient httpClient) =>
+app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, int postId, HttpClient httpClient, HttpContext context) =>
 {
+    if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
+        var authHeaderValue = authHeader.ToString();
+        var token = authHeaderValue.Substring("Bearer ".Length);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+    }
+    else
+    {
+        return Results.Unauthorized();
+    }
+
     // Get Forum with single Post and Comments
     var forumRequestUri = $"http://contentservice-api:8080/forums/{forumName}/post/{postId}";
     var forum = await httpClient.GetFromJsonAsync<ForumDto>(forumRequestUri);
@@ -156,7 +194,7 @@ app.MapGet("/api/forums/{forumName}/posts/{postId}", async (string forumName, in
     }
 
     return Results.Ok(forum);
-});
+}).RequireAuthorization("StandardUser");
 
 
 

@@ -79,16 +79,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApplication();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowGateway", builder =>
-    {
-        builder.WithOrigins("http://localhost:4000")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -108,9 +98,8 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 
-app.UseCors("AllowGateway");
 
-app.MapGet("/hello", () => "Hello World!").RequireAuthorization();
+app.MapGet("/hello", () => "Hello World!").RequireAuthorization("StandardUser");
 
 
 app.MapPost("/Forums/{forumId}/Subscriptions",

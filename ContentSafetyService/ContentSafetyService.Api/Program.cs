@@ -43,17 +43,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAspire", builder =>
-    {
-        builder.WithOrigins("https://localhost:7214")
-            .WithOrigins("http://localhost:5041")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
-
 builder.Services.AddHttpClient();
 
 builder.Services.AddDaprClient();
@@ -83,7 +72,6 @@ app.UseSwaggerUI();
 
 //app.UseHttpsRedirection(); 
 
-app.UseCors("AllowAspire");
 
 app.UseRouting();
 app.UseCloudEvents();
@@ -94,7 +82,7 @@ app.MapGet("/hello", () => "Hello World!");
 
 
 
-app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
+app.MapPost("/events/subscribe", (ILogger<Program> logger, MessagePayload text) =>
     {
         logger.LogInformation("Received message: {Text}", text.Text);
         return Results.Ok();
@@ -104,7 +92,7 @@ app.MapPost("/subscribe", (ILogger<Program> logger, MessagePayload text) =>
 
 
 
-app.MapPost("/contentmoderation",
+app.MapPost("/events/contentmoderation",
     async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command, DaprClient dapr) =>
     {
         // Save moderation content request?

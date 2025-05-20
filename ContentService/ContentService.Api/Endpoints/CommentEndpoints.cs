@@ -18,7 +18,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.CreateCommentAsync(commentDto, username, postId, userId, forumId);
                     return Results.Created();
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapPut("/forum/{forumId}/post/{postId}/comment/{commentId}",
                 async (IPostCommand command, UpdateCommentDto commentDto, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
@@ -27,7 +27,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.UpdateCommentAsync(commentDto, userId, forumId, postId, commentId);
                     return Results.Ok(commentDto);
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
 
             app.MapDelete("/forum/{forumId}/post/{postId}/comment/{commentId}",
                 async (IPostCommand command, int forumId, int postId, int commentId, ClaimsPrincipal user) =>
@@ -36,7 +36,7 @@ namespace ContentService.Api.Endpoints
 
                     await command.DeleteCommentAsync(userId, forumId, postId, commentId);
                     return Results.Ok("Comment deleted");
-                }).WithTags(tag);
+                }).WithTags(tag).RequireAuthorization("StandardUser");
         }
     }
 }
