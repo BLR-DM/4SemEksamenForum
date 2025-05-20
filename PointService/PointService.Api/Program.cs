@@ -78,9 +78,9 @@ app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 app.UseCors("AllowGateway");
-app.MapGet("/hello", () => "Hello World!");
+app.MapGet("/api/hello", () => "Hello Api!");
 
-app.MapPost("/User/{userId}/Points",
+app.MapPost("/api/User/{userId}/Points",
     async (string userId, CreatePointEntryDto dto, IPointEntryCommand command) =>
     {
         try
@@ -95,7 +95,7 @@ app.MapPost("/User/{userId}/Points",
         }
     });
 
-app.MapPost("/PointAction",
+app.MapPost("/api/PointAction",
     async (CreatePointActionDto dto, IPointActionCommand command) =>
     {
         try
@@ -110,7 +110,7 @@ app.MapPost("/PointAction",
         }
     });
 
-app.MapGet("/pointactions",
+app.MapGet("/api/pointactions",
     async (IPointActionQuery query) =>
     {
         try
@@ -124,7 +124,7 @@ app.MapGet("/pointactions",
         }
     });
 
-app.MapGet("/User/{userId}/Points",
+app.MapGet("/api/User/{userId}/Points",
     async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>
     {
         try
@@ -147,7 +147,7 @@ app.MapGet("/User/{userId}/Points",
 
 app.MapEventEndpoints();
 
-app.MapPut("/PointAction",
+app.MapPut("/api/PointAction",
     async (UpdatePointActionDto dto, IPointActionCommand command) =>
     {
         try
