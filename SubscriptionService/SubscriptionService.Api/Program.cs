@@ -63,7 +63,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Moderator", policy =>
+    {
+        policy.RequireRole("moderator");
+    });
+    options.AddPolicy("StandardUser", policy =>
+    {
+        policy.RequireRole("standard-user");
+    });
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -73,7 +83,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGateway", builder =>
     {
-        builder.WithOrigins("http://localhost:5000")
+        builder.WithOrigins("http://localhost:4000")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -97,7 +107,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
-//app.UseHttpsRedirection();
 
 app.UseCors("AllowGateway");
 
@@ -120,70 +129,8 @@ app.MapPost("/Forums/{forumId}/Subscriptions",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    });
+    }).RequireAuthorization("StandardUser");
 
-
-
-//app.MapPost("/Posts/{postId}/Subscriptions",
-//    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
-//    {
-//        try
-//        {
-//            await command.CreateAsync(postId, subDto.AppUserId);
-//            return Results.Ok();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    });
-
-//app.MapPost("/events/notify-forum-subscribers",
-//    async (NotifyForumSubscriberEventDto evtDto, IPostPublishedHandler handler) =>
-//    {
-//        try
-//        {
-//            await handler.HandlePostPublishedNotification(evtDto);
-//            return Results.Ok();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "forum-notification-requested");
-
-
-//app.MapPost("/events/comment-published",
-//    async (CommentPublishedDto evtDto, ICommentPublishedHandler handler) =>
-//    {
-//        try
-//        {
-//            await handler.HandleCommentPublished(evtDto);
-//            return Results.Ok();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "comment-published");
-
-//app.MapPost("/events/notify-post-subscribers",
-//    async (NotifyPostSubscriberEventDto evtDto, ICommentPublishedHandler handler) =>
-//    {
-//        try
-//        {
-//            await handler.HandleCommentPublishedNotification(evtDto);
-//            return Results.Ok();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    }).WithTopic("pubsub", "post-notification-requested");
 
 app.MapDelete("/Forums/{forumId}/Subscriptions",
     async (int forumId, IForumSubCommand command, ClaimsPrincipal user) =>
@@ -201,22 +148,7 @@ app.MapDelete("/Forums/{forumId}/Subscriptions",
             Console.WriteLine(ex.Message);
             return Results.Problem(ex.Message);
         }
-    });
-
-//app.MapDelete("/Posts/{postId}/Subscriptions",
-//    async (int postId, [FromBody] CreateSubDto subDto, IPostSubCommand command) =>
-//    {
-//        try
-//        {
-//            await command.DeleteAsync(postId, subDto.AppUserId);
-//            return Results.Ok();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message);
-//            return Results.Problem(ex.Message);
-//        }
-//    });
+    }).RequireAuthorization("StandardUser");
 
 app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery query) =>
 {
@@ -231,7 +163,7 @@ app.MapGet("/Forum/{forumId}/Subscriptions", async (int forumId, IForumSubQuery 
         Console.WriteLine(ex.Message);
         return Results.Problem(ex.Message);
     }
-});
+}).RequireAuthorization("StandardUser");
 
 app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, IForumSubQuery query) =>
 {
@@ -246,7 +178,7 @@ app.MapGet("/Users/{appUserId}/Forums/Subscriptions", async (string appUserId, I
         Console.WriteLine(ex.Message);
         return Results.Problem(ex.Message);
     }
-});
+}).RequireAuthorization("StandardUser");
 
 app.MapGet("/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery query) =>
 {
@@ -260,7 +192,7 @@ app.MapGet("/Post/{postId}/Subscriptions", async (int postId, IPostSubQuery quer
         Console.WriteLine(ex.Message);
         return Results.Problem(ex.Message);
     }
-});
+}).RequireAuthorization("StandardUser");
 
 app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IPostSubQuery query) =>
 {
@@ -277,7 +209,7 @@ app.MapGet("/Users/{appUserId}/Posts/Subscriptions", async (string appUserId, IP
         var response = ResponseDto<List<int>>.Fail(ex.Message);
         return Results.Ok(response);
     }
-});
+}).RequireAuthorization("StandardUser");
 
 app.MapEventEndpoints();
 

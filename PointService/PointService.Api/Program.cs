@@ -54,7 +54,6 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-//builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGateway", builder =>
@@ -147,12 +146,6 @@ app.MapGet("/User/{userId}/Points",
     }).RequireAuthorization();
 
 app.MapEventEndpoints();
-
-//app.MapPost("/postvote-created", (PostVoteDto dto, IPointEntryCommand command) =>
-//{
-//    Console.WriteLine("Lets go");                  ////KRÆVER REFAC PÅ VOTESERVICE
-
-//}).WithTopic("pubsub", "postvote-created").AllowAnonymous();
 
 app.MapPut("/PointAction",
     async (UpdatePointActionDto dto, IPointActionCommand command) =>
