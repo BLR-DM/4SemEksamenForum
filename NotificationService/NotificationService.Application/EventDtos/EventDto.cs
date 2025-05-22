@@ -13,5 +13,8 @@
 
     public record CommentPublishedDto(string UserId, int ForumId, int PostId, int CommentId, string Title);
     public record PostVoteEventDto(int PostId, string UserId);
+    public record PostRejectedDto(string UserId, int ForumId, int PostId);
+    public record ForumRejectedDto(string UserId, int ForumId);
+    public record CommentRejectedDto(string UserId, int ForumId, int PostId, int CommentId);
 
 }

@@ -9,5 +9,8 @@
         public const string PostUpVoteCreated = "post-upvote-created";
         public const string PostDownVoteCreated = "post-downvote-created";
         public const string PostVoteCreated = "post-vote-created";
+        public const string PostRejected = "post-rejected";
+        public const string ForumRejected = "forum-rejected";
+        public const string CommentRejected = "comment-rejected";
     }
 }

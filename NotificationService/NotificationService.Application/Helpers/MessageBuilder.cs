@@ -18,5 +18,20 @@ namespace NotificationService.Application.Helpers
         {
             return $"A user has interacted with a post you're following";
         }
+
+        public static string BuildPostRejected()
+        {
+            return $"A post you've tried to create has been rejected";
+        }
+
+        public static string BuildForumRejected()
+        {
+            return $"A forum you've tried to create has been rejected";
+        }
+
+        public static string BuildCommentRejected()
+        {
+            return $"A comment you've tried to create has been rejected";
+        }
     }
 }
