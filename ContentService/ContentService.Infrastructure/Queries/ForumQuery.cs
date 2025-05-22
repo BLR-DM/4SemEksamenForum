@@ -49,6 +49,7 @@ namespace ContentService.Infrastructure.Queries
         async Task<List<ForumDto>> IForumQuery.GetForumsWithPostsAsync()
         {
             var forum = await _db.Forums.AsNoTracking()
+                .Where(f => f.Status != Status.Rejected)
                 .Include(f => f.Posts
                     .Where(p => p.Status != Status.Rejected))
                 .ToListAsync();
