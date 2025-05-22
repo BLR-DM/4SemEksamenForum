@@ -9,6 +9,7 @@
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="/" Match="NavLinkMatch.Prefix">My Page</MudNavLink>
+            <MudNavLink Href="/explore" Match="NavLinkMatch.Prefix">Explore forums</MudNavLink>
             <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
             <MudNavGroup Title="Subscribed Forums" Expanded="true">
                 @if (SubscribedForums is not null && SubscribedForums.Count != 0)
