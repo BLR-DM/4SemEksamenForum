@@ -72,9 +72,6 @@ namespace WebService.Services
                 if(UserId != null)
                     try
                     {
-                        //Points = await _pointService.GetPointsByUserId(UserId);
-                        //Notifications = await _notificationService.GetNotificationsByUserId(UserId);
-
                         var pointsTask = _pointService.GetPointsByUserId(UserId);
                         var notificationsTask = _notificationService.GetNotificationsByUserId(UserId);
                         var forumsTask = _forumService.GetForumsWithPostsIds();
@@ -82,8 +79,8 @@ namespace WebService.Services
                         await Task.WhenAll(pointsTask, notificationsTask, forumsTask);
 
                         Points = pointsTask.Result;
-                        Notifications = notificationsTask.Result;
-                        Forums = forumsTask.Result;
+                        Notifications = notificationsTask.Result.OrderByDescending(n => n.CreatedAt).ToList();
+                        Forums = forumsTask.Result.OrderBy(f => f.ForumName).ToList();
                         IsInitialized = true;
                     }
                     catch (Exception ex)
