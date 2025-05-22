@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubscriptionService.Domain.Exceptions;
 
 namespace SubscriptionService.Domain.Entities
 {
@@ -32,7 +33,7 @@ namespace SubscriptionService.Domain.Entities
         {
             if (otherSubscriptions.Any(sub => sub.PostId == PostId && sub.AppUserId == AppUserId))
             {
-                throw new Exception("User is already subscribed to this post.");
+                throw new AlreadySubscribedException("User is already subscribed to this post.");
             }
         }
     }

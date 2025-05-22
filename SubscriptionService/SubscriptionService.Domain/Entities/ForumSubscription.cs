@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SubscriptionService.Domain.Exceptions;
 
 namespace SubscriptionService.Domain.Entities
 {
@@ -31,7 +32,7 @@ namespace SubscriptionService.Domain.Entities
         {
             if (otherSubscriptions.Any(sub => sub.ForumId == ForumId && sub.AppUserId == AppUserId))
             {
-                throw new Exception("User is already subscribed to this forum.");
+                throw new AlreadySubscribedException("User is already subscribed to this forum.");
             }
         }
     }

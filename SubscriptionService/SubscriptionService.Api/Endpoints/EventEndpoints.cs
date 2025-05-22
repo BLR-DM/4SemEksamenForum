@@ -2,6 +2,7 @@
 using SubscriptionService.Application.EventDto;
 using SubscriptionService.Application.Queries.Interfaces;
 using SubscriptionService.Application.Services;
+using SubscriptionService.Domain.Exceptions;
 using EventHandler = SubscriptionService.Application.Services.EventHandler;
 
 namespace SubscriptionService.Api.Endpoints
@@ -40,6 +41,10 @@ namespace SubscriptionService.Api.Endpoints
 
                         return Results.Ok();
                     }
+                    catch (AlreadySubscribedException)
+                    {
+                        return Results.Ok();
+                    }
                     catch (Exception ex)
                     {
                         await eventHandler.FailedToSubscribeUserOnPostPublished(evtDto.UserId, evtDto.ForumId, evtDto.PostId);
@@ -57,6 +62,10 @@ namespace SubscriptionService.Api.Endpoints
 
                         return Results.Ok();
                     }
+                    catch (AlreadySubscribedException)
+                    {
+                        return Results.Ok();
+                    }
                     catch (Exception ex)
                     {
                         await eventHandler.FailedToSubscribeUserOnCommentPublished(evtDto.UserId, evtDto.ForumId, evtDto.PostId, evtDto.CommentId);
@@ -72,6 +81,10 @@ namespace SubscriptionService.Api.Endpoints
                     {
                         await command.CreateAsync(evtDto.ForumId, evtDto.UserId);
 
+                        return Results.Ok();
+                    }
+                    catch (AlreadySubscribedException)
+                    {
                         return Results.Ok();
                     }
                     catch (Exception ex)
