@@ -32,6 +32,8 @@
 
     private async Task CreateForum()
     {
+        if (!ValidateInput(CreateForumDto)) return;
+
         try
         {
             await ForumService.CreateForum(CreateForumDto);
@@ -43,5 +45,21 @@
             Console.WriteLine(e);
             ErrorMessage = "Failed to create forum";
         }
+    }
+
+    private bool ValidateInput(CreateForumDto forumDto)
+    {
+        if (string.IsNullOrEmpty(forumDto.ForumName) || string.IsNullOrEmpty(forumDto.Content))
+        {
+            ErrorMessage = "Fields cannot be empty";
+            return false;
+        }
+
+        if (forumDto.ForumName.Any(c => c == ' '))
+        {
+            ErrorMessage = "Forum name cannot have spaces";
+            return false;
+        }
+        return true;
     }
 }
