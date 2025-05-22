@@ -122,6 +122,7 @@
         {
             await ForumService.DeleteForum(forumId);
             Session.RemoveForumSubscription(forumId);
+            Session.Forums?.RemoveAll(f => f.Id == forumId);
             Navigation.NavigateTo("/");
 
 

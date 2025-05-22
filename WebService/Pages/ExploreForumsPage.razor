@@ -2,6 +2,10 @@
 @inject UserSessionService Session
 
 <div class="content-wrapper">
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-info custom-alert">@ErrorMessage</div>
+    }
     @if (ForumNames is not null && ForumNames.Count != 0)
     {
         foreach (var forumName in ForumNames)
@@ -15,11 +19,16 @@
 
 @code {
     List<string>? ForumNames { get; set; }
+    public string? ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await Session.WaitUntilReadyAsync();
         ForumNames = Session?.Forums?.Select(f => f.ForumName).ToList();
+        if (ForumNames == null || ForumNames.Count == 0)
+        {
+            ErrorMessage = "No forums available";
+        }
     }
 }
 
@@ -45,5 +54,10 @@
 
     .forum-name-wrapper:hover {
         background-color: #f0f0f0;
+    }
+
+    .custom-alert {
+        width: 100%;
+        text-align: center;
     }
 </style>
