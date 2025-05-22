@@ -13,9 +13,17 @@ namespace ContentService.Api.Endpoints
             events.MapPost("/content-moderated",
                     async (IModerationResultHandler handler, ContentModeratedDto dto) =>
                     {
-                        Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
-                        await handler.HandleModerationResultAsync(dto);
-                        return Results.Ok();
+                        try
+                        {
+                            Console.WriteLine($"Received moderation result: {dto.ContentId} = {dto.Result}");
+                            await handler.HandleModerationResultAsync(dto);
+                            return Results.Ok();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return Results.Problem(ex.Message);
+                        }
                     })
                 .WithTopic("pubsub", "content-moderated");
 
@@ -23,8 +31,16 @@ namespace ContentService.Api.Endpoints
             events.MapPost("/compensate/delete-forum",
                     async (IForumCommand command, CompensateByDeletingForumDto evt) =>
                     {
-                        await command.DeleteForumAsync(evt.UserId, evt.ForumId);
-                        return Results.NoContent();
+                        try
+                        {
+                            await command.DeleteForumAsync(evt.UserId, evt.ForumId);
+                            return Results.NoContent();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return Results.Problem(ex.Message);
+                        }
                     })
                 .WithTopic("pubsub", "failed-to-subscribe-user-on-forum-published")
                 .WithTopic("pubsub", "failed-to-add-points-on-forum-published");
@@ -33,8 +49,16 @@ namespace ContentService.Api.Endpoints
             events.MapPost("/compensate/delete-post",
                     async (IForumCommand command, CompensateByDeletingPostDto evt) =>
                     {
-                        await command.DeletePostAsync(evt.UserId, evt.ForumId, evt.PostId);
-                        return Results.NoContent();
+                        try
+                        {
+                            await command.DeletePostAsync(evt.UserId, evt.ForumId, evt.PostId);
+                            return Results.NoContent();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return Results.Problem(ex.Message);
+                        }
                     })
                 .WithTopic("pubsub", "failed-to-subscribe-user-on-post-published")
                 .WithTopic("pubsub", "failed-to-add-points-on-post-published");
@@ -42,8 +66,16 @@ namespace ContentService.Api.Endpoints
             events.MapPost("/compensate/delete-comment",
                     async (IPostCommand command, CompensateByDeletingCommentDto evt) =>
                     {
-                        await command.DeleteCommentAsync(evt.UserId, evt.ForumId, evt.PostId, evt.CommentId);
-                        return Results.NoContent();
+                        try
+                        {
+                            await command.DeleteCommentAsync(evt.UserId, evt.ForumId, evt.PostId, evt.CommentId);
+                            return Results.NoContent();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return Results.Problem(ex.Message);
+                        }
                     })
                 .WithTopic("pubsub", "failed-to-add-points-on-comment-published")
                 .WithTopic("pubsub", "failed-to-subscribe-user-on-comment-published");
