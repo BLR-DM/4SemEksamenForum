@@ -50,6 +50,11 @@ namespace ContentService.Api.Endpoints
                 {
                     try
                     {
+                        if (user.IsInRole("moderator"))
+                        {
+                            await command.DeleteCommentModAsync(forumId, postId, commentId);
+                            return Results.Ok("Comment deleted");
+                        }
                         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                         await command.DeleteCommentAsync(userId, forumId, postId, commentId);
