@@ -20,40 +20,47 @@ public class CommentVoteCommand : ICommentVoteCommand
     }
     async Task ICommentVoteCommand.ToggleCommentVote(int commentId, CommentVoteDto dto, string userId)
     {
-        var voteAction = await _commentVoteService.ToggleCommentVoteAsync(userId, commentId, dto.VoteType);
-
-        switch (voteAction)
+        try
         {
-            case VoteAction.Created:
+            var voteAction = await _commentVoteService.ToggleCommentVoteAsync(userId, commentId, dto.VoteType);
 
-                if (dto.VoteType == true)
-                {
-                    await _eventHandler.CommentUpVoteCreated(commentId, userId); 
-                }
-                else
-                {
-                    await _eventHandler.CommentDownVoteCreated(commentId, userId);
-                }
-                break;
+            switch (voteAction)
+            {
+                case VoteAction.Created:
 
-            case VoteAction.Deleted:
+                    if (dto.VoteType == true)
+                    {
+                        await _eventHandler.CommentUpVoteCreated(commentId, userId);
+                    }
+                    else
+                    {
+                        await _eventHandler.CommentDownVoteCreated(commentId, userId);
+                    }
+                    break;
 
-                if (dto.VoteType == true)
-                {
-                    await _eventHandler.CommentUpVoteRemoved(commentId, userId);
-                }
-                break;
+                case VoteAction.Deleted:
 
-            case VoteAction.Updated:
-                if (dto.VoteType == true)
-                {
-                    await _eventHandler.CommentUpVoteCreated(commentId, userId);
-                }
-                else
-                {
-                    await _eventHandler.CommentDownVoteCreated(commentId, userId);
-                }
-                break;
+                    if (dto.VoteType == true)
+                    {
+                        await _eventHandler.CommentUpVoteRemoved(commentId, userId);
+                    }
+                    break;
+
+                case VoteAction.Updated:
+                    if (dto.VoteType == true)
+                    {
+                        await _eventHandler.CommentUpVoteCreated(commentId, userId);
+                    }
+                    else
+                    {
+                        await _eventHandler.CommentDownVoteCreated(commentId, userId);
+                    }
+                    break;
+            }
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 }
