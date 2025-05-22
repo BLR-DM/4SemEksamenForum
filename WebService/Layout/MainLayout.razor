@@ -12,7 +12,7 @@
 <MudLayout>
     <MudAppBar Elevation="1" Style="background-color: grey;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">BLR Forum</MudText>
         <MudSpacer />
         <MudAutocomplete T="string"
             Value="SearchText" 
@@ -27,7 +27,7 @@
             ValueChanged="OnForumSelected"/>
         <div class="notification-icon-wrapper" @onclick="NavigateToNotifications">
             <i class="bi bi-bell"></i>
-            @if (Session.Notifications?.Count > 0)
+            @if (Session.Notifications?.Any(n => !n.IsRead) == true)
             {
                 <span class="notification-badge">@Session.Notifications?.Where(n => n.IsRead == false).Count()</span>
             }
