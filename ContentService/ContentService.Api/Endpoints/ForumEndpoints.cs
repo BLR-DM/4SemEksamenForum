@@ -106,7 +106,7 @@ namespace ContentService.Api.Endpoints
                     }
                 }).WithTags(tag).RequireAuthorization("StandardUser");
 
-            app.MapDelete("/api/forum/{forumId}", // check appUserId / moderator
+            app.MapDelete("/api/forum/{forumId}",
                 async (IForumCommand command, ClaimsPrincipal user, int forumId) =>
                 {
                     try
