@@ -170,5 +170,31 @@ namespace ContentService.Application.Commands
                 throw;
             }
         }
+
+        async Task IPostCommand.DeleteCommentModAsync(int forumId, int postId, int commentId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumWithSinglePostAsync(forumId, postId);
+                var post = forum.GetPostById(postId);
+                var comment = post.GetCommentById(commentId);
+
+                // Do
+                _forumRepository.DeleteComment(comment);
+
+                // Save
+                await _unitOfWork.Commit();
+
+                await _eventHandler.CommentDeleted(comment.AppUserId, forum.Id, post.Id, comment.Id);
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
     }
 }

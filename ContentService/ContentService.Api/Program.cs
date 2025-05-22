@@ -1,17 +1,10 @@
 ﻿using ContentService.Api.Endpoints;
 using ContentService.Application;
-using ContentService.Application.Commands.CommandDto.ForumDto;
-using ContentService.Application.Commands.Interfaces;
-using ContentService.Application.EventDto;
-using ContentService.Application.Services;
 using ContentService.Infrastructure;
-using ContentService.Infrastructure.Interfaces;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,7 +50,6 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-
 // Enable DI validation at startup
 //builder.Services.AddOptions<ServiceProviderOptions>()
 //    .Configure(options => options.ValidateOnBuild = true);
@@ -68,7 +60,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     app.MapScalarApiReference();
-    
 }
 
 app.UseRouting();
@@ -78,7 +69,6 @@ app.UseCloudEvents();
 app.MapSubscribeHandler();
 
 app.MapGet("/api/hello", () => "Hello World!").RequireAuthorization("StandardUser");
-
 
 app.MapForumEndpoints();
 app.MapPostEndpoints();

@@ -1,12 +1,10 @@
 using ContentSafetyService.Application;
 using ContentSafetyService.Application.Commands;
 using ContentSafetyService.Domain.Enums;
-using ContentSafetyService.Domain.ValueObjects;
 using ContentSafetyService.Infrastructure;
 using Dapr;
 using Dapr.AppCallback.Autogen.Grpc.v1;
 using Dapr.Client;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Action = ContentSafetyService.Domain.Enums.Action;
@@ -62,8 +60,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     app.MapScalarApiReference();
-
-    
 }
 
 app.UseSwagger();
@@ -79,40 +75,35 @@ app.MapSubscribeHandler();
 
 app.MapGet("/hello", () => "Hello World!");
 
-
-
-
-app.MapPost("/events/subscribe", (ILogger<Program> logger, MessagePayload text) =>
-    {
-        logger.LogInformation("Received message: {Text}", text.Text);
-        return Results.Ok();
-    })
-    .WithTopic("pubsub", "test-topic");
-
-
-
-
 app.MapPost("/events/contentmoderation",
     async (ILogger<Program> logger, ContentModerationDto payload, IContentSafetyCommand command, DaprClient dapr) =>
     {
-        // Save moderation content request?
-        logger.LogInformation("Content for moderation received:\n" +
-                              "ContentId: {Id}\n" +
-                              "Content: {Content}", payload.ContentId, payload.Content);
+        try
+        {
+            // Save moderation content request?
+            logger.LogInformation("Content for moderation received:\n" +
+                                  "ContentId: {Id}\n" +
+                                  "Content: {Content}", payload.ContentId, payload.Content);
 
-        var mediaType = MediaType.Text;
-        var blocklists = Array.Empty<string>();
+            var mediaType = MediaType.Text;
+            var blocklists = Array.Empty<string>();
 
-        var decision = await command.ModerateContentAsync(mediaType, payload.Content, blocklists);
+            var decision = await command.ModerateContentAsync(mediaType, payload.Content, blocklists);
 
-        logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
+            logger.LogInformation("Decision made by AI: {Decision}", decision.SuggestedAction);
 
-        // Test
+            // Test
 
-        var contentModeratedDto = new ContentModeratedDto(payload.ContentId, decision.SuggestedAction);
-        await dapr.PublishEventAsync("pubsub", "content-moderated", contentModeratedDto);
+            var contentModeratedDto = new ContentModeratedDto(payload.ContentId, decision.SuggestedAction);
+            await dapr.PublishEventAsync("pubsub", "content-moderated", contentModeratedDto);
 
-        return Results.Ok();
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Results.Problem(ex.Message);
+        }
 
     })
     .WithTopic("pubsub", "forum-submitted")
@@ -120,7 +111,5 @@ app.MapPost("/events/contentmoderation",
     .WithTopic("pubsub", "comment-submitted");
 
 app.Run();
-public record MessagePayload(string Text);
 public record ContentModerationDto(string ContentId, string Content);
 public record ContentModeratedDto(string ContentId, Action Result);
-public record ContentRejectedDto(string ContentId, string Reason); // test, instead of reason, include the ActionByCategory / rejected ones
