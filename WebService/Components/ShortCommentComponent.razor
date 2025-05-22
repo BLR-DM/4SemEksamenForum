@@ -142,12 +142,12 @@
             await PostService.DeleteComment(forumId, postId, commentId);
 
             await OnDeleted.InvokeAsync(commentId);
-            
+
         }
         catch (Exception e)
         {
+            ErrorMessage = "Failed to delete comment";
             Console.WriteLine(e);
-            throw;
         }
     }
 }

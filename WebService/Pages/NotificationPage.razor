@@ -17,18 +17,25 @@
         </div>
     </div>
 }
-else
+@if (!string.IsNullOrEmpty(ErrorMessage))
 {
-    <div>No notifications</div>
+    <div class="alert alert-info">@ErrorMessage</div>
 }
 
 
 @code {
+    public string ErrorMessage { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         if (!Session.IsInitialized)
         {
             await Session.InitializeAsync();
+
+            if (Session.Notifications == null)
+            {
+                ErrorMessage = "No notifications";
+            }
         }
     }
 }
