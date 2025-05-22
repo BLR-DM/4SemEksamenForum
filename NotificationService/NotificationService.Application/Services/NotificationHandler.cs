@@ -43,6 +43,7 @@ namespace NotificationService.Application.Services
                 default:
                     throw new Exception($"Unknown topic: {topic}");
             }
+
         }
 
         private async Task HandlePostPublished(PostPublishedDto dto)
