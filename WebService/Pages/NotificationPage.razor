@@ -3,37 +3,36 @@
 @inject UserSessionService Session
 
 <div class="mt-3"></div>
-@if (Session.Notifications is not null && Session.Notifications.Count > 0) 
-{
-    <div class="content-wrapper">
-        <div class="notification-list">
-            <div>Notifications:</div>
-            @foreach (var notification in Session.Notifications)
-            {
-                <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
-            }
-        </div>
-    </div>
-}
+<div class="content-wrapper">
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <div class="alert alert-info">@ErrorMessage</div>
 }
 
+@if (Session.Notifications is not null && Session.Notifications.Count > 0) 
+{
+    <div class="notification-list">
+        <div>Notifications:</div>
+        @foreach (var notification in Session.Notifications)
+        {
+            <ShortNotificationComponent Notification="notification"></ShortNotificationComponent>
+        }
+    </div>
+}
+</div>
+
 
 @code {
-    public string ErrorMessage { get; set; }
+    public string? ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (!Session.IsInitialized)
-        {
-            await Session.InitializeAsync();
+        await Session.WaitUntilReadyAsync();
 
-            if (Session.Notifications == null)
-            {
-                ErrorMessage = "No notifications";
-            }
+        if (Session.Notifications == null || Session.Notifications?.Count == 0) 
+        {
+            ErrorMessage = "No notifications";
         }
+        
     }
 }
