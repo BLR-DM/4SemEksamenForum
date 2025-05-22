@@ -130,6 +130,24 @@ namespace WebService.Proxies
             }
         }
 
+        async Task IContentServiceProxy.DeleteForum(int forumId)
+        {
+            try
+            {
+                var uri = $"content/api/forum/{forumId}";
+
+                var response = await _httpClient.DeleteAsync(uri);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception("Could not delete forum");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Could not delete forum");
+            }
+        }
+
         async Task IContentServiceProxy.DeleteComment(int forumId, int postId, int commentId)
         {
             try
@@ -181,5 +199,6 @@ namespace WebService.Proxies
         Task CreateComment(CreateCommentDto dto, int forumId, int postId);
         Task DeletePost(int forumId, int postId);
         Task DeleteComment(int forumId, int postId, int commentId);
+        Task DeleteForum(int forumId);
     }
 }

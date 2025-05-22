@@ -78,6 +78,19 @@ namespace WebService.Services
 
             return forumViews;
         }
+
+        async Task IForumService.DeleteForum(int forumId)
+        {
+            try
+            {
+                await _contentServiceProxy.DeleteForum(forumId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
     }
 
     public interface IForumService
@@ -88,5 +101,6 @@ namespace WebService.Services
         Task<List<ForumView>> GetForums();
         Task<List<ForumViewWithPostIds>> GetForumsWithPostsIds();
         Task CreateForum(CreateForumDto dto);
+        Task DeleteForum(int forumId);
     }
 }
