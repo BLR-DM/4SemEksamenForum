@@ -174,35 +174,7 @@ namespace ContentService.Application.Commands
             }
         }
 
-        //async Task IForumCommand.HandlePublishAsync(PublishForumDto forumDto)
-        //{
-        //    try
-        //    {
-        //        await _unitOfWork.BeginTransaction();
-
-        //        // Load
-        //        var forum = await _forumRepository.GetForumWithPostsAsync(forumDto.Id);
-
-        //        // Idempotency check
-        //        if (forum.Status == Status.Published)
-        //            return;
-
-        //        // MarkAsPublished event
-        //        // await _dapr.PublishEventAsync("pubsub", "forumPublished", forum);
-
-        //        // Do
-        //        forum.MarkAsPublished();
-
-        //        // Save
-        //        await _unitOfWork.Commit();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        await _unitOfWork.Rollback();
-        //        throw;
-        //    }
-        //}
-
+    
         async Task IForumCommand.UpdateForumAsync(UpdateForumDto forumDto, string appUserId, int forumId)
         {
             try
@@ -247,7 +219,35 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 // Event
-                await _eventHandler.ForumDeleted(appUserId, forum.Id);
+                await _eventHandler.ForumDeleted(forum.AppUserId, forum.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        async Task IForumCommand.DeleteForumModAsync(int forumId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                var forum = await _forumRepository.GetForumWithAllAsync(forumId);
+
+                var deletedPosts = forum.DeleteAllPosts();
+                var deletedComments = deletedPosts.SelectMany(p => p.DeleteAllComments()).ToList();
+
+                _forumRepository.DeleteComments(deletedComments);
+                _forumRepository.DeletePosts(deletedPosts);
+                _forumRepository.DeleteForum(forum);
+
+                await _unitOfWork.Commit();
+
+                // Event
+                await _eventHandler.ForumDeleted(forum.AppUserId, forum.Id);
             }
             catch (Exception ex)
             {
@@ -333,6 +333,35 @@ namespace ContentService.Application.Commands
                 await _unitOfWork.Commit();
 
                 await _eventHandler.PostDeleted(appUserId, forum.Id, post.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                await _unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        async Task IForumCommand.DeletePostModAsync(int forumId, int postId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                // Load
+                var forum = await _forumRepository.GetForumWithSinglePostAsync(forumId, postId);
+                var post = forum.GetPostById(postId);
+
+                // Do
+                var deletedComments = post.DeleteAllComments();
+
+                _forumRepository.DeletePost(post);
+                _forumRepository.DeleteComments(deletedComments);
+
+                //Save
+                await _unitOfWork.Commit();
+
+                await _eventHandler.PostDeleted(post.AppUserId, forum.Id, post.Id);
             }
             catch (Exception ex)
             {

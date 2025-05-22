@@ -83,6 +83,11 @@ namespace ContentService.Api.Endpoints
                 {
                     try
                     {
+                        if (user.IsInRole("moderator"))
+                        {
+                            await command.DeletePostModAsync(forumId, postId);
+                            return Results.Ok("Post deleted");
+                        }
                         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                         await command.DeletePostAsync(userId, forumId, postId);

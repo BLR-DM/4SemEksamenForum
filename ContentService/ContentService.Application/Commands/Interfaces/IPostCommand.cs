@@ -10,5 +10,6 @@ namespace ContentService.Application.Commands.Interfaces
         Task DeleteCommentAsync(string appUserId, int forumId, int postId, int commentId);
         Task HandleCommentApprovalAsync(PublishCommentDto publishCommentDto);
         Task HandleCommentRejectionAsync(RejectCommentDto rejectCommentDto);
+        Task DeleteCommentModAsync(int forumId, int postId, int commentId);
     }
 }

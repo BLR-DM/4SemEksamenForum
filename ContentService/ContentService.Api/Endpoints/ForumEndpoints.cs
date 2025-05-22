@@ -111,6 +111,11 @@ namespace ContentService.Api.Endpoints
                 {
                     try
                     {
+                        if (user.IsInRole("moderator"))
+                        {
+                            await command.DeleteForumModAsync(forumId);
+                            return Results.NoContent();
+                        }
                         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                         await command.DeleteForumAsync(userId, forumId);
                         return Results.NoContent();
