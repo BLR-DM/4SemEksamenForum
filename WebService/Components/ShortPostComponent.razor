@@ -6,7 +6,7 @@
 
 <div class="short-post">
     <div class="header">
-        <span class="header-left">@Post.Username</span>
+        <span class="header-left">@Post.Username · @DateTime.Parse(Post.CreatedDate).Humanize()</span>
         <span class="header-right">@Post.CreatedDate</span>
     </div>
 
