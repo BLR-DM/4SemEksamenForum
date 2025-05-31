@@ -6,8 +6,8 @@
 
 <div class="short-post">
     <div class="header">
-        <span class="header-left">@Post.Username · @DateTime.Parse(Post.CreatedDate).Humanize()</span>
-        <span class="header-right">@Post.CreatedDate</span>
+        <span class="header-left">
+            @Post.Username · @DateTime.Parse(Post.CreatedDate).Humanize(dateToCompareAgainst: DateTime.UtcNow.AddHours(2))</span>
     </div>
 
     <div class="title">

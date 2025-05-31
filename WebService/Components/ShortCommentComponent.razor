@@ -6,8 +6,7 @@
 
 <div class="short-comment">
     <div class="header">
-        <span class="header-left">@Comment.Username · @DateTime.Parse(Comment.CreatedDate).Humanize()</span> @*Humanize?*@
-        <span class="header-right">@DateTime.Parse(Comment.CreatedDate).Humanize()</span>
+        <span class="header-left">@Comment.Username · @DateTime.Parse(Comment.CreatedDate).Humanize(dateToCompareAgainst: DateTime.UtcNow.AddHours(2))</span>
     </div>
 
     <div class="comment-content">
