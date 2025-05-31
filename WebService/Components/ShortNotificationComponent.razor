@@ -10,8 +10,8 @@
         <div class="notification-wrapper">
             <div class="notification-content @(Notification.IsRead ? "notification-read" : "")" 
                  @onclick="() => OnNotificationClicked(Notification.Id)">
-                <div><strong>Message:</strong><span>@Notification.Message</span></div>
-                <div><strong>CreatedAt:</strong><span>@Notification.CreatedAt</span></div>
+                <div><strong>Message: </strong><span>@Notification.Message</span></div>
+                <div><strong>Created: </strong><span>@Notification.CreatedAt.Humanize(dateToCompareAgainst: DateTime.UtcNow.AddHours(2))</span></div>
                 @if (!Notification.IsRead)
                 {
                     <div class="notification-indicator"></div>
