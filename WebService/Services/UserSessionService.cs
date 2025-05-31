@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
+using WebService.Components;
 using WebService.Layout;
 using WebService.Views;
 
@@ -59,6 +60,15 @@ namespace WebService.Services
                 IsLoggedIn = true;
 
                 var tokenResult = await _tokenProvider.RequestAccessToken();
+
+                if (tokenResult.Status != AccessTokenResultStatus.Success)
+                {
+
+                    // Need to redirect to login / force relogin
+                    return;
+
+                }
+
                 if (tokenResult.TryGetToken(out var token))
                 {
                     Token = token.Value;
