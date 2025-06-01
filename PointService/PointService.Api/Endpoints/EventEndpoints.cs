@@ -68,7 +68,7 @@ namespace PointService.Api.Endpoints
                     Console.WriteLine(ex.Message);
                     return Results.Problem();
                 }
-            });
+            }).WithTopic("pubsub", "forum-deleted");
 
             app.MapPost("/events/post-published", async (PostPublishedDto postPublishedDto, IPointEntryCommand command,
                 IEventHandler eventHandler) =>
