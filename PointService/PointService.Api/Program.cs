@@ -114,7 +114,7 @@ app.MapGet("/api/pointactions",
         {
             return Results.Problem();
         }
-    }).RequireAuthorization("StandardUser");
+    }).RequireAuthorization("Moderator");
 
 app.MapGet("/api/User/{userId}/Points",
     async (string userId, ClaimsPrincipal user, IPointEntryQuery query) =>

@@ -116,5 +116,15 @@ namespace WebService.Helpers
 
             return notificationView;
         }
+        
+        public static PointActionView MapPointActionToView(PointActionDto pointActionDto)
+        {
+            var pointActionView = new PointActionView()
+            {
+                PointActionId = pointActionDto.Action,
+                Points = pointActionDto.Points
+            };
+            return pointActionView;
+        }
     }
 }
