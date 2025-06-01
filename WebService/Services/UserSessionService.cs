@@ -1,9 +1,10 @@
-﻿using System.Data;
-using System.Security.Claims;
-using System.Text.Json;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
+using System.Data;
+using System.Security.Claims;
+using System.Text.Json;
 using WebService.Components;
 using WebService.Layout;
 using WebService.Views;
@@ -18,6 +19,7 @@ namespace WebService.Services
         private readonly IPointService _pointService;
         private readonly INotificationService _notificationService;
         private readonly IForumService _forumService;
+        private readonly NavigationManager _navigationManager;
         private TaskCompletionSource _readyTcs = new();
 
         public bool IsLoggedIn { get; private set; }
@@ -39,7 +41,8 @@ namespace WebService.Services
         public event Action? OnSubscriptionsChanged;
 
         public UserSessionService(AuthenticationStateProvider authStateProvider, ISubscriptionService subscriptionService,
-            IAccessTokenProvider tokenProvider, IPointService pointService, INotificationService notificationService, IForumService forumService)
+            IAccessTokenProvider tokenProvider, IPointService pointService, INotificationService notificationService, IForumService forumService,
+            NavigationManager navigationManager)
         {
             _authStateProvider = authStateProvider;
             _subscriptionService = subscriptionService;
@@ -47,6 +50,7 @@ namespace WebService.Services
             _pointService = pointService;
             _notificationService = notificationService;
             _forumService = forumService;
+            _navigationManager = navigationManager;
         }
 
         public async Task InitializeAsync()
@@ -63,10 +67,8 @@ namespace WebService.Services
 
                 if (tokenResult.Status != AccessTokenResultStatus.Success)
                 {
-
-                    // Need to redirect to login / force relogin
+                    _navigationManager.NavigateTo("/loggedout");
                     return;
-
                 }
 
                 if (tokenResult.TryGetToken(out var token))
