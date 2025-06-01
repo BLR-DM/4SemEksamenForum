@@ -17,8 +17,6 @@ builder.Services.AddHttpClient();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-
-    // Adjust if needed – this is usually the Docker gateway IP for bridge networks
     options.KnownProxies.Add(IPAddress.Parse("172.18.0.1"));
 });
 
