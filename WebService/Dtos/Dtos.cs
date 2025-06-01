@@ -54,4 +54,10 @@
         public int ContextId { get; set; }
         public string ContextType { get; set; }
     }
+
+    public record PointActionDto
+    {
+        public string Action { get; set; }
+        public int Points { get; set; }
+    }
 }

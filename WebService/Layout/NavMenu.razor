@@ -9,6 +9,10 @@
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="/" Match="NavLinkMatch.Prefix">My Page</MudNavLink>
+            @if (Session.HasRole("moderator"))
+            {
+                <MudNavLink Href="/admin" Match="NavLinkMatch.Prefix">Admin Page</MudNavLink>
+            }
             <MudNavLink Href="/explore" Match="NavLinkMatch.Prefix">Explore forums</MudNavLink>
             <MudNavLink Href="/forum/create" Match="NavLinkMatch.Prefix">Create new forum</MudNavLink>
             <MudNavGroup Title="Subscribed Forums" Expanded="true">

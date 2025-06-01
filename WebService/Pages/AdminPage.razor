@@ -1,0 +1,151 @@
+﻿@page "/admin"
+@using System.ComponentModel.DataAnnotations
+@using System.Drawing
+@using System.Runtime.InteropServices.JavaScript
+@using WebService.Dtos.CommandDtos
+@inject UserSessionService Session
+@inject NavigationManager NavigationManager
+@inject IPointService PointService
+
+@if (HasLoadedUser)
+{
+    <h3>AdminPage</h3>
+
+    <p>This page is only accessible to users with the Moderator role.</p>
+
+    <div class="content-wrapper">
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-info custom-alert">@ErrorMessage</div>
+        }
+        @if (PointActionViews.Count != 0)
+        {
+            foreach (var pointAction in PointActionViews)
+            {
+                <form @onsubmit="@((_) => UpdatePoints(pointAction.PointActionId, NewPoints))">
+                    <div class="point-box">
+                        <span>@pointAction.PointActionId</span>
+
+                        @if (editingPointActionId == pointAction.PointActionId)
+                        {
+                            <input type="number"@bind="NewPoints" style="max-width: 45px; border: 1px solid black;"/>
+                            <button type="submit">save</button>
+                            <button type="button" @onclick="CancelEdit">cancel</button>
+                        }
+                        else
+                        {
+                            <input type="number" value="@pointAction.Points" readonly style="max-width: 45px;" />
+                            <button type="button" @onclick="() => StartEdit(pointAction)">edit</button>
+                        }
+                    </div>
+                </form>
+            }
+        }
+    </div>
+}
+
+
+@code {
+    public string? ErrorMessage { get; set; }
+    public List<PointActionView> PointActionViews { get; set; } = [];
+    public bool HasLoadedUser { get; set; } = false;
+    private string? editingPointActionId = null;
+    public int NewPoints { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Session.WaitUntilReadyAsync();
+
+        if (!Session.HasRole("moderator"))
+        {
+            NavigationManager.NavigateTo("/unauthorized");
+        }
+
+        HasLoadedUser = true;
+        try
+        {
+            PointActionViews = await PointService.GetPointActions();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+
+
+    }
+
+    private void StartEdit(PointActionView action)
+    {
+        editingPointActionId = action.PointActionId;
+        NewPoints = action.Points;
+    }
+
+    private void CancelEdit()
+    {
+        editingPointActionId = null;
+    }
+
+
+    private async Task UpdatePoints(string pointActionId, int newPoints)
+    {
+        var updatePointActionDto = new UpdatePointActionDto(pointActionId, newPoints);
+
+        var success = await PointService.UpdatePointAction(updatePointActionDto);
+
+        if (success)
+        {
+            var updatedPointAction = PointActionViews.First(pa => pa.PointActionId == pointActionId);
+            updatedPointAction.Points = NewPoints;
+            CancelEdit();
+        }
+        else
+        {
+            ErrorMessage = "Failed to update points";
+        }
+
+
+    }
+
+    private class EditPointModel
+    {
+        [Required]
+        [Range(-1000, 1000)]
+        public int Points { get; set; }
+    }
+
+}
+
+<style>
+    .content-wrapper {
+        box-shadow: 0px 0px 0px 0px;
+        background-color: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .point-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        padding: 8px;
+        margin: 6px auto;
+        width: 400px;
+        border-radius: 4px;
+        box-shadow: 3px 3px 10px 0px rgba(150, 150, 150, 0.5);
+    }
+
+    .point-box button {
+        margin-left: 8px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .custom-alert {
+        width: 100%;
+        text-align: center;
+    }
+</style>
